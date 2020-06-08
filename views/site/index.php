@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 /* @var $this yii\web\View */
 
-$this->title = 'My Yii Application';
+$this->title = 'UDH-Connect';
 // $this->registerJsFile(
 //     '@web/js/liff-starter.js',
 //     ['depends' => [\yii\web\JqueryAsset::className()]]
