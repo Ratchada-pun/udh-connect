@@ -12,9 +12,7 @@ use yii\helpers\Url;
 
 $this->title = "นัดหมายแพทย์";
 
-$this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
-    'depends' => [\yii\bootstrap\BootstrapAsset::className()]
-]);
+
 ?>
 
 <style>
@@ -34,15 +32,37 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
         border-color: #6c757d;
     }
 
+    .sufee-login img {
+    max-width: 10%;
+    }
+
     .btn {
         text-align: left;
         font-size: 16pt;
     }
 
-    img {
+    .img {
         max-width: 10%;
 
     }
+    @media (max-width: 767px) {
+	.quick-links-grid .ql-grid-item {
+		width: 100% !important;
+	}
+	.login-content {
+		margin: 0;
+	}
+	.container-fluid {
+		padding-right: 0;
+    	padding-left: 0;
+	}
+    .card-body {
+            padding: 0;
+    }
+}
+.login-form .btn {
+    font-size: 16px;
+}
 </style>
 
 <div class="sufee-login d-flex align-content-center flex-wrap">
@@ -56,9 +76,6 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                                 <p style="font-size: 16pt;margin-top:5px;">
                                     โรงพยาบาลอุดรธานี
                                 </p>
-                                <p style="font-size: 16pt;margin-bottom:5px;">
-                                    แผนก : <?= $DeptGrDesc['DeptGrDesc'] ?>
-                                </p>
                             </strong>
                         </p>
                     </div>
@@ -66,39 +83,31 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
             </div>
 
             <div class="login-form">
-                <?php $form = ActiveForm::begin(['id' => 'form-department', 'type' => ActiveForm::TYPE_VERTICAL, 'options' => ['data-pjax' => true]]); ?>
+                <?php $form = ActiveForm::begin(['id' => 'form-sub-department', 'type' => ActiveForm::TYPE_VERTICAL, 'options' => ['data-pjax' => true]]); ?>
                 <div class="row">
                     <div class="col-12">
                         <div class="card-body">
                             <div class="form-group">
-                                <!-- <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="ค้นหาแผนก..." aria-label="Search for...">
-                                        <span class="input-group-btn">  
-                                            <button class="btn btn-outline-success" type="button">ค้นหา</button>
-                                        </span>
-                                </div> -->
-
-                                <!-- <div class="input-group">
+                              <!-- <div class="input-group">
                                     <div class="input-group-addon">
                                         <i class="fa fa-search"></i>
                                     </div>
                                     <input type="text" class="form-control" placeholder="ค้นหาแผนก..." >
                                 </div> -->
-                                
+                                <div class="input-group">
+                                    <a class="list-group-item list-group-item-action active" style="font-size: 16pt;">
+                                    แผนก : <?= $DeptGrDesc['DeptGrDesc'] ?>
+                                    </a>
+                                </div>
+                          
+                            </div>
+
+                            <div id="list-group" class="list-group">
                                 <div class="input-group">
                                     <div class="input-group-addon">
                                         <i class="fa fa-search"></i>
                                     </div>
                                     <input type="text" class="form-control" placeholder="ค้นหาแผนก..."  id="myInput" autofocus autocomplete="off">
-                                </div>
-                            </div>
-
-                            <div id="list-group" class="list-group">
-                                <div class="input-group">
-                                    <a class="list-group-item list-group-item-action active" style="font-size: 14pt;">
-                                        <i class="fa fa-bullhorn"></i>
-                                        เลือกความเชี่ยวชาญ
-                                    </a>
                                 </div>
                                 <br>
                                 <?php foreach ($deptCodeSub as $key => $value) : ?>
@@ -110,7 +119,7 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                                     </div>
                                 <?php endforeach; ?>
                             </div>
-                            <br />
+                            <br>
                             <div>
                                 <p>
                                     <a href="/app/appoint/create-department" class="btn btn-info btn-lg btn-block text-center">
@@ -126,9 +135,6 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                 <?php ActiveForm::end(); ?>
             </div>
 
-
-
-
         </div>
     </div>
 
@@ -136,10 +142,7 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
 
 
 <?php 
-$this->registerJsFile(
-    '@web/js/waitMe/waitMe.min.js',
-    ['depends' => [\yii\web\JqueryAsset::className()]]
-);
+
 $this->registerJs(
     <<<JS
 // function myFunction() {

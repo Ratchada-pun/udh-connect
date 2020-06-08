@@ -1,0 +1,201 @@
+/* mobile menu */
+.mobile-menu-bs {
+  cursor: pointer;
+}
+
+.mobile-menu-bs {
+  position: fixed;
+  overflow: hidden;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px #ddd solid;
+  z-index: 100;
+  box-shadow: 0px 0px 13px 0px rgba(82, 63, 105, 0.05);
+}
+
+.mobile-menu-bs ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-menu-bs ul li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  float: left;
+  /* width: 20%; */
+  height: 60px;
+  display: block;
+  color: #9a9b9c;
+  overflow: hidden;
+  position: relative;
+}
+
+.mobile-menu-bs ul li.active .icon,
+.mobile-menu-bs ul li.active .h1 {
+  color: #e75b8d; /*#009AA9;*/
+}
+
+.mobile-menu-bs ul li .page-scroll-pink:hover .icon,
+.mobile-menu-bs ul li .page-scroll-pink:hover .h1 {
+  color: #e75b8d;
+}
+
+.mobile-menu-bs ul li.active:before {
+  position: absolute;
+  content: '';
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /*border-bottom: 4px solid #62cb31;*/
+  border-bottom: 4px solid #e75b8d;
+}
+
+.mobile-menu-bs ul li.active.border-bottom-info:before {
+  position: absolute;
+  content: '';
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /*border-bottom: 4px solid #62cb31;*/
+  border-bottom: 4px solid #00c0ef;
+}
+
+.mobile-menu-bs ul li.active.border-bottom-info .icon,
+.mobile-menu-bs ul li.active.border-bottom-info .h1 {
+  color: #00c0ef;
+}
+
+.mobile-menu-bs ul li .page-scroll-info:hover .icon,
+.mobile-menu-bs ul li .page-scroll-info:hover .h1 {
+  color: #00c0ef;
+}
+
+.mobile-menu-bs ul li.active.border-bottom-success:before {
+  position: absolute;
+  content: '';
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 4px solid #1dc9b7;
+}
+
+.mobile-menu-bs ul li.active.border-bottom-success .icon,
+.mobile-menu-bs ul li.active.border-bottom-success .h1 {
+  color: #1dc9b7;
+}
+
+.mobile-menu-bs ul li .page-scroll-success:hover .icon,
+.mobile-menu-bs ul li .page-scroll-success:hover .h1 {
+  color: #1dc9b7;
+}
+
+.mobile-menu-bs ul li.active.border-bottom-warning:before {
+  position: absolute;
+  content: '';
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 4px solid #f39c12;
+}
+
+.mobile-menu-bs ul li.active.border-bottom-warning .icon,
+.mobile-menu-bs ul li.active.border-bottom-warning .h1 {
+  color: #f39c12;
+}
+
+.mobile-menu-bs ul li .page-scroll-warning:hover .icon,
+.mobile-menu-bs ul li .page-scroll-warning:hover .h1 {
+  color: #f39c12;
+}
+
+.mobile-menu-bs ul li .page-scroll-danger:hover .icon,
+.mobile-menu-bs ul li .page-scroll-danger:focus .icon,
+.mobile-menu-bs ul li .page-scroll-danger:hover .h1,
+.mobile-menu-bs ul li .page-scroll-danger:focus .h1 {
+  color: #dd4b39;
+}
+
+.mobile-menu-bs ul li .icon {
+  padding-top: 3px;
+  text-align: center;
+  height: 35px;
+  line-height: 35px;
+}
+
+.mobile-menu-bs ul li .icon i {
+  /*font-size: 20px;*/
+}
+
+.mobile-menu-bs ul li .icon i.icon-more {
+  font-size: 15px;
+}
+
+.mobile-menu-bs ul li .h1 {
+  margin: 0;
+  /*margin-top: 3px;*/
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #9a9b9c;
+}
+.kt-badge.kt-badge--warning {
+  color: #fff !important;
+}
+.logo-menu {
+  width: 80%;
+  padding-bottom: 35px;
+}
+.card-icon-border-large {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 50px;
+  background-color: #fff;
+  border: 5px solid;
+  border-radius: 50%;
+  font-size: 1.88rem;
+  line-height: 90px;
+  color: #666;
+  /* margin-top: -3.06rem; */
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  z-index: 101;
+}
+li.menu-logo .content-menu-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.border-pink {
+  color: #eee;
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .hidden-sm {
+    display: none !important;
+  }
+  .card-icon-border-large {
+    width: 70px;
+    height: 70px;
+    margin-top: 10px;
+  }
+}
+@media (max-width: 767px) {
+  .hidden-xs {
+    display: none !important;
+  }
+  .card-icon-border-large {
+    width: 70px;
+    height: 70px;
+    position: fixed;
+  }
+}
+.menu-item a {
+  color: #9a9b9c;
+}

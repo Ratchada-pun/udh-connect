@@ -21,8 +21,16 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'js/waitMe/waitMe.min.css',
+        //'css/style.css'
     ];
     public $js = [
+        'https://static.line-scdn.net/liff/edge/2.1/sdk.js',
+        'js/liff-starter.js',
+        'js/moment.min.js',
+        'js/waitMe/waitMe.min.js',
+        'https://cdn.jsdelivr.net/npm/sweetalert2@9',
+        
     ];
     public $depends = [
         'yii\web\YiiAsset',

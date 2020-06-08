@@ -10,6 +10,35 @@ $this->title = 'My Yii Application';
 //     ['depends' => [\yii\web\JqueryAsset::className()]]
 // );
 ?>
+
+<style>
+	.quick-links-grid {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+	.quick-links-grid .ql-grid-item {
+    display: inherit;
+    padding: 20px 5px;
+    text-align: center;
+    vertical-align: middle;
+    text-decoration: none;
+    color: #45567c;
+    padding: 25px;
+}
+@media (max-width: 767px) {
+	.quick-links-grid .ql-grid-item {
+		width: 100% !important;
+	}
+	.login-content {
+		margin: 0;
+	}
+	.container-fluid {
+		padding-right: 0;
+    	padding-left: 0;
+	}
+}
+</style>
 <div class="site-index">
 
 	<!-- <div class="jumbotron">
@@ -46,7 +75,7 @@ $this->title = 'My Yii Application';
 									<div class="quick-links-grid">
 
 										<div class="ql-grid-item">
-											<a href="<?= Url::to(['/app/register/policy', 'user' => 'new']) ?>" class="btn btn-pill btn-outline-primary btn-lg" style="border:solid">
+											<a href="<?= Url::to(['/app/register/policy', 'user' => 'new']) ?>" class="btn btn-pill btn-outline-primary btn-lg btn-action" style="border:solid">
 												<i class="icon-user-follow" style="font-size: 60px;"></i>
 												<span class="ql-grid-title">
 													<p style="font-size: 18pt;">
@@ -54,12 +83,10 @@ $this->title = 'My Yii Application';
 													</p>
 												</span>
 											</a>
-
 										</div>
 
-
 										<div class="ql-grid-item">
-											<a href="<?= Url::to(['/app/register/policy', 'user' => 'old']) ?>" class="btn btn-pill btn-outline-success btn-lg" style="border:solid">
+											<a href="<?= Url::to(['/app/register/policy', 'user' => 'old']) ?>" class="btn btn-pill btn-outline-success btn-lg btn-action" style="border:solid">
 												<i class="icon-user-following" style="font-size: 60px;"></i>
 												<span class="ql-grid-title">
 													<p style="font-size: 18pt;">

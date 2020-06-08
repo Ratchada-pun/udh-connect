@@ -104,6 +104,7 @@ a.desc:after {
     width: 100%;
     padding: 10px 15px;
   }
+
 }
 
 .nav > li > form > button.logout:focus,
@@ -120,4 +121,29 @@ a.desc:after {
 }
 .logo a.logo-app {
   width: 300px !important;
+}
+@media (max-width: 767px) {
+  .login-form {
+    padding: 15px!important;
+  }
+}
+@media (max-width: 767px) {
+  .hidden-xs {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .hidden-sm {
+    display: none !important;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .hidden-md {
+    display: none !important;
+  }
+}
+@media (min-width: 1200px) {
+  .hidden-lg {
+    display: none !important;
+  }
 }

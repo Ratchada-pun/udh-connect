@@ -136,28 +136,31 @@ class RegisterController extends Controller
 
         $request = Yii::$app->request;
 
-        if($session->get('user')) {
-            return $this->redirect(['/app/appoint/create-department']);
-        }
+        // if($session->get('user')) {
+        //     return $this->redirect(['/app/appoint/create-department']);
+        // }
 
-        if ($model->load(Yii::$app->request->post(), '')) {
+        if ($model->load(Yii::$app->request->post())) {
             $response = Yii::$app->response;
             $response->format = \yii\web\Response::FORMAT_JSON;
+            $formdata = $request->post('TblPatient', []);
             $posted = $request->post();
 
-            $isRegisted = TblPatient::findOne(['id_card' => $posted['id_card']]) !== null;
+            $isRegisted = TblPatient::findOne(['id_card' => $formdata['id_card']] ) !== null;
 
             if($isRegisted){
                 throw new HttpException(422, "มีการลงทะเบียนข้อมูลในระบบแล้ว ไม่สามารถลงทะเบียนซ้ำได้");
             }
 
-            $day = isset($posted['day']) ? $posted['day'] : null;
-            $month = isset($posted['month']) ? $posted['month'] : null;
-            $year = isset($posted['year']) ? $posted['year'] : null;
+
+            $day = isset($formdata['day']) ? $formdata['day'] : null;
+            $month = isset($formdata['month']) ? $formdata['month'] : null;
+            $year = isset($formdata['year']) ? $formdata['year'] : null;
             $brith_day = $year . '-' . $month . '-' . $day; // yyyy-mm-dd
             $model->brith_day = $brith_day;
-            $model->user_type = isset($posted['user_type']) ? $posted['user_type'] : null;
-            $model->user_type = isset($posted['hn']) ? $posted['hn'] : null;
+            //$model->user_type = isset($formdata['user_type']) ? $formdata['user_type'] : null;
+            //$model->hn = isset($posted['hn']) ? $posted['hn'] : null;
+            $model->line_id = isset($posted['userId']) ? $posted['userId'] : null;
             if ($model->save()) {
                 $session->set('user', $model->getAttributes());
                 return [
@@ -174,6 +177,7 @@ class RegisterController extends Controller
         }
         if ($user == 'old') {
             return $this->render('_form_old_user', [
+                'model' => $model,
                 'user_type' => $user
             ]);
         }

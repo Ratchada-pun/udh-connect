@@ -68,6 +68,8 @@ class AppointController extends Controller
      */
     public function actionCreateDepartment()
     {
+        // $session = Yii::$app->session;
+        // $session->remove('user');
         // $response = Yii::$app->response;
         // $response->format = \yii\web\Response::FORMAT_JSON;
         $DeptGroups = Yii::$app->mssql->createCommand(
@@ -212,7 +214,7 @@ class AppointController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionCreateAppointments($id)
+    public function actionCreateAppointments($id,$doc_id = '')
     {
         $db_mssql = Yii::$app->mssql;
         $db_queue = Yii::$app->db_queue;
@@ -287,25 +289,37 @@ class AppointController extends Controller
             Appoint_dep_doc.deptCode = :deptCode')
             ->bindValues([':deptCode' => $id])
             ->queryAll();
+    
         $doc_codes = $this->replaceEmptyString(ArrayHelper::getColumn($query_doc_codes, 'docCode'));
 
-
         // ข้อมูลแพทย์ในระบบคิว
-        $doctors = $db_queue->createCommand('SELECT
-        tbl_doctor.*,
-        CONCAT( IFNULL( tbl_doctor.doctor_title, \'\' ), tbl_doctor.doctor_name ) AS doctor_name
-        FROM
-            tbl_doctor
-        WHERE
-            tbl_doctor.doctor_code IN (' . implode(",", $doc_codes) . ')')
-            ->queryAll();
+        $doctors = [];
+        if ($doc_codes) {
+            $doctors = $db_queue->createCommand(
+                'SELECT
+                    tbl_doctor.*,
+                CONCAT( IFNULL( tbl_doctor.doctor_title, \'\' ), tbl_doctor.doctor_name ) AS doctor_name
+                FROM
+                    tbl_doctor
+                INNER JOIN tbl_med_schedule ON tbl_med_schedule.doctor_id = tbl_doctor.doctor_id
+                WHERE
+                    tbl_doctor.doctor_code IN (' . implode(",", $doc_codes) . ') AND 
+                    tbl_med_schedule.schedule_date >= CURRENT_DATE
+                GROUP BY  
+                    tbl_doctor.doctor_code
+                ' 
+            )
+                ->queryAll();
+        }
 
         foreach ($doctors as $doctor) {
-            $doctors_list = ArrayHelper::merge($doctors_list, [ArrayHelper::merge($doctor, [
-                'service_id' => $service['service_id'],
-                'service_name' => $service['service_name'],
-                'service_code' => $service['service_code'],
-            ])]);
+            $doctors_list = ArrayHelper::merge($doctors_list, [
+                ArrayHelper::merge($doctor, [
+                    'service_id' => $service['service_id'],
+                    'service_name' => $service['service_name'],
+                    'service_code' => $service['service_code'],
+                ])
+            ]);
         }
 
         return $this->render('_form_appointments', [
@@ -453,7 +467,7 @@ class AppointController extends Controller
                     INNER JOIN tbl_doctor ON tbl_med_schedule.doctor_id = tbl_doctor.doctor_id
                     INNER JOIN tbl_service ON tbl_service.service_id = tbl_med_schedule.service_id
                 WHERE
-                    UNIX_TIMESTAMP( tbl_med_schedule.schedule_date ) >= UNIX_TIMESTAMP(NOW())
+                    tbl_med_schedule.schedule_date >= CURRENT_DATE
                     AND tbl_doctor.doctor_code = ' . $doc_id . '
                 ORDER BY
                     tbl_med_schedule.schedule_date ASC')
@@ -461,7 +475,7 @@ class AppointController extends Controller
         return Json::encode($med_schedules);
     }
 
-    public function actionScheduleTimes()
+    public function actionScheduleTimes()  //ตารางแพทย์
     {
         $attributes = \Yii::$app->request->post('AppointModel', []);
         $appoint_date = \Yii::$app->request->post('appoint_date', '');
@@ -483,7 +497,10 @@ class AppointController extends Controller
             INNER JOIN tbl_service ON tbl_service.service_id = tbl_med_schedule.service_id
             WHERE
             tbl_doctor.doctor_code = :doctor_id AND
-            tbl_med_schedule.schedule_date = :schedule_date
+            tbl_med_schedule.schedule_date = :schedule_date  AND
+            LEFT(tbl_service.service_name,8) = \'ห้องตรวจ\'
+
+
             ORDER BY
             tbl_med_schedule_time.start_time ASC')
             ->bindValues([
@@ -537,10 +554,18 @@ class AppointController extends Controller
     {
         $session = Yii::$app->session;
         $profile = $session->get('user');
+        if (empty($profile)) {
+            throw new HttpException(404, 'ไม่พบข้อมูลผู้ใช้งาน.');
+        }
         $attributes = \Yii::$app->request->post('AppointModel', []);
+        $model = new AppointModel();
+        $model->load($attributes, '');
+        if(!$model->validate()){
+            throw new HttpException(400, Json::encode($model->errors));
+        }
         $appoint_time_from = \Yii::$app->request->post('appoint_time_from', '');
         $appoint_time_to = \Yii::$app->request->post('appoint_time_to', '');
-        $appoint_times = \Yii::$app->request->post('appoint_times', '');
+        $appoint_time = isset($attributes['appoint_time']) ? $attributes['appoint_time'] : '';
         $doc_option = \Yii::$app->request->post('doc_option', '');
         $db_mssql = Yii::$app->mssql;
         $formatter = Yii::$app->formatter;
@@ -590,15 +615,18 @@ class AppointController extends Controller
                     Appoint.pre_dept_code = :pre_dept_code AND
                     Appoint.appoint_time_from = :appoint_time_from AND
                     Appoint.appoint_time_to = :appoint_time_to AND
-                    Appoint.hn = :hn')
+                    (Appoint.hn = :hn OR
+                    Appoint.CID = :CID)
+                    ')
                     ->bindValues([
                         ':maker' => 'queue online',
-                        ':doctor' => $attributes['doc_code'],
-                        ':appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:Ymd'),
+                        ':doctor' => sprintf("% 6s", $attributes['doc_code']),
+                        ':appoint_date' => ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543) . $formatter->asDate($attributes['appoint_date'], 'php:md'),
                         ':pre_dept_code' => $attributes['dept_code'],
                         ':appoint_time_from' => $appoint_time_from,
                         ':appoint_time_to' => $appoint_time_to,
-                        ':hn' => $profile['hn'],
+                        ':hn' => sprintf("% 7s", $profile['hn']),
+                        ':CID' => $profile['id_card'],
                     ])
                     ->queryAll();
             } else {
@@ -612,14 +640,17 @@ class AppointController extends Controller
                 Appoint.pre_dept_code = :pre_dept_code AND
                 Appoint.appoint_time_from = :appoint_time_from AND
                 Appoint.appoint_time_to = :appoint_time_to AND
-                Appoint.hn = :hn')
+                (Appoint.hn = :hn OR
+                Appoint.CID = :CID)
+                ')
                     ->bindValues([
                         ':maker' => 'queue online',
                         ':appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:Ymd'),
                         ':pre_dept_code' => $attributes['dept_code'],
                         ':appoint_time_from' => $appoint_time_from,
                         ':appoint_time_to' => $appoint_time_to,
-                        ':hn' => $profile['hn'],
+                        ':hn' => sprintf("% 7s", $profile['hn']),
+                        ':CID' => $profile['id_card'],
                     ])
                     ->queryAll();
             }
@@ -630,30 +661,34 @@ class AppointController extends Controller
 
             $db_mssql->createCommand()->insert('Appoint', [
                 'app_type' => 'A',
-                'doctor' => empty($attributes['doc_code']) ? '0' : sprintf("% 6s", $attributes['doc_code']),
-                'hn' => $profile['hn'],
-                'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:Ymd'),
+                'doctor' => empty($attributes['doc_code']) ? sprintf("% 6s", '0') : sprintf("% 6s", $attributes['doc_code']),
+                'hn' => sprintf("% 7s", $profile['hn']),
+                'appoint_date' => ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543) . $formatter->asDate($attributes['appoint_date'], 'php:md'),
                 'appoint_time_from' => $appoint_time_from,
                 'appoint_time_to' => $appoint_time_to,
                 'appoint_note' => 'ทดสอบข้อมูล',
                 'pre_dept_code' => $attributes['dept_code'],
+                'CID' => $profile['id_card'],
+                'phone' => $profile['phone_number'],
                 'maker' => 'queue online',
                 'keyin_time' => $formatter->asDate('now', 'php:Y-m-d H:i:s'),
             ])->execute();
             $appoint = [
                 'doctor_name' => empty($attributes['doc_code']) ? 'ไม่ระบุแพทย์' : $doctor['doctitle'] . $doctor['docName'] . ' ' . $doctor['docLName'],
                 'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:d M ') . ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543),
-                'appoint_time' => $appoint_times,
+                'appoint_time' => $appoint_time,
                 'department_name' => $dept['deptDesc'],
                 'hn' => $profile['hn'],
+                'fullname' => $profile['first_name'] .' '.$profile['last_name']
             ];
             $transaction->commit();
             return [
                 'message' => 'ทำรายการสำเร็จ',
                 'appoint' => $appoint,
-                'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:Ymd'),
+                'appoint_date' => ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543) . $formatter->asDate($attributes['appoint_date'], 'php:md'),
                 'hn' => $profile['hn'],
-                'doctor' => empty($attributes['doc_code']) ? '0' : sprintf("% 6s", $attributes['doc_code'])
+                'id_card' => $profile['id_card'],
+                'doctor' => empty($attributes['doc_code']) ? sprintf("% 6s", '0') : sprintf("% 6s", $attributes['doc_code'])
             ];
         } catch (\Exception $e) {
             $transaction->rollBack();
@@ -674,38 +709,217 @@ class AppointController extends Controller
     }
 
 
-    public function actionFollowUp($hn = '', $appoint_date = '', $doctor = '')
+    public function actionFollowUp($hn = '', $appoint_date = '', $doctor = '', $cid = '')
     {
         $session = Yii::$app->session;
         $profile = $session->get('user');
         $db_mssql = Yii::$app->mssql;
-        $appoint = $db_mssql->createCommand('SELECT
-                dbo.Appoint.*,
-                dbo.DEPT.deptDesc,
-                REPLACE( dbo.DOCC.docName, \' \', \'\') as docName,
-                REPLACE( dbo.DOCC.docLName, \' \', \'\') as docLName,
-                REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
-                REPLACE( dbo.PATIENT.lastName, \' \', \'\') as lastName
-                FROM
-                dbo.Appoint
-                LEFT JOIN dbo.DEPT ON dbo.DEPT.deptCode = dbo.Appoint.pre_dept_code
-                LEFT JOIN dbo.DOCC ON dbo.DOCC.docCode = dbo.Appoint.doctor
-                LEFT JOIN dbo.Appoint_dep_doc ON dbo.Appoint_dep_doc.docCode = dbo.DOCC.docCode
-                INNER JOIN dbo.PATIENT ON dbo.PATIENT.hn = dbo.Appoint.hn
-                WHERE
-                dbo.Appoint.maker = \'queue online\' AND
-                dbo.Appoint.hn = :hn AND
-                dbo.Appoint.appoint_date = :appoint_date AND
-                dbo.Appoint.doctor = :doctor
-            ')
-            ->bindValues([
-                ':hn' => sprintf("% 7s", $profile['hn']),
-                ':appoint_date' => $appoint_date,
-                ':doctor' => $doctor
+        $query = (new \yii\db\Query())
+            ->select([
+                'dbo.Appoint.*',
+                'dbo.DEPT.deptDesc',
+                'REPLACE( dbo.DOCC.docName, \' \', \'\') as docName',
+                'REPLACE( dbo.DOCC.docLName, \' \', \'\') as docLName',
+                'REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName',
+                'REPLACE( dbo.PATIENT.lastName, \' \', \'\') as lastName'
             ])
-            ->queryOne();
-        return  $this->render('_form_folle_up', [
-            'appoint' => $appoint
+            ->from('dbo.Appoint')
+            ->leftJoin('dbo.DEPT', 'dbo.DEPT.deptCode = dbo.Appoint.pre_dept_code')
+            ->leftJoin('dbo.DOCC', 'dbo.DOCC.docCode = dbo.Appoint.doctor')
+            ->leftJoin('dbo.Appoint_dep_doc', 'dbo.Appoint_dep_doc.docCode = dbo.DOCC.docCode')
+            ->leftJoin('dbo.PATIENT', 'dbo.PATIENT.hn = dbo.Appoint.hn')
+            ->where([
+                'dbo.Appoint.appoint_date' => $appoint_date,
+                'dbo.Appoint.maker' => 'queue online',
+                'dbo.Appoint.CID' => $cid,
+                'dbo.Appoint.doctor' => sprintf("% 6s", $doctor)
+            ]);
+        if (!empty($hn)) {
+            $query->andWhere([
+                'dbo.Appoint.hn' => sprintf("% 7s", $hn)
+            ]);
+        }
+        $appoint = $query->one($db_mssql);
+
+        if ($appoint && empty($hn)) {
+            $appoint = ArrayHelper::merge($appoint, [
+                'firstName' => $profile['first_name'],
+                'lastName' => $profile['last_name'],
+            ]);
+        }
+
+        return  $this->render('_form_follow_up', [
+            'appoint' => $appoint,
+            'message' => empty($hn) ? 'กรุณาติดต่อห้องบัตร ตามวันและเวลาที่ท่านนัดหมาย!' : 'กรุณากดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่ท่านนัดหมาย!'
         ]);
     }
+
+    public function actionProfile($userId)
+    {
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
+        $profile = (new \yii\db\Query())
+            ->select(['*'])
+            ->from('tbl_patient')
+            ->where(['tbl_patient.line_id' => $userId])
+            ->limit(10)
+            ->one();
+
+        if ($profile) {
+            $session = Yii::$app->session;
+            $session->set('user', $profile);
+        }
+
+        return $profile;
+    }
+
+    public function actionUserHistory() //ประวัตใบนัดแพทย์
+    {
+        $session = Yii::$app->session;
+        $profile = $session->get('user');
+        $db_mssql = Yii::$app->mssql;
+        $query = (new \yii\db\Query())
+            ->select([
+                'dbo.Appoint.doctor',
+                'dbo.Appoint.hn',
+                'dbo.Appoint.appoint_date',
+                'dbo.Appoint.appoint_time_from',
+                'dbo.Appoint.appoint_time_to',
+                'dbo.Appoint.maker',
+                'dbo.Appoint.phone',
+                'dbo.Appoint.CID',
+                'dbo.Appoint.pre_dept_code',
+                'dbo.DEPT.deptDesc',
+                'dbo.PATIENT.phone',
+                'REPLACE(dbo.PATIENT.titleCode, \' \', \'\') as titleCode',
+                'REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName',
+                'REPLACE( dbo.PATIENT.lastName, \' \', \'\') as lastName',
+                'REPLACE(dbo.DOCC.doctitle, \' \', \'\') as doctitle',
+                'REPLACE(dbo.DOCC.docName, \' \', \'\') as docName',
+                'REPLACE(dbo.DOCC.docLName, \' \', \'\') as docLName'
+            ])
+            ->from('dbo.Appoint')
+            ->innerJoin('dbo.DEPT', 'dbo.DEPT.deptCode = dbo.Appoint.pre_dept_code')
+            ->leftJoin('dbo.PATIENT', 'dbo.PATIENT.hn = dbo.Appoint.hn')
+            ->leftJoin('dbo.DOCC', 'dbo.DOCC.docCode = dbo.Appoint.doctor')
+            ->where(['dbo.Appoint.maker' => 'queue online'])
+            ->orderBy('dbo.Appoint.appoint_date DESC');
+        if ($profile['hn']) {
+            $query->andWhere([
+                'dbo.Appoint.hn' => sprintf("% 7s", $profile['hn'])
+            ]);
+        }
+        if ($profile['id_card']) {
+            $query->andWhere([
+                'dbo.Appoint.CID' => $profile['id_card']
+            ]);
+        }
+        $history = $query->all($db_mssql);
+        // $history = $db_mssql->createCommand(
+        //     'SELECT
+        //     	dbo.Appoint.doctor,
+        //         dbo.Appoint.hn,
+        //         dbo.Appoint.appoint_date,
+        //         dbo.Appoint.appoint_time_from,
+        //         dbo.Appoint.appoint_time_to,
+        //         dbo.Appoint.maker,
+        //         dbo.Appoint.phone,
+        //         dbo.Appoint.CID,
+        //         dbo.Appoint.pre_dept_code,
+        //         dbo.DEPT.deptDesc,
+        //         dbo.PATIENT.phone,
+        //     REPLACE(dbo.PATIENT.titleCode, \' \', \'\') as titleCode,
+        //     REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
+        //     REPLACE( dbo.PATIENT.lastName, \' \', \'\') as lastName,
+        //     REPLACE(dbo.DOCC.doctitle, \' \', \'\') as doctitle,
+        //     REPLACE(dbo.DOCC.docName, \' \', \'\') as docName,
+        //     REPLACE(dbo.DOCC.docLName, \' \', \'\') as docLName
+        //     FROM
+        //     dbo.Appoint
+        //     INNER JOIN dbo.DEPT ON dbo.DEPT.deptCode = dbo.Appoint.pre_dept_code
+        //     LEFT JOIN dbo.PATIENT ON dbo.PATIENT.hn = dbo.Appoint.hn
+        //     LEFT JOIN dbo.DOCC ON dbo.DOCC.docCode = dbo.Appoint.doctor 
+        //     WHERE
+        //     dbo.Appoint.maker = \'queue online\' AND
+        //     dbo.Appoint.CID = :CID OR
+        //     dbo.Appoint.hn = :hn 
+        //     ORDER BY
+        //     dbo.Appoint.appoint_date DESC
+        //     '
+        // )
+        //     ->bindValues([
+        //         ':hn' => sprintf("% 7s", $profile['hn']),
+        //         ':CID' => $profile['id_card'],
+        //     ])
+        //     ->queryAll();
+        $rows = [];
+        foreach ($history as $key => $value) {
+            if (empty($value['firstName'])) {
+                $value['firstName'] = $profile['first_name'];
+                $value['lastName'] = $profile['last_name'];
+            }
+            $rows[] = $value;
+        }
+        return $this->render('_form_user_history', [
+            'history' => $rows
+        ]);
+    }
+
+    public function actionAppointmentsHistory() //นัดหมายแพทย์จากประวัตินัดหมาย
+    {
+        $session = Yii::$app->session;
+        $profile = $session->get('user');
+        $db_mssql = Yii::$app->mssql;
+        $query = (new \yii\db\Query())
+            ->select([
+                'dbo.Appoint.hn',
+                'dbo.Appoint.appoint_date',
+                'dbo.Appoint.appoint_time_from',
+                'dbo.Appoint.appoint_time_to',
+                'dbo.Appoint.maker',
+                'dbo.Appoint.phone',
+                'dbo.Appoint.CID',
+                'dbo.DEPT.deptDesc',
+                'dbo.PATIENT.phone',
+                'REPLACE(dbo.PATIENT.titleCode, \' \', \'\') as titleCode',
+                'REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName',
+                'REPLACE( dbo.PATIENT.lastName, \' \', \'\') as lastName',
+                'REPLACE(dbo.DOCC.doctitle, \' \', \'\') as doctitle',
+                'REPLACE(dbo.DOCC.docName, \' \', \'\') as docName',
+                'REPLACE(dbo.DOCC.docLName, \' \', \'\') as docLName',
+                'REPLACE(dbo.Appoint.pre_dept_code, \' \', \'\') as pre_dept_code',
+                'REPLACE(dbo.Appoint.doctor, \' \', \'\') as doctor'
+            ])
+            ->from('dbo.Appoint')
+            ->innerJoin('dbo.DEPT', 'dbo.DEPT.deptCode = dbo.Appoint.pre_dept_code')
+            ->leftJoin('dbo.PATIENT', 'dbo.PATIENT.hn = dbo.Appoint.hn')
+            ->leftJoin('dbo.DOCC', 'dbo.DOCC.docCode = dbo.Appoint.doctor')
+            ->where(['dbo.Appoint.maker' => 'queue online'])
+            ->orderBy('dbo.Appoint.appoint_date DESC');
+        if ($profile['hn']) {
+            $query->andWhere([
+                'dbo.Appoint.hn' => sprintf("% 7s", $profile['hn'])
+            ]);
+        }
+        if ($profile['id_card']) {
+            $query->andWhere([
+                'dbo.Appoint.CID' => $profile['id_card']
+            ]);
+        }
+        $history = $query->one($db_mssql);
+
+        if ($history) {
+            if (empty($history['firstName'])) {
+                $history['firstName'] = $profile['first_name'];
+                $history['lastName'] = $profile['last_name'];
+            }
+        }
+
+
+        return $this->render('_appointments_history.php', [
+            'history' => $history
+        ]);
+    }
+
+
 }

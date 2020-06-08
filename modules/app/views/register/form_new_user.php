@@ -17,8 +17,42 @@ $last_day_str = strtotime('last day of this month', Yii::$app->formatter->asTime
 $last_day = Yii::$app->formatter->asDate($last_day_str, 'php:d');
 
 $this->title = "ลงทะเบียนผู้ป่วยใหม่";
-?>
 
+$this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
+    'depends' => [\yii\bootstrap\BootstrapAsset::className()],
+]);
+?>
+<style>
+    .form-group.has-error .form-control {
+        border-color: #a94442;
+    }
+    .form-group.has-success .form-control {
+        border-color: #3c763d;
+    }
+    .form-group.has-error .help-block {
+        color: #a94442;
+    }
+    @media (max-width: 767px) {
+        .quick-links-grid .ql-grid-item {
+            width: 100% !important;
+        }
+
+        .login-content {
+            margin: 0;
+        }
+
+        .container-fluid {
+            padding-right: 0;
+            padding-left: 0;
+        }
+
+        @media (max-width: 767px) {
+            .card-body {
+                padding: 0;
+            }
+        }
+    }
+</style>
 
 <div class="sufee-login d-flex align-content-center flex-wrap">
     <div class="container">
@@ -42,43 +76,69 @@ $this->title = "ลงทะเบียนผู้ป่วยใหม่";
             </div>
 
             <div class="login-form">
-                <?php $form = ActiveForm::begin(['id' => 'form-signup', 'type' => ActiveForm::TYPE_VERTICAL, 'enableAjaxValidation' => true]); ?>
+                <?php $form = ActiveForm::begin(['id' => 'form-signup', 'type' => ActiveForm::TYPE_VERTICAL]); ?>
                 <div class="row">
                     <div class=" col-12">
                         <div class="card-body">
 
                             <div class="form-group">
-                                <label class="control-label" for="first_name">ชื่อจริง</label>
+                                <?= $form->field($model, 'first_name', ['addon' => ['prepend' => ['content' => '<i class="icon-user"></i>']]])->textInput([
+                                    'placeholder' => 'ชื่อ',
+                                    'maxlength' => true
+                                ]) ?>
+                                <!-- <label class="control-label" for="first_name">ชื่อจริง</label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="icon-user"></i>
                                     </span>
+
                                     <input type="text" name="first_name" class="form-control" placeholder="ชื่อ" aria-label="ชื่อ">
-                                </div>
+                                </div> -->
                             </div>
                             <div class="form-group">
-                                <label class="control-label" for="last_name">นามสกุล</label>
+                                <?= $form->field($model, 'last_name', ['addon' => ['prepend' => ['content' => '<i class="icon-user"></i>']]])->textInput([
+                                    'placeholder' => 'นามสกุล',
+                                    'maxlength' => true
+                                ]) ?>
+
+                                <!-- <label class="control-label" for="last_name">นามสกุล</label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="icon-user"></i>
                                     </span>
                                     <input type="text" name="last_name" class="form-control" placeholder="นามสกุล" aria-label="นามสกุล">
-                                </div>
+                                </div> -->
                             </div>
 
                             <div class="form-group">
-                                <label class="control-label" for="id_card">เลขประจำตัวประชาชน</label>
+                                <?= $form->field($model, 'id_card', ['addon' => ['prepend' => ['content' => ' <i class="fa fa-address-card-o"></i>']]])->textInput([
+                                    'placeholder' => 'เลขประจำตัวประชาชน',
+                                    'id' => "cid",
+                                    'maxlength' => true
+                                ]) ?>
+                                <!-- <label class="control-label" for="id_card">เลขประจำตัวประชาชน</label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-address-card-o"></i>
                                     </span>
                                     <input type="text" id="cid" name="id_card" class="form-control" placeholder="เลขประจำตัวประชาชน" aria-label="เลขประจำตัวประชาชน">
-                                </div>
+                                </div> -->
                             </div>
 
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
+                                        <?=
+                                            $form->field($model, 'day')->dropdownList(
+                                                $model->getDayOptions(),
+                                                [
+                                                    'prompt' => 'เลือกวันที่',
+                                                    'id' => 'day',
+                                                    'value' => $currentday
+                                                ]
+                                            );
+                                        ?>
+                                        <?php /*
                                         <label class="control-label" for="day">วันที่</label>
                                         <select name="day" id="day" class="form-control">
                                             <?php for ($i = 1; $i <= 31; $i++) : ?>
@@ -87,10 +147,22 @@ $this->title = "ลงทะเบียนผู้ป่วยใหม่";
                                                 </option>
                                             <?php endfor; ?>
                                         </select>
+                                    */ ?>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
+                                        <?=
+                                            $form->field($model, 'month')->dropdownList(
+                                                $model->getMonthOptions(),
+                                                [
+                                                    'prompt' => 'เลือกเดือน',
+                                                    'id' => 'month',
+                                                    'value' => $currentmonth
+                                                ]
+                                            );
+                                        ?>
+                                        <?php /*
                                         <label class="control-label" for="month">เดือน</label>
                                         <select name="month" id="month" class="form-control">
                                             <?php for ($i = 1; $i <= 12; $i++) : ?>
@@ -99,10 +171,22 @@ $this->title = "ลงทะเบียนผู้ป่วยใหม่";
                                                 </option>
                                             <?php endfor; ?>
                                         </select>
+                                        */ ?>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
+                                        <?=
+                                            $form->field($model, 'year')->dropdownList(
+                                                $model->getYearOptions(),
+                                                [
+                                                    'prompt' => 'เลือกปี',
+                                                    'id' => 'year',
+                                                    'value' => $currentYear
+                                                ]
+                                            );
+                                        ?>
+                                        <?php /*
                                         <label class="control-label" for="year">ปี</label>
                                         <select name="year" id="year" class="form-control">
                                             <?php for ($i = $startYear; $i <= $currentYear; $i++) : ?>
@@ -111,38 +195,41 @@ $this->title = "ลงทะเบียนผู้ป่วยใหม่";
                                                 </option>
                                             <?php endfor; ?>
                                         </select>
+                                        */ ?>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="control-label" for="phone_number">หมายเลขโทรศัพท์</label>
+                                <?= $form->field($model, 'phone_number', ['addon' => ['prepend' => ['content' => '<i class="fa fa-phone"></i>']]])->textInput([
+                                    'placeholder' => 'หมายเลขโทรศัพท์',
+                                    'type' => 'tel',
+                                    'id' => "tel",
+                                    'maxlength' => true
+                                ]) ?>
+                                <!-- <label class="control-label" for="phone_number">หมายเลขโทรศัพท์</label>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-phone"></i>
                                     </span>
                                     <input type="tel" id="tel" name="phone_number" class="form-control" placeholder="หมายเลขโทรศัพท์" aria-label="หมายเลขโทรศัพท์">
-                                </div>
+                                </div> -->
                             </div>
 
                             <div class="form-group">
                                 <?php
-                                echo Html::input('hidden', 'user_type', $user_type)
+                                echo Html::activeHiddenInput($model, 'user_type', ['value' => $user_type])
                                 ?>
                             </div>
 
                             <div class="form-group">
                                 <div class="ml-auto">
-                                    <button type="reset" class="btn btn-danger" id="reset-form">
-                                        ล้างข้อมูล
-                                    </button>
+                                    <?= Html::resetButton('ล้างข้อมูล', ['class' => 'btn btn-danger', 'id' => 'reset-form']) ?>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="ml-auto">
-                                    <button type="submit" class="btn btn-success" name="signup1" value="Sign up">
-                                        ลงทะเบียน
-                                    </button>
+                                    <?= Html::submitButton('ลงทะเบียน', ['class' => 'btn btn-success']) ?>
                                 </div>
                             </div>
 
@@ -160,22 +247,45 @@ $this->registerJsFile(
     'https://cdn.jsdelivr.net/npm/sweetalert2@9',
     ['depends' => [\yii\web\JqueryAsset::className()]]
 );
+// $this->registerJsFile(
+//     '@web/js/waitMe/waitMe.min.js',
+//     ['depends' => [\yii\web\JqueryAsset::className()]]
+// );
 
 $this->registerJs(
     <<<JS
+// if(udhApp.isRegister()){
+// 	window.location.href = '/app/apppoint/create-department'
+// }
+
+
 $('#reset-form').on('click',function(){
     $('#form-signup').trigger('reset');
 })
-$( "#tel" ).keypress(function(event) {
-  console.log(mask($(this).val()));
-});
+
+function getFormData(form) {
+    //serialize data function
+    var formArray = form.serializeArray();
+
+    var returnArray = {};
+    for (var i = 0; i < formArray.length; i++){
+        returnArray[formArray[i]['name']] = formArray[i]['value'];
+    }
+    return returnArray;
+}
+
 var \$form = $('#form-signup');
 \$form.on('beforeSubmit', function() {
-    var data = \$form.serialize();
+    $('#form-signup').waitMe({
+        effect : 'roundBounce',
+        color: '#ff518a'
+    })
+    var data = getFormData(\$form);
+    var profile = udhApp.getProfileStorage();
     $.ajax({
         url: \$form.attr('action'),
         type: \$form.attr('method'),
-        data: data,
+        data: Object.assign(data, profile),
         dataType: 'JSON',
         success: function (data) {
             if(data.success){
@@ -196,8 +306,10 @@ var \$form = $('#form-signup');
                     $(\$form).yiiActiveForm('updateAttribute', key, data.validate[key]);
                 })
             }
+            $('#form-signup').waitMe("hide");
         },
         error: function(error) {
+            $('#form-signup').waitMe("hide");
             Swal.fire({
                 title: '',
                 text: error.responseJSON ? error.responseJSON.message : "Error",

@@ -8,6 +8,7 @@ use yii\base\Model;
 class AppointModel extends Model
 {
 
+    public $doctor_id;
     public $doc_code;
     public $dept_code;
     public $appoint_date;

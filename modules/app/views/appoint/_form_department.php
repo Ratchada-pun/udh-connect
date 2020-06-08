@@ -10,6 +10,10 @@ use yii\helpers\Url;
 /* @var $form yii\widgets\ActiveForm */
 
 $this->title = "นัดหมายแพทย์";
+$this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
+    'depends' => [\yii\bootstrap\BootstrapAsset::className()],
+]);
+
 ?>
 
 <style>
@@ -34,10 +38,33 @@ $this->title = "นัดหมายแพทย์";
         font-size: 16pt;
     }
 
-    img {
+    .sufee-login img {
         max-width: 10%;
 
     }
+
+    @media (max-width: 767px) {
+        .quick-links-grid .ql-grid-item {
+            width: 100% !important;
+        }
+
+        .login-content {
+            margin: 0;
+        }
+
+        .container-fluid {
+            padding-right: 0;
+            padding-left: 0;
+        }
+
+        .card-body {
+            padding: 0;
+        }
+    }
+    .login-form .btn {
+    font-size: 16px;
+
+}
 </style>
 
 <div class="sufee-login d-flex align-content-center flex-wrap">
@@ -51,9 +78,7 @@ $this->title = "นัดหมายแพทย์";
                                 <p style="font-size: 16pt;margin-top:5px;">
                                     โรงพยาบาลอุดรธานี
                                 </p>
-                                <p style="font-size: 16pt;margin-bottom:5px;">
-                                     รายชื่อแผนก
-                                </p>
+                             
                             </strong>
                         </p>
                     </div>
@@ -66,32 +91,25 @@ $this->title = "นัดหมายแพทย์";
                     <div class="col-12">
                         <div class="card-body">
                             <div class="form-group">
-                                <!-- <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="ค้นหาแผนก..." aria-label="Search for...">
-                                        <span class="input-group-btn">  
-                                            <button class="btn btn-outline-success" type="button">ค้นหา</button>
-                                        </span>
-                                </div> -->
-
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-search"></i>
-                                    </div>
-                                    <input type="text" class="form-control" placeholder="ค้นหาแผนก..." aria-label="Search for...">
-                                </div>
-                            </div>
-
-                            <div class="list-group">
-                                <div class="input-group">
-                                    <a class="list-group-item list-group-item-action active" style="font-size: 14pt;">
-                                        <i class="fa fa-bullhorn"></i>
-                                        เลือกแผนกที่ท่านต้องการนัดแพทย์
+                                    <a class="list-group-item list-group-item-action active" style="font-size: 14pt;text-align:center;">
+                                         รายชื่อแผนก
                                     </a>
                                 </div>
-                                <br>
+                           
+                            </div>
+
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-search"></i>
+                                </div>
+                                <input type="text" class="form-control" placeholder="ค้นหาแผนก..." id="myInput" autofocus autocomplete="off">
+                            </div>
+                            <br>
+                            <div class="list-group" id="list-group">
                                 <?php foreach ($DeptGroups as $key => $value) : ?>
                                     <div class="input-group">
-                                        <a href="<?= Url::to(['/app/appoint/create-sub-department', 'id' => $value['DeptGroup']]) ?>" class="list-group-item btn btn-outline-success">
+                                        <a href="<?= Url::to(['/app/appoint/create-sub-department', 'id' => $value['DeptGroup']]) ?>" class="list-group-item btn btn-outline-success list-group-department">
                                             <img src="<?= Yii::getAlias('@web/images/doctor.png') ?>" class="img-responsive" style="display: inline-block;">
                                             <?= $value['DeptGrDesc'] ?>
                                             <span class="icon-input">
@@ -99,8 +117,6 @@ $this->title = "นัดหมายแพทย์";
                                         </a>
                                     </div>
                                 <?php endforeach; ?>
-
-
                             </div>
                         </div>
 
@@ -113,3 +129,37 @@ $this->title = "นัดหมายแพทย์";
     </div>
 
 </div>
+
+
+
+<?php
+
+$this->registerJs(
+    <<<JS
+var listDept = $('#list-group').find('a.list-group-department')
+$('#myInput').on('keyup', function(){
+    var filterKey = $(this).val().toLowerCase()
+    $.each(listDept, function( index, value ) {
+        if($(this)[0]){
+            var txtValue = $(this)[0].textContent || $(this)[0].innerText;
+            console.log(txtValue.toLowerCase().indexOf(value));
+            if (String(txtValue).replace(/\s/g, '')
+                      .toLowerCase()
+                      .indexOf(filterKey) > -1) {
+                $($(this)[0]).show()
+            } else {
+                $($(this)[0]).hide()
+            }
+        }
+    });
+    if(!filterKey){
+        $(listDept).show()
+    }
+})
+JS
+);
+?>
+
+<?php
+echo $this->render('menu');
+?>
