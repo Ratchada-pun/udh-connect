@@ -47,12 +47,12 @@ use yii\helpers\Html;
                 </span>
             </a>
         </li>
-        <li class="menu_title">
+        <!-- <li class="menu_title">
             <a href="#" onclick="udhApp.logout()">
                 <i class="icon-logout"></i>
                 <span>ออกจากระบบ </span>
             </a>
-        </li>
+        </li> -->
 
         </li>
     </ul>

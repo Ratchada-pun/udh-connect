@@ -70,7 +70,7 @@ JS
                 <?php $form = ActiveForm::begin(['id' => 'appoint-form', 'type' => ActiveForm::TYPE_VERTICAL, 'options' => ['data-pjax' => true]]); ?>
                 <div class="row">
                     <div class="col-12">
-                        <div class="card-body">
+                        <div class="card-body" style="padding: 0;">
 
                             <div class="form-group">
                                 <div class="list-group">
