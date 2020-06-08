@@ -2,9 +2,9 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=udh-connect;port=3307',
+    'dsn' => 'mysql:host=db;dbname=udh-connect;port=3306',
     'username' => 'root',
-    'password' => '',
+    'password' => 'root_db',
     'charset' => 'utf8',
 
     // Schema cache options (for production environment)

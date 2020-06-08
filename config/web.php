@@ -80,7 +80,7 @@ $config = [
         ],
         'db_queue' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=172.16.254.64;dbname=queue;port=3306',
+            'dsn' => 'mysql:host=db;dbname=queue;port=3306',
             'username' => 'root',
             'password' => 'root_db',
             'charset' => 'utf8',
