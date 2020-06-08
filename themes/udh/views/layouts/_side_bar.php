@@ -28,10 +28,10 @@ use yii\helpers\Html;
 <div class="side_bar dark_blue side_bg_img scroll_auto">
     <ul id="dc_accordion" class="sidebar-menu tree">
 
-        <li class="menu_title">
+        <!-- <li class="menu_title">
             <a href="#"> <i class="fa fa-home"></i> <span>หน้าหลัก </span> </a>
 
-        </li>
+        </li> -->
         <li class="menu_title">
             <a href="/app/appoint/create-department"> 
                 <i class="fa fa-pencil-square-o"></i>
