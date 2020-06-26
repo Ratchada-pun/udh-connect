@@ -41,7 +41,7 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-top:5px;">
-                                    โรงพยาบาลอุดรธานี
+                                    นัดหมายแพทย์
                                 </p>
                                 <p style="font-size: 16pt;margin-bottom:5px;">
                                     ลงทะเบียนผู้ป่วยเก่า

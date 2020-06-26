@@ -146,9 +146,9 @@ class RegisterController extends Controller
             $formdata = $request->post('TblPatient', []);
             $posted = $request->post();
 
-            $isRegisted = TblPatient::findOne(['id_card' => $formdata['id_card']] ) !== null;
+            $isRegisted = TblPatient::findOne(['id_card' => $formdata['id_card']]) !== null;
 
-            if($isRegisted){
+            if ($isRegisted) {
                 throw new HttpException(422, "มีการลงทะเบียนข้อมูลในระบบแล้ว ไม่สามารถลงทะเบียนซ้ำได้");
             }
 
@@ -202,46 +202,80 @@ class RegisterController extends Controller
         $request = Yii::$app->request;
         $db_mssql = Yii::$app->mssql;
         $fliterKey = $request->post('filter');
-        if (strlen($fliterKey) < 13) {
-            $query = $db_mssql->createCommand('SELECT
-                    dbo.v_patient_detail.hn,
-                    REPLACE(dbo.v_patient_detail.CardID, \' \', \'\') as CardID,
-                    dbo.v_patient_detail.titleCode,
-                    REPLACE( dbo.v_patient_detail.firstName, \' \', \'\') as firstName,
-                    REPLACE(dbo.v_patient_detail.lastName, \' \', \'\') as lastName,
-                    dbo.v_patient_detail.phone,
-                    dbo.v_patient_detail.mobilephone,
-                    dbo.v_patient_detail.age,
-                    dbo.v_patient_detail.bday
+        if (strlen($fliterKey) == 13) {
+            // $query = $db_mssql->createCommand('SELECT
+            //         dbo.v_patient_detail.hn,
+            //         REPLACE(dbo.v_patient_detail.CardID, \' \', \'\') as CardID,
+            //         dbo.v_patient_detail.titleCode,
+            //         REPLACE( dbo.v_patient_detail.firstName, \' \', \'\') as firstName,
+            //         REPLACE(dbo.v_patient_detail.lastName, \' \', \'\') as lastName,
+            //         dbo.v_patient_detail.phone,
+            //         dbo.v_patient_detail.mobilephone,
+            //         dbo.v_patient_detail.age,
+            //         dbo.v_patient_detail.bday
 
-                    FROM
-                    dbo.v_patient_detail
-                    WHERE
-                    dbo.v_patient_detail.hn = :hn
-                ')
+            //         FROM
+            //         dbo.v_patient_detail
+            //         WHERE
+            //         dbo.v_patient_detail.hn = :hn
+            //     ')
+            //     ->bindValues([
+            //         ':hn' => sprintf("% 7s", $fliterKey)
+            //     ])
+            //     ->queryOne();
+            $query = $db_mssql->createCommand('SELECT TOP
+                    1 dbo.PATIENT.hn,
+                    REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
+                    REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
+                    dbo.PATIENT.phone,
+                    dbo.PATIENT.birthDay,
+                    dbo.PATIENT.titleCode,
+                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID                    
+                FROM
+                    dbo.PATIENT
+                    INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+                WHERE
+                dbo.PatSS.CardID = :CardID')
                 ->bindValues([
-                    ':hn' => sprintf("% 7s", $fliterKey)
+                    ':CardID' => $fliterKey
                 ])
                 ->queryOne();
         } else {
-            $query = $db_mssql->createCommand('SELECT
-                    dbo.v_patient_detail.hn,
-                    REPLACE(dbo.v_patient_detail.CardID, \' \', \'\') as CardID,
-                    dbo.v_patient_detail.titleCode,
-                    REPLACE( dbo.v_patient_detail.firstName, \' \', \'\') as firstName,
-                    REPLACE(dbo.v_patient_detail.lastName, \' \', \'\') as lastName,
-                    dbo.v_patient_detail.phone,
-                    dbo.v_patient_detail.mobilephone,
-                    dbo.v_patient_detail.age,
-                    dbo.v_patient_detail.bday
+            // $query = $db_mssql->createCommand('SELECT
+            //         dbo.v_patient_detail.hn,
+            //         REPLACE(dbo.v_patient_detail.CardID, \' \', \'\') as CardID,
+            //         dbo.v_patient_detail.titleCode,
+            //         REPLACE( dbo.v_patient_detail.firstName, \' \', \'\') as firstName,
+            //         REPLACE(dbo.v_patient_detail.lastName, \' \', \'\') as lastName,
+            //         dbo.v_patient_detail.phone,
+            //         dbo.v_patient_detail.mobilephone,
+            //         dbo.v_patient_detail.age,
+            //         dbo.v_patient_detail.bday
 
-                    FROM
-                    dbo.v_patient_detail
-                    WHERE
-                    dbo.v_patient_detail.CardID LIKE :CardID
-                ')
+            //         FROM
+            //         dbo.v_patient_detail
+            //         WHERE
+            //         dbo.v_patient_detail.CardID LIKE :CardID
+            //     ')
+            //     ->bindValues([
+            //         ':CardID' => '%'.$fliterKey.'%'
+            //     ])
+            //     ->queryOne();
+            $query = $db_mssql->createCommand('SELECT TOP
+                    1 dbo.PATIENT.hn,
+                    REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
+                    REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
+                    dbo.PATIENT.phone,
+                    dbo.PATIENT.birthDay,
+                    dbo.PATIENT.titleCode,
+                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID  
+                FROM
+                    dbo.PATIENT
+                    INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+                WHERE
+                    dbo.PATIENT.hn = :hn')
                 ->bindValues([
-                    ':CardID' => '%'.$fliterKey.'%'
+                    ':hn' => sprintf("% 7s", $fliterKey)
                 ])
                 ->queryOne();
         }

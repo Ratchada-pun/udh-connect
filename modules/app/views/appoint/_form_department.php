@@ -76,9 +76,8 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-top:5px;">
-                                    โรงพยาบาลอุดรธานี
+                                    นัดหมายแพทย์
                                 </p>
-                             
                             </strong>
                         </p>
                     </div>
@@ -96,7 +95,6 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                                          รายชื่อแผนก
                                     </a>
                                 </div>
-                           
                             </div>
 
                             <div class="input-group">
@@ -109,9 +107,9 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                             <div class="list-group" id="list-group">
                                 <?php foreach ($DeptGroups as $key => $value) : ?>
                                     <div class="input-group">
-                                        <a href="<?= Url::to(['/app/appoint/create-sub-department', 'id' => $value['DeptGroup']]) ?>" class="list-group-item btn btn-outline-success list-group-department">
+                                        <a href="<?= Url::to(['/app/appoint/create-sub-department', 'id' => $key]) ?>" class="list-group-item btn btn-outline-success list-group-department">
                                             <img src="<?= Yii::getAlias('@web/images/doctor.png') ?>" class="img-responsive" style="display: inline-block;">
-                                            <?= $value['DeptGrDesc'] ?>
+                                            <?= $value ?>
                                             <span class="icon-input">
                                             </span>
                                         </a>

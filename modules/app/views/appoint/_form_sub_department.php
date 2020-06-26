@@ -74,7 +74,7 @@ $this->title = "นัดหมายแพทย์";
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-top:5px;">
-                                    โรงพยาบาลอุดรธานี
+                                    นัดหมายแพทย์
                                 </p>
                             </strong>
                         </p>

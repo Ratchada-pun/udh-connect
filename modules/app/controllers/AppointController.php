@@ -72,14 +72,25 @@ class AppointController extends Controller
         // $session->remove('user');
         // $response = Yii::$app->response;
         // $response->format = \yii\web\Response::FORMAT_JSON;
+        // $DeptGroups = Yii::$app->mssql->createCommand(
+        //     'SELECT
+        //         REPLACE(dbo.DEPTGr.DeptGroup, \' \', \'\') as DeptGroup,
+        //         REPLACE(dbo.DEPTGr.DeptGrDesc, \' \', \'\') as DeptGrDesc
+        //     FROM
+        //     dbo.DEPTGr
+        //     '
+        // )->queryAll();
+
         $DeptGroups = Yii::$app->mssql->createCommand(
             'SELECT
                 REPLACE(dbo.DEPTGr.DeptGroup, \' \', \'\') as DeptGroup,
                 REPLACE(dbo.DEPTGr.DeptGrDesc, \' \', \'\') as DeptGrDesc
             FROM
-            dbo.DEPTGr
-            '
-        )->queryAll();
+                dbo.DEPTGROUP
+                INNER JOIN dbo.DEPTGr ON dbo.DEPTGr.DeptGroup = dbo.DEPTGROUP.DeptGroup 
+                '
+            )->queryAll();
+        $DeptGroups = ArrayHelper::map($DeptGroups, 'DeptGroup', 'DeptGrDesc');
 
         return $this->render('_form_department.php', [
             'DeptGroups' => $DeptGroups,
