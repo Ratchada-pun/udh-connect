@@ -17,7 +17,7 @@ $config = [
             'class' => 'app\modules\app\Module',
         ],
     ],
-    'language'=>'th_TH',
+    'language' => 'th_TH',
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -49,7 +49,11 @@ $config = [
                 ],
             ],
         ],
-        'db' => $db,
+        
+        // database connection
+        'db' => $db['db'],
+        'mssql' => $db['mssql'],
+        'db_queue' => $db['db_queue'],
 
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -69,21 +73,8 @@ $config = [
                 'yii\bootstrap\BootstrapPluginAsset' => false,
             ],
         ],
-        'thaiFormatter'=>[
-            'class'=>'dixonsatit\thaiYearFormatter\ThaiYearFormatter',
-        ],
-        'mssql' => [
-            'class' => 'yii\db\Connection',
-            'dsn' => 'sqlsrv:Server=192.168.0.3;Database=UDTest',
-            'username' => 'homc',
-            'password' => 'homc',
-        ],
-        'db_queue' => [
-            'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=db;dbname=queue;port=3306',
-            'username' => 'root',
-            'password' => 'root_db',
-            'charset' => 'utf8',
+        'thaiFormatter' => [
+            'class' => 'dixonsatit\thaiYearFormatter\ThaiYearFormatter',
         ],
     ],
     'params' => $params,
