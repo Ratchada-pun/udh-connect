@@ -89,7 +89,7 @@ class AppointController extends Controller
                 dbo.DEPTGROUP
                 INNER JOIN dbo.DEPTGr ON dbo.DEPTGr.DeptGroup = dbo.DEPTGROUP.DeptGroup 
                 '
-            )->queryAll();
+        )->queryAll();
         $DeptGroups = ArrayHelper::map($DeptGroups, 'DeptGroup', 'DeptGrDesc');
 
         return $this->render('_form_department.php', [
@@ -225,7 +225,7 @@ class AppointController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionCreateAppointments($id,$doc_id = '')
+    public function actionCreateAppointments($id, $doc_id = '')
     {
         $db_mssql = Yii::$app->mssql;
         $db_queue = Yii::$app->db_queue;
@@ -300,7 +300,7 @@ class AppointController extends Controller
             Appoint_dep_doc.deptCode = :deptCode')
             ->bindValues([':deptCode' => $id])
             ->queryAll();
-    
+
         $doc_codes = $this->replaceEmptyString(ArrayHelper::getColumn($query_doc_codes, 'docCode'));
 
         // ข้อมูลแพทย์ในระบบคิว
@@ -318,7 +318,7 @@ class AppointController extends Controller
                     tbl_med_schedule.schedule_date >= CURRENT_DATE
                 GROUP BY  
                     tbl_doctor.doctor_code
-                ' 
+                '
             )
                 ->queryAll();
         }
@@ -571,7 +571,7 @@ class AppointController extends Controller
         $attributes = \Yii::$app->request->post('AppointModel', []);
         $model = new AppointModel();
         $model->load($attributes, '');
-        if(!$model->validate()){
+        if (!$model->validate()) {
             throw new HttpException(400, Json::encode($model->errors));
         }
         $appoint_time_from = \Yii::$app->request->post('appoint_time_from', '');
@@ -690,7 +690,7 @@ class AppointController extends Controller
                 'appoint_time' => $appoint_time,
                 'department_name' => $dept['deptDesc'],
                 'hn' => $profile['hn'],
-                'fullname' => $profile['first_name'] .' '.$profile['last_name']
+                'fullname' => $profile['first_name'] . ' ' . $profile['last_name']
             ];
             $transaction->commit();
             return [
@@ -932,5 +932,116 @@ class AppointController extends Controller
         ]);
     }
 
+    public function actionQueueStatus($hn)
+    {
+        $db_mssql = Yii::$app->mssql;
+        $profile = $db_mssql->createCommand('SELECT TOP
+                1 dbo.PATIENT.hn,
+                REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
+                REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
+                dbo.PATIENT.phone,
+                dbo.PATIENT.birthDay,
+                dbo.PATIENT.titleCode,
+                REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID  
+            FROM
+                dbo.PATIENT
+                INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+            WHERE
+                dbo.PATIENT.hn = :hn')
+            ->bindValues([
+                ':hn' => sprintf("% 7s", $hn)
+            ])
+            ->queryOne();
+        return $this->render('form_detail_status', [
+            // 'rows' => $rows
+            'profile' => $profile
+        ]);
+    }
 
+    public function actionQueueList($hn)
+    {
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
+        $rows = $this->getDataQueue($hn); //queue ข้อมูล
+        return $rows;
+    }
+
+    private function getDataQueue($hn)
+    {
+        $startDate = Yii::$app->formatter->asDate('now', 'php:Y-m-d 00:00:00');
+        $endDate = Yii::$app->formatter->asDate('now', 'php:Y-m-d 23:59:59');
+        $rows = (new \yii\db\Query())
+            ->select([
+                'tbl_queue_detail.*',
+                'tbl_queue.queue_no',
+                'tbl_queue.patient_id',
+                'tbl_queue.queue_type_id',
+                'tbl_queue.coming_type_id',
+                'tbl_queue.appoint_id',
+                'tbl_service.service_id',
+                'tbl_service.service_code',
+                'tbl_service.service_name',
+                'tbl_service.service_group_id',
+                'tbl_service.prefix_id',
+                'tbl_service.service_num_digit',
+                'tbl_service.ticket_id',
+                'tbl_service.print_copy_qty',
+                'tbl_service.floor_id',
+                'tbl_service.service_order',
+                'tbl_service.service_status',
+                'tbl_service.icon_path',
+                'tbl_service.icon_base_url',
+                'tbl_service_group.service_group_name',
+                'tbl_patient.hn',
+                'tbl_patient.fullname',
+                'tbl_queue.created_at',
+                'DATE_FORMAT(tbl_queue.created_at,\'%d %M %Y\') as queue_date',
+                'TIME_FORMAT(tbl_queue_detail.created_at,\'%H:%i\') as queue_time',
+                '`profile`.`name`',
+                'tbl_queue_type.queue_type_name',
+                'tbl_coming_type.coming_type_name',
+                'tbl_queue_status.queue_status_name',
+                'tbl_doctor.doctor_code',
+                'tbl_doctor.doctor_title',
+                'tbl_doctor.doctor_name',
+                'tbl_counter_service.counter_service_name',
+                'tbl_counter_service.counter_service_no',
+                'tbl_appoint.appoint_date',
+                'tbl_appoint.app_time_from',
+                'tbl_appoint.app_time_to',
+                'tbl_appoint.doc_code',
+                'tbl_appoint.doc_name',
+                'file_storage_item.base_url',
+                'file_storage_item.path',
+                'tbl_caller.caller_id',
+            ])
+            ->from('tbl_queue_detail')
+            ->innerJoin('tbl_queue', 'tbl_queue.queue_id = tbl_queue_detail.queue_id')
+            ->innerJoin('tbl_service', 'tbl_service.service_id = tbl_queue_detail.service_id')
+            ->innerJoin('tbl_service_group', 'tbl_service_group.service_group_id = tbl_service.service_group_id')
+            ->innerJoin('tbl_queue_type', 'tbl_queue_type.queue_type_id = tbl_queue.queue_type_id')
+            ->innerJoin('tbl_coming_type', 'tbl_coming_type.coming_type_id = tbl_queue.coming_type_id')
+            ->innerJoin('tbl_queue_status', 'tbl_queue_status.queue_status_id = tbl_queue_detail.queue_status_id')
+            ->leftJoin('tbl_doctor', 'tbl_doctor.doctor_id = tbl_queue_detail.doctor_id')
+            ->leftJoin('tbl_caller', 'tbl_queue_detail.queue_detail_id = tbl_caller.queue_detail_id')
+            ->leftJoin('tbl_counter_service', 'tbl_caller.counter_service_id = tbl_counter_service.counter_service_id')
+            ->leftJoin('tbl_appoint', 'tbl_appoint.appoint_id = tbl_queue.appoint_id')
+            ->innerJoin('`profile`', '`profile`.user_id = tbl_queue.created_by')
+            ->innerJoin('tbl_patient', 'tbl_patient.patient_id = tbl_queue.patient_id')
+            ->leftJoin('file_storage_item', 'file_storage_item.ref_id = tbl_patient.patient_id')
+            ->where(['tbl_patient.hn' => $hn])
+            ->andWhere(['between', 'tbl_queue_detail.created_at', $startDate, $endDate])
+            ->andWhere('tbl_queue_detail.queue_status_id <> :queue_status_id', [':queue_status_id' => 5])
+            ->groupBy('tbl_queue_detail.queue_detail_id')
+            ->orderBy('tbl_queue.created_at ASC')
+            ->all(Yii::$app->db_queue);
+
+        $items = [];
+        foreach ($rows as $key => $item) {
+            $items[] = ArrayHelper::merge($item, [
+                'queue_date' => Yii::$app->formatter->asDate($item['created_at'], 'php:d M Y')
+            ]);
+        }
+        return $items;
+    }
 }

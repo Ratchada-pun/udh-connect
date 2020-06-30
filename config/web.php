@@ -7,6 +7,10 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    # ตั้งค่าการใช้งานภาษาไทย (Language)
+    'language' => 'th-TH', // ตั้งค่าภาษาไทย
+    # ตั้งค่า TimeZone ประเทศไทย
+    'timeZone' => 'Asia/Bangkok', // ตั้งค่า TimeZone
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -17,7 +21,6 @@ $config = [
             'class' => 'app\modules\app\Module',
         ],
     ],
-    'language' => 'th_TH',
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -75,6 +78,16 @@ $config = [
         ],
         'thaiFormatter' => [
             'class' => 'dixonsatit\thaiYearFormatter\ThaiYearFormatter',
+        ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'nullDisplay' => '',
+            'dateFormat' => 'php:Y-m-d',
+            'datetimeFormat' => 'php:Y-m-d H:i:s',
+            'timeFormat' => 'php:H:i:s',
+            'defaultTimeZone' => 'Asia/Bangkok',
+            'timeZone' => 'Asia/Bangkok',
+            'locale' => 'th-TH'
         ],
     ],
     'params' => $params,

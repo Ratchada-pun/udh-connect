@@ -234,6 +234,10 @@ JS
 </div>
 
 <?php
+echo $this->render('menu');
+?>
+
+<?php
 $this->registerJs("moment.locale('th')");
 // $this->registerJsFile(
 //     '@web/js/appointments.js',

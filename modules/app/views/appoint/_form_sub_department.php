@@ -139,7 +139,9 @@ $this->title = "นัดหมายแพทย์";
     </div>
 
 </div>
-
+<?php
+echo $this->render('menu');
+?>
 
 <?php 
 

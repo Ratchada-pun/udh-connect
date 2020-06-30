@@ -1,0 +1,301 @@
+<?php
+
+use kartik\form\ActiveForm;
+use yii\helpers\Url;
+
+$this->title = "สถานะคิว";
+
+
+$this->registerCss(<<<CSS
+.card {
+    box-shadow: 0 2px 7px 0 rgba(5, 34, 97, 0.1);
+    border-radius: 0.48rem;
+}
+.card-header {
+  padding: 8px 16px;
+}
+.card-title {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 1.2rem;
+}
+.card-title-time,
+.card-title-date {
+  display: inline-block;
+  color: #2786fb !important;
+  font-weight: 500;
+}
+.card-footer .btn-success {
+  font-size: 12px;
+  border-radius: 56px;
+}
+.card-body ul {
+    font-size: 14px;
+    list-style: none;
+    /* margin-block-start: 0; */
+    /* margin-block-end: 0; */
+    padding-inline-start: 0;
+}
+.kt-input-icon {
+  margin-bottom: 10px;
+}
+.container {
+    padding: 0;
+}
+.container-content {
+    padding: 15px 0 0 0;
+}
+.list-group-item.active {
+    background-color: #ff518a;
+    border-color: #ff518a;
+}
+
+.btn {
+    display: inline-block;
+}
+
+.card-body {
+    padding: 0;
+}
+CSS
+);
+
+?>
+<div class="card">
+    <div class="card-header text-white bg-danger border-0  text-center">
+        <div class="media p-6">
+            <div class="media-body">
+                <p class="btn-flat m-b-30 m-t-30">
+                    <strong class="">
+                        <p style="font-size: 16pt;margin-top:5px;">
+                            สถานะคิว
+                        </p>
+                    </strong>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="card-body" style="background: #f6f6f6;">
+        <ul class="no-margin mt-10" style="list-style: none;padding-inline-start: 40px;font-size: 16px;">
+            <li><strong>ชื่อ:</strong> <?= $profile['firstName'] . ' ' . $profile['lastName'] ?></li>
+            <li><strong>NH:</strong> <?= $profile['hn'] ?> </li>
+        </ul>
+    </div>
+</div>
+<div id="app" class="d-flex align-content-center flex-wrap">
+    <div class="container">
+        <div class="container-content">
+
+        <div class="form-group">
+            <input v-model="filterKey" class="form-control" type="text" placeholder="ค้นหา...." /> 
+        </div>
+            
+            <div v-for="(item, key) in filteredQueueList" :key="key" class="card card-shadow  mb-4">
+                <div class="card-header" style="padding: 12px 16px;border: 1px solid #e5e9ec;">
+                    <div class="card-title">
+                        <span class="card-title-date" style="font-size: 14px;font-weight: 600;">
+                            คิวที่ {{ item.queue_no }}
+                        </span>
+                        <div class="card-title-time" style="font-size: 14px;font-weight: 600;">
+                            <span>
+                                <i class="far fa-calendar-alt"></i>
+                                {{ item.queue_date }}
+                            </span>
+                            <span class="hidden" style="color: #8F8F8F;">
+                                <i class="far fa-clock"></i> เวลา:
+                            </span>
+                            {{ item.queue_time }} น.
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body" style="background: #f6f6f6;padding: 12px 16px;">
+                    <ul class="no-margin">
+                        <li><strong>แผนก:</strong> {{ item.service_name }}</li>
+                        <li><strong>แพทย์:</strong> {{ item.doctor_name ? item.doctor_title + item.doctor_name : '-'  }}</li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-white hidden">
+                    <button type="button" class="btn btn-success btn-sm">
+                        {{ item.queue_status_name }}
+                    </button>
+                    <button type="button" class="btn btn-success btn-sm pull-right">
+                        คิวรอ {{ item.count }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+$this->registerJsFile(
+    '@web/js/socket.io.js',
+    ['depends' => [\yii\web\JqueryAsset::className()]]
+);
+$this->registerJsFile(
+    'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js',
+    ['depends' => [\yii\web\JqueryAsset::className()]]
+);
+$this->registerJsFile(
+    'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
+    ['depends' => [\yii\web\JqueryAsset::className()]]
+);
+$this->registerJsFile(
+    'https://momentjs.com/downloads/moment.min.js',
+    ['depends' => [\yii\web\JqueryAsset::className()]]
+);
+$this->registerJsFile(
+    'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/th.min.js',
+    ['depends' => [\yii\web\JqueryAsset::className()]]
+);
+$this->registerJs(<<<JS
+
+//moment.locale('th');
+var app = new Vue({
+    el: '#app',
+    data: {
+        queueList: [],
+        count: {},
+        filterKey: ''
+    },
+    computed: {
+        hn: function() {
+            var params = this.getQueryParams(window.location.search)
+            return params.hn
+        },
+        filteredQueueList: function() {
+            var _this = this
+            var filterKey = this.filterKey && this.filterKey.toLowerCase();
+            var queueList = _this.queueList
+            if (filterKey) {
+                queueList = queueList.filter(function(row) {
+                return Object.keys(row).some(function(key) {
+                  return (
+                    String(row[key])
+                      .toLowerCase()
+                      .indexOf(filterKey) > -1
+                  );
+                });
+              });
+            }
+            queueList = queueList.map(row => {
+                return _this.updateObject(row, {
+                    count: _this.count[row.queue_detail_id] || 0,
+                })
+            })
+            return queueList
+        },
+        ids: function() {
+            return this.queueList.map(row => Number(row.queue_detail_id))
+        }
+    },
+    mounted: function () {
+        this.\$nextTick(function () {
+            this.fetchDataQueueList()
+        })
+    },
+    methods: {
+        getQueryParams: function (url) {
+            var pos = url.indexOf('?');
+            if (pos < 0) {
+                return {};
+            }
+
+            var pairs = $.grep(url.substring(pos + 1).split('#')[0].split('&'), function (value) {
+                return value !== '';
+            });
+            var params = {};
+
+            for (var i = 0, len = pairs.length; i < len; i++) {
+                var pair = pairs[i].split('=');
+                var name = decodeURIComponent(pair[0].replace(/\+/g, '%20'));
+                var value = decodeURIComponent(pair[1].replace(/\+/g, '%20'));
+                if (!name.length) {
+                    continue;
+                }
+                if (params[name] === undefined) {
+                    params[name] = value || '';
+                } else {
+                    if (!$.isArray(params[name])) {
+                        params[name] = [params[name]];
+                    }
+                    params[name].push(value || '');
+                }
+            }
+
+            return params;
+        },
+        fetchDataQueueList: async function() {
+            try {
+                var result = await axios.get('/app/appoint/queue-list?hn=' + this.hn)
+                this.queueList = result.data
+                this.getCountData()
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || '',
+                })
+            }
+        },
+        getCountData: async function() {
+            try {
+                for (let i = 0; i < this.queueList.length; i++) {
+                    var queue = this.queueList[i];
+                    var result = await axios.post('https://queue.udhconnect.info/api/v1/queue/count-queue-wait', queue)
+                    var obj = {}
+                    obj[queue.queue_detail_id] = result.data.data.count || 0
+                    var count = result.data.data.count || 0
+                    if(count > 0 && count < 4){
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'แจ้งเตือน!',
+                            text: `รออีก \${count} คิว`,
+                            showConfirmButton: true,
+                            confirmButtonText: 'ตกลง'
+                        })
+                    }
+                    this.count = this.updateObject(this.count, obj)
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || '',
+                })
+            }
+        },
+        updateObject: function(oldObject, updatedProperties) {
+            return {
+                ...oldObject,
+                ...updatedProperties
+            }
+        }
+   }
+})
+
+var socket = io('https://queue.udhconnect.info', { path: '/node-api/socket.io' });
+socket.on('call wait', function(data){
+    if(data.data.queue_detail){
+        var queue_detail = data.data.queue_detail
+        var counter = data.data.counter
+        if (app.ids.includes(Number(queue_detail.queue_detail_id))) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'ถึงคิวคุณแล้วค่ะ!',
+              text: `กรุณาเชิญที่ \${counter.counter_service_name}`,
+              showConfirmButton: true,
+              confirmButtonText: 'ตกลง'
+            })
+        } else {
+            app.getCountData()
+        }
+    }
+});
+JS
+);
+?>

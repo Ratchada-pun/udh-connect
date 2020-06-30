@@ -18,6 +18,7 @@ use yii\widgets\Breadcrumbs;
         <div class="content_wrapper">
             <div class="container-fluid">
                 <!-- breadcrumb -->
+                <?php /*
                 <div class="page-heading">
                     <div class="row d-flex align-items-center">
                         <div class="col-12">
@@ -38,6 +39,7 @@ use yii\widgets\Breadcrumbs;
                         </div>
                     </div>
                 </div>
+                */?>
                 <!-- breadcrumb_End -->
                 <?=\yii2mod\alert\Alert::widget()?>
                 <?= $content ?>

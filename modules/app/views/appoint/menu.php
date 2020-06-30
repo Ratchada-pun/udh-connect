@@ -5,6 +5,9 @@ use yii\helpers\Url;
 $this->registerCssFile("@web/css/mobile-menu-bs.css", [
     'depends' => [\yii\bootstrap\BootstrapAsset::className()],
 ]);
+
+$session = Yii::$app->session;
+$profile = $session->get('user');
 ?>
 <style>
     .mobile-menu-bs ul li .icon i {
@@ -47,12 +50,13 @@ $this->registerCssFile("@web/css/mobile-menu-bs.css", [
 
             <li class="border-bottom-danger" style="width: 20%;"></li>
 
-            <li class="menu-item border-bottom-danger" style="width: 20%;"><a href="#" data-toggle="tab" data-target="#tab-settings" class="page-scroll page-scroll-danger">
+            <li class="menu-item border-bottom-danger" style="width: 20%;">
+                 <a href="<?= Url::to(['/app/appoint/queue-status', 'hn' => $profile['hn']]) ?>" class="page-scroll page-scroll-danger">
                     <div class="icon"><i class="fa fa-address-card-o fa-2x"></i></div>
                     <div class="h1 no-margin"><span class="menu-label">สถานะคิว</span>
                         <p data-v-0dbf6a13=""></p>
                     </div>
-                </a>
+                </>
             </li>
 
             <li class="menu-item border-bottom-info" style="width: 20%;">
