@@ -131,6 +131,11 @@ CSS
         </div>
     </div>
 </div>
+
+<?php
+echo $this->render('menu');
+?>
+
 <?php
 $this->registerJsFile(
     '@web/js/socket.io.js',
