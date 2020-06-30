@@ -224,7 +224,7 @@ class RegisterController extends Controller
             //     ])
             //     ->queryOne();
             $query = $db_mssql->createCommand('SELECT TOP
-                    1 dbo.PATIENT.hn,
+                    1 REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
                     REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
                     REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
                     dbo.PATIENT.phone,
@@ -262,7 +262,7 @@ class RegisterController extends Controller
             //     ])
             //     ->queryOne();
             $query = $db_mssql->createCommand('SELECT TOP
-                    1 dbo.PATIENT.hn,
+                    1 REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
                     REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
                     REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
                     dbo.PATIENT.phone,
