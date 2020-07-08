@@ -970,6 +970,11 @@ class AppointController extends Controller
     {
         $startDate = Yii::$app->formatter->asDate('now', 'php:Y-m-d 00:00:00');
         $endDate = Yii::$app->formatter->asDate('now', 'php:Y-m-d 23:59:59');
+        $couters = (new \yii\db\Query())
+            ->select(['tbl_counter_service.*'])
+            ->from('tbl_counter_service')
+            ->all(Yii::$app->db_queue);
+        $map_couters = ArrayHelper::map($couters, 'counter_service_id', 'counter_service_name');
         $rows = (new \yii\db\Query())
             ->select([
                 'tbl_queue_detail.*',
@@ -1004,6 +1009,8 @@ class AppointController extends Controller
                 'tbl_doctor.doctor_code',
                 'tbl_doctor.doctor_title',
                 'tbl_doctor.doctor_name',
+                'tbl_counter_service.counter_service_id',
+                'tbl_queue_detail.counter_service_id as counter_service_id1',
                 'tbl_counter_service.counter_service_name',
                 'tbl_counter_service.counter_service_no',
                 'tbl_appoint.appoint_date',
@@ -1014,12 +1021,14 @@ class AppointController extends Controller
                 'file_storage_item.base_url',
                 'file_storage_item.path',
                 'tbl_caller.caller_id',
+                'tbl_service_type.service_type_name'
             ])
             ->from('tbl_queue_detail')
             ->innerJoin('tbl_queue', 'tbl_queue.queue_id = tbl_queue_detail.queue_id')
             ->innerJoin('tbl_service', 'tbl_service.service_id = tbl_queue_detail.service_id')
             ->innerJoin('tbl_service_group', 'tbl_service_group.service_group_id = tbl_service.service_group_id')
             ->innerJoin('tbl_queue_type', 'tbl_queue_type.queue_type_id = tbl_queue.queue_type_id')
+            ->innerJoin('tbl_service_type', 'tbl_service_type.service_type_id = tbl_queue_detail.service_type_id')
             ->innerJoin('tbl_coming_type', 'tbl_coming_type.coming_type_id = tbl_queue.coming_type_id')
             ->innerJoin('tbl_queue_status', 'tbl_queue_status.queue_status_id = tbl_queue_detail.queue_status_id')
             ->leftJoin('tbl_doctor', 'tbl_doctor.doctor_id = tbl_queue_detail.doctor_id')
@@ -1039,7 +1048,8 @@ class AppointController extends Controller
         $items = [];
         foreach ($rows as $key => $item) {
             $items[] = ArrayHelper::merge($item, [
-                'queue_date' => Yii::$app->formatter->asDate($item['created_at'], 'php:d M Y')
+                'queue_date' => Yii::$app->formatter->asDate($item['created_at'], 'php:d M Y'),
+                'counter_service_name' => empty($item['counter_service_id1']) ? $item['counter_service_name'] : ArrayHelper::getValue($map_couters, $item['counter_service_id1'], '')
             ]);
         }
         return $items;

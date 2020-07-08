@@ -62,6 +62,15 @@ $this->registerCss(<<<CSS
 .card-body {
     padding: 0;
 }
+.btn-radius {
+    border-radius: 56px;
+}
+.card-header.header-gray,
+.card-footer.footer-gray{
+    background: #e2e2e2!important;
+    border: 1px solid rgba(0, 0, 0, 0.125)!important;
+}
+
 CSS
 );
 
@@ -88,45 +97,56 @@ CSS
     </div>
 </div>
 <div id="app" class="d-flex align-content-center flex-wrap">
+
+    <!-- <div class="form-group w-100 mt-10">
+        <input v-model="filterKey" class="form-control" type="text" placeholder="ค้นหา...." />
+    </div> -->
+
     <div class="container">
         <div class="container-content">
 
-        <div class="form-group">
-            <input v-model="filterKey" class="form-control" type="text" placeholder="ค้นหา...." /> 
-        </div>
-            
             <div v-for="(item, key) in filteredQueueList" :key="key" class="card card-shadow  mb-4">
-                <div class="card-header" style="padding: 12px 16px;border: 1px solid #e5e9ec;">
+                <div :class="['card-header',{'header-gray': item.queue_status_id === '4'}]" style="padding: 12px 16px;border: 1px solid #e5e9ec;">
                     <div class="card-title">
                         <span class="card-title-date" style="font-size: 14px;font-weight: 600;">
-                            คิวที่ {{ item.queue_no }}
+                            คิวของคุณ : {{ item.queue_no }}
                         </span>
                         <div class="card-title-time" style="font-size: 14px;font-weight: 600;">
                             <span>
+                                คิวกำลังเรียก : {{ item.last_queue }}
+                            </span>
+                            <!-- <span>
                                 <i class="far fa-calendar-alt"></i>
                                 {{ item.queue_date }}
-                            </span>
-                            <span class="hidden" style="color: #8F8F8F;">
+                            </span> -->
+                            <!-- <span class="hidden" style="color: #8F8F8F;">
                                 <i class="far fa-clock"></i> เวลา:
                             </span>
-                            {{ item.queue_time }} น.
+                            {{ item.queue_time }} น. -->
                         </div>
                     </div>
                 </div>
                 <div class="card-body" style="background: #f6f6f6;padding: 12px 16px;">
                     <ul class="no-margin">
-                        <li><strong>แผนก:</strong> {{ item.service_name }}</li>
-                        <li><strong>แพทย์:</strong> {{ item.doctor_name ? item.doctor_title + item.doctor_name : '-'  }}</li>
+                        <li><strong>{{ item.service_type_name }}</strong> </li>
+                        <li><strong>แผนก : </strong>{{ item.service_name }}</li>
+                        <li><strong>ห้องตรวจ/ช่องบริการ :</strong> {{ item.counter_service_name }}</li>
+                        <li v-if="item.doctor_name"><strong>แพทย์:</strong> {{ item.doctor_name ? item.doctor_title + item.doctor_name : ''  }}</li>
                     </ul>
                 </div>
-                <div class="card-footer bg-white hidden">
-                    <button type="button" class="btn btn-success btn-sm">
-                        {{ item.queue_status_name }}
-                    </button>
-                    <button type="button" class="btn btn-success btn-sm pull-right">
-                        คิวรอ {{ item.count }}
+                
+                <div :class="['card-footer',{'footer-gray': item.queue_status_id === '4'}]">
+                    
+                   <button type="button" :class="getStatusClass(item.queue_status_id)">
+                        สถานะ : {{ item.queue_status_name }}
+                    </button> 
+                    
+                    <button type="button" class="btn btn-warning btn-sm pull-right btn-radius">   <!--จำนวนคิวที่รอนับตามจำนวนคิวจากหน้าจอเรียกคิว--->
+                        คิวรอ : {{ item.count }} 
                     </button>
                 </div>
+
+
             </div>
         </div>
     </div>
@@ -164,6 +184,7 @@ var app = new Vue({
     el: '#app',
     data: {
         queueList: [],
+        displays: [],
         count: {},
         filterKey: ''
     },
@@ -176,6 +197,8 @@ var app = new Vue({
             var _this = this
             var filterKey = this.filterKey && this.filterKey.toLowerCase();
             var queueList = _this.queueList
+            var examinations = _this.displays.examinations || []
+            var historys = _this.displays.historys || []
             if (filterKey) {
                 queueList = queueList.filter(function(row) {
                 return Object.keys(row).some(function(key) {
@@ -188,14 +211,20 @@ var app = new Vue({
               });
             }
             queueList = queueList.map(row => {
+                var history = historys.find(r => Number(r.counter_service_id)  === Number(row.counter_service_id))
+                var examination = examinations.find(r => Number(r.counter_service_id)  === Number(row.counter_service_id1))
                 return _this.updateObject(row, {
                     count: _this.count[row.queue_detail_id] || 0,
+                    last_queue: history ? (historys[0].queue_no || '-') : (examination ? (examinations[0].queue_no || '-') : '-')
                 })
             })
             return queueList
         },
         ids: function() {
             return this.queueList.map(row => Number(row.queue_detail_id))
+        },
+        counter_service_ids: function() {
+            return this.queueList.map(row => row.counter_service_id || row.counter_service_id1)
         }
     },
     mounted: function () {
@@ -239,6 +268,7 @@ var app = new Vue({
                 var result = await axios.get('/app/appoint/queue-list?hn=' + this.hn)
                 this.queueList = result.data
                 this.getCountData()
+                this.fetchDataQueueWait()
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
@@ -274,11 +304,49 @@ var app = new Vue({
                 })
             }
         },
+        fetchDataQueueWait: async function() {
+            try {
+                var counter_service_ids = this.queueList.map(row => row.counter_service_id || row.counter_service_id1)
+                var service_ids = this.queueList.map(row => row.service_id)
+                var result = await axios.post('https://queue.udhconnect.info/api/v1/display/queue-display-today', {
+                    counter_service_ids: counter_service_ids,
+                    service_ids: service_ids
+                })
+                this.displays = result.data.data
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || '',
+                })
+            }
+        },
         updateObject: function(oldObject, updatedProperties) {
             return {
                 ...oldObject,
                 ...updatedProperties
             }
+        },
+        getStatusClass: function(status) {
+            var statusClass = 'btn btn-sm'
+            switch (status) {
+                case '1': //รอเรียก
+                    statusClass = 'btn btn-info btn-sm btn-radius'
+                    break;
+                case '2': //กำลังเรียก
+                    statusClass = 'btn btn-success btn-sm btn-radius'
+                    break;
+                case '3'://พักคิว
+                    statusClass = 'btn btn-warning btn-sm btn-radius'
+                    break;
+                case '4'://เสร็จสิ้น
+                    statusClass = 'btn btn-success btn-sm btn-radius'
+                    break;
+                default:
+                statusClass = 'btn btn-success btn-sm btn-radius'
+                    break;
+            }
+            return statusClass
         }
    }
 })
@@ -298,6 +366,9 @@ socket.on('call wait', function(data){
             })
         } else {
             app.getCountData()
+            if(app.counter_service_ids.includes(Number(counter.counter_service_id))) {
+                app.fetchDataQueueWait()
+            }
         }
     }
 });
