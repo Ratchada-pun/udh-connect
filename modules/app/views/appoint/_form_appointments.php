@@ -45,6 +45,24 @@ JS
 );
 
 ?>
+<style>
+@media (max-width: 767px) {
+    .quick-links-grid .ql-grid-item {
+        width: 100% !important;
+    }
+    .login-content {
+        margin: 0;
+    }
+    .container-fluid {
+        padding-right: 0;
+        padding-left: 0;
+    }
+    .card-body {
+            padding: 0;
+    }
+}
+
+</style>
 
 <div class="sufee-login d-flex align-content-center flex-wrap">
     <div class="container">
@@ -124,7 +142,7 @@ JS
                                         <div class="help-block invalid-feedback"></div>
                                     </div>
 
-                                    <br>
+                                      <br>
                                     <p style="margin:0;">
                                         <small class="text-danger" style="font-size: 10pt;">
                                             <i class="fa fa-bullhorn"></i>
