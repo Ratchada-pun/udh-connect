@@ -136,7 +136,7 @@ class FlexQueueStatus extends BaseObject
                         ->setMargin(ComponentMargin::SM)
                         ->setFlex(0),
                     TextComponentBuilder::builder()
-                        ->setText($item['doctor_name'])
+                        ->setText(!empty($item['doctor_name']) ? $item['doctor_name'] : '-')
                         ->setSize(ComponentFontSize::SM)
                         ->setAlign(ComponentAlign::END)
                         ->setColor('#aaaaaa'),
@@ -204,7 +204,7 @@ class FlexQueueStatus extends BaseObject
                         ->setMargin(ComponentMargin::SM)
                         ->setFlex(0),
                     TextComponentBuilder::builder()
-                        ->setText($item['counter_service_no'])
+                        ->setText(!empty($item['counter_service_no']) ? $item['counter_service_no'] : '-')
                         ->setSize(ComponentFontSize::SM)
                         ->setAlign(ComponentAlign::END)
                         ->setColor('#aaaaaa'),
