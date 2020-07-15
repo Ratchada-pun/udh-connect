@@ -15,6 +15,7 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
         '@udh'   => '@app/themes/udh',
+        '@common' => '@app/common'
     ],
     'modules' => [
         'app' => [

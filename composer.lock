@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "24f89076a9120adc6ba068b660243d88",
+    "content-hash": "9503f635f0006f1e036ea35c342be5e4",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -32,7 +32,7 @@
             "version": "v4.7.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/FortAwesome/Font-Awesome.git",
+                "url": "git@github.com:FortAwesome/Font-Awesome.git",
                 "reference": "a8386aae19e200ddb0f6845b5feeee5eb7013687"
             },
             "dist": {
@@ -52,7 +52,7 @@
             "version": "3.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jquery/jquery-dist.git",
+                "url": "git@github.com:jquery/jquery-dist.git",
                 "reference": "15bc73803f76bc53b654b9fdbbbc096f56d7c03d"
             },
             "dist": {
@@ -88,7 +88,7 @@
             "version": "v7.33.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:sweetalert2/sweetalert2.git",
+                "url": "https://github.com/sweetalert2/sweetalert2.git",
                 "reference": "296862833b24e446c7bda35f040712840911cc7a"
             },
             "dist": {
@@ -1763,6 +1763,159 @@
             "time": "2019-09-03T03:11:11+00:00"
         },
         {
+            "name": "linecorp/line-bot-sdk",
+            "version": "4.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/line/line-bot-sdk-php.git",
+                "reference": "c46db583b1e1b5af64af80fe3fc9bd4e80f7e000"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/line/line-bot-sdk-php/zipball/c46db583b1e1b5af64af80fe3fc9bd4e80f7e000",
+                "reference": "c46db583b1e1b5af64af80fe3fc9bd4e80f7e000",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-sockets": "*",
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "ext-posix": "*",
+                "indigophp/hash-compat": "~1.1.0",
+                "phpmd/phpmd": "~2.4",
+                "phpunit/phpunit": "^4.8.24||^5||^6",
+                "squizlabs/php_codesniffer": "~2.6||^3"
+            },
+            "suggest": {
+                "apigen/apigen": "Install with roave/better-reflection:dev-master to generate docs",
+                "roave/better-reflection": "Required by apigen/apigen:dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LINE\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "moznion",
+                    "email": "moznion@gmail.com",
+                    "role": "Retired"
+                },
+                {
+                    "name": "Satoru Yoshihara",
+                    "email": "vaduz0@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Satoshi Shibuya",
+                    "email": "satosby@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Shunsuke Mori",
+                    "email": "morimorim7180@gmail.com",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "SDK of the LINE BOT API for PHP",
+            "homepage": "https://github.com/line/line-bot-sdk-php",
+            "keywords": [
+                "bot",
+                "line",
+                "sdk"
+            ],
+            "time": "2020-07-10T07:42:49+00:00"
+        },
+        {
+            "name": "monolog/monolog",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Seldaek/monolog.git",
+                "reference": "38914429aac460e8e4616c8cb486ecb40ec90bb1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/38914429aac460e8e4616c8cb486ecb40ec90bb1",
+                "reference": "38914429aac460e8e4616c8cb486ecb40ec90bb1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "psr/log": "^1.0.1"
+            },
+            "provide": {
+                "psr/log-implementation": "1.0.0"
+            },
+            "require-dev": {
+                "aws/aws-sdk-php": "^2.4.9 || ^3.0",
+                "doctrine/couchdb": "~1.0@dev",
+                "elasticsearch/elasticsearch": "^6.0",
+                "graylog2/gelf-php": "^1.4.2",
+                "php-amqplib/php-amqplib": "~2.4",
+                "php-console/php-console": "^3.1.3",
+                "php-parallel-lint/php-parallel-lint": "^1.0",
+                "phpspec/prophecy": "^1.6.1",
+                "phpunit/phpunit": "^8.5",
+                "predis/predis": "^1.1",
+                "rollbar/rollbar": "^1.3",
+                "ruflin/elastica": ">=0.90 <3.0",
+                "swiftmailer/swiftmailer": "^5.3|^6.0"
+            },
+            "suggest": {
+                "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
+                "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
+                "elasticsearch/elasticsearch": "Allow sending log messages to an Elasticsearch server via official client",
+                "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
+                "ext-mbstring": "Allow to work properly with unicode symbols",
+                "ext-mongodb": "Allow sending log messages to a MongoDB server (via driver)",
+                "graylog2/gelf-php": "Allow sending log messages to a GrayLog2 server",
+                "mongodb/mongodb": "Allow sending log messages to a MongoDB server (via library)",
+                "php-amqplib/php-amqplib": "Allow sending log messages to an AMQP server using php-amqplib",
+                "php-console/php-console": "Allow sending log messages to Google Chrome",
+                "rollbar/rollbar": "Allow sending log messages to Rollbar",
+                "ruflin/elastica": "Allow sending log messages to an Elastic Search server"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Monolog\\": "src/Monolog"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                }
+            ],
+            "description": "Sends your logs to files, sockets, inboxes, databases and various web services",
+            "homepage": "http://github.com/Seldaek/monolog",
+            "keywords": [
+                "log",
+                "logging",
+                "psr-3"
+            ],
+            "time": "2020-05-22T08:12:19+00:00"
+        },
+        {
             "name": "npm-asset/bootstrap",
             "version": "4.4.1",
             "dist": {
@@ -1773,6 +1926,53 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "psr/log",
+            "version": "1.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/0f73288fd15629204f9d42b7055f72dacbe811fc",
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2020-03-23T09:12:05+00:00"
         },
         {
             "name": "select2/select2",
