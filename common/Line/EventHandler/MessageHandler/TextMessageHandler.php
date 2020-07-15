@@ -250,6 +250,7 @@ class TextMessageHandler implements EventHandler
                             'items' => $items
                         ]);
                         $flexMessageBuilder = $component->get();
+                        $this->logger->info($flexMessageBuilder->buildMessage());
                         $this->bot->replyMessage($replyToken, $flexMessageBuilder);
                     }
                 }
