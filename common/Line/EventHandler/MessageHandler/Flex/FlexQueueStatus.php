@@ -97,7 +97,7 @@ class FlexQueueStatus extends BaseObject
     private function createHeroBlock()
     {
         return ImageComponentBuilder::builder()
-            ->setUrl('http://udh-connect.local/images/udh_logo.png')
+            ->setUrl('https://udhconnect.info/images/udh_logo.png')
             ->setSize(ComponentImageSize::LG)
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
             ->setAspectMode(ComponentImageAspectMode::FIT);
