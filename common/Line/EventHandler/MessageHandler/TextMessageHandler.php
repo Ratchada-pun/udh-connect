@@ -234,7 +234,7 @@ class TextMessageHandler implements EventHandler
                 break;
             case 'สถานะคิว':
                 $userId = $this->textMessage->getUserId();
-                $patient = TblPatient::findOne(['user_id' => $userId]);
+                $patient = TblPatient::findOne(['line_id' => $userId]);
                 // ตรวจสอบว่าลงทะเบียนหรือยัง
                 if (empty($patient)) {
                     $flexMessageBuilder = FlexRegister::get();
