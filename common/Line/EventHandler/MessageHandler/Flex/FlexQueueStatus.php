@@ -204,7 +204,7 @@ class FlexQueueStatus extends BaseObject
                         ->setMargin(ComponentMargin::SM)
                         ->setFlex(0),
                     TextComponentBuilder::builder()
-                        ->setText(!empty($item['counter_service_no']) ? $item['counter_service_no'] : '-')
+                        ->setText(!empty($item['counter_service_name']) ? $item['counter_service_name'] : '-')
                         ->setSize(ComponentFontSize::SM)
                         ->setAlign(ComponentAlign::END)
                         ->setColor('#aaaaaa'),
@@ -260,7 +260,7 @@ class FlexQueueStatus extends BaseObject
             ->setColor('#ec407a')
             ->setAction(
                 new UriTemplateActionBuilder(
-                    'ตรวจสอบสถานะคิว',
+                    'ติดตามสถานะคิว',
                     'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/queue-status?hn=' . $this->hn,
                     new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/queue-status?hn=' . $this->hn)
                 )
