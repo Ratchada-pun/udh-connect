@@ -120,7 +120,7 @@ class FlexQueueStatus extends BaseObject
         foreach ($this->items as $key => $item) {
             // หมายเลขคิว
             $queue = TextComponentBuilder::builder()
-                ->setText('คิว #' . $item['queue_no'])
+                ->setText('คิว ' . $item['queue_no'])
                 ->setWeight(ComponentFontWeight::BOLD)
                 ->setSize(ComponentFontSize::XL)
                 ->setColor('#ec407a');
@@ -210,6 +210,23 @@ class FlexQueueStatus extends BaseObject
                         ->setColor('#aaaaaa'),
                 ]);
             $bodyContents[] = $counter;
+
+            // สถานะคิว
+            $status = BoxComponentBuilder::builder()
+                ->setLayout(ComponentLayout::BASELINE)
+                ->setContents([
+                    TextComponentBuilder::builder()
+                        ->setText('สถานะคิว:')
+                        ->setWeight(ComponentFontWeight::BOLD)
+                        ->setMargin(ComponentMargin::SM)
+                        ->setFlex(0),
+                    TextComponentBuilder::builder()
+                        ->setText(!empty($item['queue_status_name']) ? $item['queue_status_name'] : '-')
+                        ->setSize(ComponentFontSize::SM)
+                        ->setAlign(ComponentAlign::END)
+                        ->setColor('#aaaaaa'),
+                ]);
+            $bodyContents[] = $status;
             if ($key + 1 < count($this->items)) {
                 $bodyContents[] = $separator;
             }
@@ -278,7 +295,10 @@ class FlexQueueStatus extends BaseObject
                 'DATE_FORMAT(tbl_queue.created_at,\'%d %M %Y\') as queue_date',
                 'TIME_FORMAT(tbl_queue_detail.created_at,\'%H:%i\') as queue_time',
                 'tbl_counter_service.counter_service_no',
-                'tbl_counter_service.counter_service_name'
+                'tbl_counter_service.counter_service_name',
+                'tbl_queue_status.queue_status_name',
+                'tbl_queue.created_at',
+                'tbl_queue_detail.counter_service_id as counter_service_id1'
             ])
             ->from('tbl_queue_detail')
             ->innerJoin('tbl_queue', 'tbl_queue.queue_id = tbl_queue_detail.queue_id')
@@ -305,7 +325,7 @@ class FlexQueueStatus extends BaseObject
         $items = [];
         foreach ($rows as $key => $item) {
             $items[] = ArrayHelper::merge($item, [
-                // 'queue_date' => Yii::$app->formatter->asDate($item['created_at'], 'php:d M Y'),
+                'queue_date' => Yii::$app->formatter->asDate($item['created_at'], 'php:d M ') . (Yii::$app->formatter->asDate($item['created_at'], 'php:Y') + 543),
                 'counter_service_name' => empty($item['counter_service_id1']) ? $item['counter_service_name'] : ArrayHelper::getValue($map_couters, $item['counter_service_id1'], '')
             ]);
         }
