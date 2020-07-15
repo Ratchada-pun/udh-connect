@@ -113,6 +113,13 @@ class FlexQueueStatus extends BaseObject
             ->setAlign(ComponentAlign::CENTER)
             ->setColor('#1DB446');
 
+        $titlehn = TextComponentBuilder::builder()
+            ->setText('HN ' . $this->hn)
+            ->setWeight(ComponentFontWeight::BOLD)
+            ->setSize(ComponentFontSize::LG)
+            ->setAlign(ComponentAlign::CENTER)
+            ->setColor('#aaaaaa');
+
         $separator = SeparatorComponentBuilder::builder()->setMargin(ComponentMargin::LG);
 
         $bodyContents = [];
@@ -240,7 +247,7 @@ class FlexQueueStatus extends BaseObject
             ->setLayout(ComponentLayout::VERTICAL)
             // ->setPaddingAll('8%')
             ->setPaddingTop('xs')
-            ->setContents([$title, $review]);
+            ->setContents([$titlehn, $title, $review]);
     }
 
     private function createFooterBlock()
