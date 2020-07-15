@@ -244,8 +244,8 @@ class FlexQueueStatus extends BaseObject
             ->setAction(
                 new UriTemplateActionBuilder(
                     'ตรวจสอบสถานะคิว',
-                    'https://liff.line.me/1653428124-5P8ad2x3/app/appoint/queue-status?hn=' . $this->hn,
-                    new AltUriBuilder('https://liff.line.me/1653428124-5P8ad2x3/app/appoint/queue-status?hn=' . $this->hn)
+                    'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/queue-status?hn=' . $this->hn,
+                    new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/queue-status?hn=' . $this->hn)
                 )
             );
         // $spacer = new SpacerComponentBuilder(ComponentSpaceSize::XXL);

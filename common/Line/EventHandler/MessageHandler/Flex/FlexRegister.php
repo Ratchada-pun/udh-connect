@@ -114,8 +114,8 @@ class FlexRegister
             ->setAction(
                 new UriTemplateActionBuilder(
                     'ลงทะเบียนผู้ป่วยเก่า',
-                    'https://liff.line.me/1653428124-5P8ad2x3/app/register/create-new-user?user=old',
-                    new AltUriBuilder('https://liff.line.me/1653428124-5P8ad2x3/app/register/create-new-user?user=old')
+                    'https://liff.line.me/1654023325-EkWmY9PA/app/register/create-new-user?user=old',
+                    new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/register/create-new-user?user=old')
                 )
             );
         $newButton = ButtonComponentBuilder::builder()
@@ -124,8 +124,8 @@ class FlexRegister
             ->setAction(
                 new UriTemplateActionBuilder(
                     'ลงทะเบียนผู้ป่วยใหม่',
-                    'https://liff.line.me/1653428124-5P8ad2x3/app/register/create-new-user?user=new',
-                    new AltUriBuilder('https://liff.line.me/1653428124-5P8ad2x3/app/register/create-new-user?user=new')
+                    'https://liff.line.me/1654023325-EkWmY9PA/app/register/create-new-user?user=new',
+                    new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/register/create-new-user?user=new')
                 )
             );
         $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
