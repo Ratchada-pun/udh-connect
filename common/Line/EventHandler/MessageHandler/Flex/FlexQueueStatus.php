@@ -224,7 +224,7 @@ class FlexQueueStatus extends BaseObject
                         ->setText(!empty($item['queue_status_name']) ? $item['queue_status_name'] : '-')
                         ->setSize(ComponentFontSize::SM)
                         ->setAlign(ComponentAlign::END)
-                        ->setColor('#aaaaaa'),
+                        ->setColor($item['queue_status_id'] == 4 ? '#1DB446' : '#aaaaaa'),
                 ]);
             $bodyContents[] = $status;
             if ($key + 1 < count($this->items)) {
@@ -296,6 +296,7 @@ class FlexQueueStatus extends BaseObject
                 'TIME_FORMAT(tbl_queue_detail.created_at,\'%H:%i\') as queue_time',
                 'tbl_counter_service.counter_service_no',
                 'tbl_counter_service.counter_service_name',
+                'tbl_queue_status.queue_status_id',
                 'tbl_queue_status.queue_status_name',
                 'tbl_queue.created_at',
                 'tbl_queue_detail.counter_service_id as counter_service_id1'
