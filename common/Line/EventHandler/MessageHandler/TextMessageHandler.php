@@ -238,6 +238,7 @@ class TextMessageHandler implements EventHandler
                 // ตรวจสอบว่าลงทะเบียนหรือยัง
                 if (empty($patient)) {
                     $flexMessageBuilder = FlexRegister::get();
+                    $this->logger->info($flexMessageBuilder->buildMessage());
                 } else {
                     $items = FlexQueueStatus::getDataItems($patient['hn']);
                     if (empty($items)) {
