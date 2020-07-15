@@ -240,6 +240,7 @@ class TextMessageHandler implements EventHandler
                 if (empty($patient)) {
                     $flexMessageBuilder = FlexRegister::get();
                     $this->logger->info(Json::encode($flexMessageBuilder->buildMessage()));
+                    $this->bot->replyMessage($replyToken, $flexMessageBuilder);
                 } else {
                     $items = FlexQueueStatus::getDataItems($patient['hn']);
                     if (empty($items)) {
