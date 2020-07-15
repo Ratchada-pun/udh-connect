@@ -246,7 +246,7 @@ class FlexQueueStatus extends BaseObject
     private function createFooterBlock()
     {
         $contact = TextComponentBuilder::builder()
-            ->setText('ติดต่อสอบถามเจ้าหน้าที่ โทร 0123456789')
+            ->setText('ติดต่อสอบถามเจ้าหน้าที่ โทร 042-245-555')
             ->setSize(ComponentFontSize::XXS)
             ->setColor('#aaaaaa')
             ->setWrap(true)
