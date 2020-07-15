@@ -83,7 +83,7 @@ class FlexQueueStatus extends BaseObject
                     ->setHero($this->createHeroBlock())
                     ->setBody($this->createBodyBlock())
                     ->setFooter($this->createFooterBlock())
-                    ->setSize(BubleContainerSize::GIGA)
+                    ->setSize(BubleContainerSize::MEGA)
                     ->setStyles(
                         BubbleStylesBuilder::builder()
                             ->setHero(
