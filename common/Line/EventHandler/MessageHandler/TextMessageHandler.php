@@ -35,6 +35,7 @@ use LINE\LINEBot\TemplateActionBuilder\LocationTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
+use yii\helpers\Json;
 
 class TextMessageHandler implements EventHandler
 {
@@ -238,7 +239,7 @@ class TextMessageHandler implements EventHandler
                 // ตรวจสอบว่าลงทะเบียนหรือยัง
                 if (empty($patient)) {
                     $flexMessageBuilder = FlexRegister::get();
-                    $this->logger->info($flexMessageBuilder->buildMessage());
+                    $this->logger->info(Json::encode($flexMessageBuilder->buildMessage()));
                 } else {
                     $items = FlexQueueStatus::getDataItems($patient['hn']);
                     if (empty($items)) {
@@ -251,7 +252,7 @@ class TextMessageHandler implements EventHandler
                             'items' => $items
                         ]);
                         $flexMessageBuilder = $component->get();
-                        $this->logger->info($flexMessageBuilder->buildMessage());
+                        $this->logger->info(Json::encode($flexMessageBuilder->buildMessage()));
                         $this->bot->replyMessage($replyToken, $flexMessageBuilder);
                     }
                 }
