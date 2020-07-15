@@ -83,7 +83,7 @@ class FlexQueueStatus extends BaseObject
                     ->setHero($this->createHeroBlock())
                     ->setBody($this->createBodyBlock())
                     ->setFooter($this->createFooterBlock())
-                    ->setSize(BubleContainerSize::MEGA)
+                    ->setSize(BubleContainerSize::GIGA)
                     ->setStyles(
                         BubbleStylesBuilder::builder()
                             ->setHero(
@@ -238,7 +238,7 @@ class FlexQueueStatus extends BaseObject
 
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
-            ->setPaddingAll('8%')
+            // ->setPaddingAll('8%')
             ->setPaddingTop('xs')
             ->setContents([$title, $review]);
     }
