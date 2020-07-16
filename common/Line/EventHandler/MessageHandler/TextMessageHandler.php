@@ -4,6 +4,7 @@ namespace common\Line\EventHandler\MessageHandler;
 
 use app\models\TblPatient;
 use common\Line\EventHandler;
+use common\Line\EventHandler\MessageHandler\Flex\FlexContact;
 use common\Line\EventHandler\MessageHandler\Flex\FlexQueueStatus;
 use common\Line\EventHandler\MessageHandler\Flex\FlexRegister;
 use common\Line\EventHandler\MessageHandler\Flex\FlexSampleRestaurant;
@@ -258,6 +259,10 @@ class TextMessageHandler implements EventHandler
                     }
                 }
 
+                break;
+            case 'ติดต่อสอบถาม':
+                $flexMessageBuilder = FlexContact::get();
+                $this->bot->replyMessage($replyToken, $flexMessageBuilder);
                 break;
             default:
                 $this->echoBack($replyToken, $text);

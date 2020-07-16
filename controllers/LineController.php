@@ -2,6 +2,7 @@
 namespace app\controllers;
 
 use common\Line\EventHandler\MessageHandler\AudioMessageHandler;
+use common\Line\EventHandler\MessageHandler\Flex\FlexContact;
 use common\Line\EventHandler\MessageHandler\Flex\FlexQueueStatus;
 use common\Line\EventHandler\MessageHandler\Flex\FlexRegister;
 use common\Line\EventHandler\MessageHandler\Flex\FlexSampleRestaurant;
@@ -146,15 +147,16 @@ class LineController extends Controller
         // $flexMessageBuilder = FlexSampleRestaurant::get();
         // $flexMessageBuilder = FlexQueueStatus::get();
         // return $flexMessageBuilder->buildMessage();
-        $items = FlexQueueStatus::getDataItems('327442');
-        $component = \Yii::createObject([
-            'class' => FlexQueueStatus::className(),
-            'userId' => 3,
-            'hn' => '327442',
-            'items' => $items
-        ]);
-        $flexMessageBuilder = $component->get();
+        // $items = FlexQueueStatus::getDataItems('327442');
+        // $component = \Yii::createObject([
+        //     'class' => FlexQueueStatus::className(),
+        //     'userId' => 3,
+        //     'hn' => '327442',
+        //     'items' => $items
+        // ]);
+        // $flexMessageBuilder = $component->get();
         // $flexMessageBuilder = FlexRegister::get();
+        $flexMessageBuilder = FlexContact::get();
         return $flexMessageBuilder->buildMessage();
     }
 }
