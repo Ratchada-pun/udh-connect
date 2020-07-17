@@ -3,6 +3,7 @@ namespace app\controllers;
 
 use common\Line\EventHandler\MessageHandler\AudioMessageHandler;
 use common\Line\EventHandler\MessageHandler\Flex\FlexContact;
+use common\Line\EventHandler\MessageHandler\Flex\FlexDepartment;
 use common\Line\EventHandler\MessageHandler\Flex\FlexQueueStatus;
 use common\Line\EventHandler\MessageHandler\Flex\FlexRegister;
 use common\Line\EventHandler\MessageHandler\Flex\FlexSampleRestaurant;
@@ -35,9 +36,12 @@ use yii\web\HttpException;
 
 class LineController extends Controller
 {
+   // Line หลัก
     const LINE_SIGNATURE = 'X-Line-Signature';
     const LINEBOT_CHANNEL_TOKEN = 'FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=';
     const LINEBOT_CHANNEL_SECRET = '4950aef914a00bbaa4bf69850e001e1f';
+
+
 
     public function behaviors()
     {
@@ -156,7 +160,9 @@ class LineController extends Controller
         // ]);
         // $flexMessageBuilder = $component->get();
         // $flexMessageBuilder = FlexRegister::get();
-        $flexMessageBuilder = FlexContact::get();
+        $flexMessageBuilder = FlexDepartment::get();
         return $flexMessageBuilder->buildMessage();
     }
+
+
 }
