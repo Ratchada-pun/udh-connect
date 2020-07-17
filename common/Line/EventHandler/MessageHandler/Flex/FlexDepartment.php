@@ -99,7 +99,15 @@ class FlexDepartment
                         ->setAspectMode(ComponentImageAspectMode::COVER)
                         ->setAlign(ComponentAlign::CENTER)
                         ->setGravity(ComponentGravity::CENTER)
-                ]);
+
+                ])
+                ->setAction(
+                    new UriTemplateActionBuilder(
+                        'เลือกแผนกอื่นๆ',
+                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'],
+                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'])
+                    )
+                );
 
             $boxTextContents[]   = TextComponentBuilder::builder()
                 ->setText($item['DeptGrDesc'])
@@ -108,7 +116,14 @@ class FlexDepartment
                 ->setColor('#aaaaaa')
                 ->setGravity(ComponentGravity::TOP)
                 ->setMargin(ComponentMargin::XS)
-                ->setWrap(true);
+                ->setWrap(true)
+                ->setAction(
+                    new UriTemplateActionBuilder(
+                        'เลือกแผนกอื่นๆ',
+                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'],
+                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'])
+                    )
+                );
 
             if (count($boxImageContents) === 3 || $key + 1 === count($items)) {
                 $boximage =  BoxComponentBuilder::builder()
@@ -229,7 +244,7 @@ class FlexDepartment
             ->setAction(
                 new UriTemplateActionBuilder(
                     'เลือกแผนกอื่นๆ',
-                    'https://liff.line.me/1654023325-EkWmY9PA//app/appoint/create-department',
+                    'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department',
                     new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department')
                 )
             );
