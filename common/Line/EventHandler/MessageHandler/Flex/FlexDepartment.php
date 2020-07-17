@@ -30,6 +30,7 @@ use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\BubbleContainerBuilder;
 use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\Uri\AltUriBuilder;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class FlexDepartment
 {
@@ -41,7 +42,7 @@ class FlexDepartment
     public static function get()
     {
         return FlexMessageBuilder::builder()
-            ->setAltText('ลงทะเบียนผู้ป่วย')
+            ->setAltText('นัดหมายแพทย์')
             ->setContents(
                 BubbleContainerBuilder::builder()
                     ->setBody(self::createBodyBlock())
@@ -63,7 +64,7 @@ class FlexDepartment
 
         $contents = [];
 
-        $items = Yii::$app->mssql->createCommand( //รายชื่อแผนกหลัก
+        $DeptGroups = Yii::$app->mssql->createCommand( //รายชื่อแผนกหลัก
             'SELECT
                 REPLACE(dbo.DEPTGr.DeptGroup, \' \', \'\') as DeptGroup,
                 REPLACE(dbo.DEPTGr.DeptGrDesc, \' \', \'\') as DeptGrDesc
@@ -75,6 +76,16 @@ class FlexDepartment
 
         $boxImageContents = [];
         $boxTextContents = [];
+
+        $items = [];
+        $ids = [];
+        foreach ($items as $key => $item) {
+            if (!ArrayHelper::isIn($item['DeptGroup'], $ids)) {
+                $ids[] = $item['DeptGroup'];
+                $items[] = $item;
+            }
+        }
+
 
         foreach ($items as $key => $item) {
             $boxImageContents[] = BoxComponentBuilder::builder()
