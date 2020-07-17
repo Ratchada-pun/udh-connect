@@ -79,7 +79,7 @@ class FlexDepartment
 
         $items = [];
         $ids = [];
-        foreach ($items as $key => $item) {
+        foreach ($DeptGroups as $key => $item) {
             if (!ArrayHelper::isIn($item['DeptGroup'], $ids)) {
                 $ids[] = $item['DeptGroup'];
                 $items[] = $item;
