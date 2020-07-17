@@ -269,7 +269,7 @@ class TextMessageHandler implements EventHandler
                 $userId = $this->textMessage->getUserId();
                 $patient = TblPatient::findOne(['line_id' => $userId]);
                 // ตรวจสอบว่าลงทะเบียนหรือยัง
-                if (empty($patient)) {
+                if (!empty($patient)) {
                     $flexMessageBuilder = FlexDepartment::get();
                     $this->logger->info(Json::encode($flexMessageBuilder->buildMessage()));
                     $this->bot->replyMessage($replyToken, $flexMessageBuilder);
