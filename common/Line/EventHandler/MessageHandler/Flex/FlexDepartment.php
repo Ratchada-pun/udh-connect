@@ -94,7 +94,7 @@ class FlexDepartment
                 ->setBorderWidth(ComponentBorderWidth::MEDIUM)
                 ->setContents([
                     ImageComponentBuilder::builder()
-                        ->setUrl('https://www.udhconnect.info/images/menu3.png.png')
+                        ->setUrl('https://www.udhconnect.info/images/menu3.png')
                         ->setSize(ComponentImageSize::LG)
                         ->setAspectMode(ComponentImageAspectMode::COVER)
                         ->setAlign(ComponentAlign::CENTER)
