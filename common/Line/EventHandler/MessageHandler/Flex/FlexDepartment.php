@@ -94,7 +94,7 @@ class FlexDepartment
                 ->setBorderWidth(ComponentBorderWidth::MEDIUM)
                 ->setContents([
                     ImageComponentBuilder::builder()
-                        ->setUrl('https://www.udhconnect.info/images/iconfinder_3_hospital_2774749.png')
+                        ->setUrl('https://www.udhconnect.info/images/menu3.png.png')
                         ->setSize(ComponentImageSize::LG)
                         ->setAspectMode(ComponentImageAspectMode::COVER)
                         ->setAlign(ComponentAlign::CENTER)
@@ -103,7 +103,7 @@ class FlexDepartment
                 ])
                 ->setAction(
                     new UriTemplateActionBuilder(
-                        'เลือกแผนกอื่นๆ',
+                        'เลือกแผนกอื่นๆ >',
                         'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'],
                         new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'])
                     )
@@ -117,9 +117,10 @@ class FlexDepartment
                 ->setGravity(ComponentGravity::TOP)
                 ->setMargin(ComponentMargin::XS)
                 ->setWrap(true)
+                ->setWeight(ComponentFontWeight::BOLD)
                 ->setAction(
                     new UriTemplateActionBuilder(
-                        'เลือกแผนกอื่นๆ',
+                        'เลือกแผนกอื่นๆ >',
                         'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'],
                         new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'])
                     )
@@ -236,14 +237,13 @@ class FlexDepartment
             ->setColor('#905c44')
             ->setMargin(ComponentMargin::SM);
 
-
         $button = ButtonComponentBuilder::builder()
             ->setStyle(ComponentButtonStyle::LINK)
             ->setHeight(ComponentButtonHeight::SM)
             ->setMargin(ComponentMargin::XS)
             ->setAction(
                 new UriTemplateActionBuilder(
-                    'เลือกแผนกอื่นๆ',
+                    'เลือกแผนกอื่นๆ >',
                     'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department',
                     new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department')
                 )
