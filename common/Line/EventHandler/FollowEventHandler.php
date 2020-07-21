@@ -21,6 +21,7 @@ namespace common\Line\EventHandler;
 use LINE\LINEBot;
 use LINE\LINEBot\Event\FollowEvent;
 use common\Line\EventHandler;
+use common\Line\EventHandler\MessageHandler\Flex\FlexGreeting;
 
 class FollowEventHandler implements EventHandler
 {
@@ -49,6 +50,8 @@ class FollowEventHandler implements EventHandler
      */
     public function handle()
     {
-        $this->bot->replyText($this->followEvent->getReplyToken(), 'Got followed event');
+        $flexMessageBuilder = FlexGreeting::get();
+        $this->bot->replyMessage($this->followEvent->getReplyToken(), $flexMessageBuilder);
+        // $this->bot->replyText($this->followEvent->getReplyToken(), 'Got followed event');
     }
 }

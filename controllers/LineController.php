@@ -1,6 +1,7 @@
 <?php
 namespace app\controllers;
 
+use common\Line\EventHandler\FollowEventHandler;
 use common\Line\EventHandler\MessageHandler\AudioMessageHandler;
 use common\Line\EventHandler\MessageHandler\Flex\FlexContact;
 use common\Line\EventHandler\MessageHandler\Flex\FlexDepartment;
@@ -21,6 +22,7 @@ use LINE\LINEBot\Event\MessageEvent\StickerMessage;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
 use LINE\LINEBot\Event\MessageEvent\UnknownMessage;
 use LINE\LINEBot\Event\MessageEvent\VideoMessage;
+use LINE\LINEBot\Event\FollowEvent;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
@@ -123,7 +125,10 @@ class LineController extends Controller
                 $handler = new AudioMessageHandler($bot, $logger, $request, $event);
             } elseif ($event instanceof VideoMessage) {
                 $handler = new VideoMessageHandler($bot, $logger, $request, $event);
-            } elseif ($event instanceof UnknownMessage) {
+            }elseif($event instanceof FollowEvent){
+                $handler = new FollowEventHandler($bot, $logger, $event);
+            }
+             elseif ($event instanceof UnknownMessage) {
                 $logger->info(sprintf(
                     'Unknown message type has come [message type: %s]',
                     $event->getMessageType()
