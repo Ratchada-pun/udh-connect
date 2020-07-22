@@ -129,7 +129,7 @@ class SiteController extends Controller
     public function actionAbout()
     {
         try {
-            $userId = 'Udeadbeefdeadbeefdeadbeefdeadbeef';
+            $userId = 'Ue5337b220743f592158018e2a0423ff3';
             $richMenuId = 'richmenu-349a649ee1b2e2f659ae2da8e24df4ef';
             $dataRichMenu = '';
             $client = new Client();
