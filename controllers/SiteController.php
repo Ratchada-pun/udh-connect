@@ -9,6 +9,9 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use yii\httpclient\Client;
+use yii\web\HttpException;
+use yii\httpclient\Exception;
 
 class SiteController extends Controller
 {
@@ -125,7 +128,26 @@ class SiteController extends Controller
      */
     public function actionAbout()
     {
-        return $this->render('about');
+        try {
+            $userId = 'Udeadbeefdeadbeefdeadbeefdeadbeef';
+            $richMenuId = 'richmenu-349a649ee1b2e2f659ae2da8e24df4ef';
+            $dataRichMenu = '';
+            $client = new Client();
+            $response = $client->createRequest()
+                ->setMethod('POST')
+                ->setUrl('https://api.line.me/v2/bot/user/' . $userId . '/richmenu/' . $richMenuId)
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['Authorization' => 'Bearer uLF9THsOlQfvth3Y7bvLym0ZwPoEliKF7MszmJq4aymKwWJfYpknJ/zmWwOZsNzgrDXU0+Y7KGMrxCPi79NX1/g3iSeY5Mva1olEL4cwoJtDdznKV+7MjYP89tW6BO8/A//QjXTcoB6BdDt6ooFzB1GUYhWQfeY8sLGRXgo3xvw='])
+                ->send();
+            if ($response->isOk) {
+                $dataRichMenu = $response->data;
+                print_r($dataRichMenu);
+            }
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+        }
+
+        //return $this->render('about');
     }
 
     public function actionClearCache()
