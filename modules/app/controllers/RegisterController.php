@@ -163,15 +163,15 @@ class RegisterController extends Controller
             //$model->hn = isset($posted['hn']) ? $posted['hn'] : null;
             $model->line_id = isset($posted['userId']) ? $posted['userId'] : null;
             if ($model->save()) {
-                $userId = 'Udeadbeefdeadbeefdeadbeefdeadbeef';
-                $richMenuId = 'richmenu-349a649ee1b2e2f659ae2da8e24df4ef';
+                $userId = $model->line_id;
+                $richMenuId = 'richmenu-47add038339ad9a9e0c8e23cdfa9370a';
                 $dataRichMenu = '';
                 $client = new Client();
                 $response = $client->createRequest()
                     ->setMethod('POST')
                     ->setUrl('https://api.line.me/v2/bot/user/'.$userId.'/richmenu/'.$richMenuId)
                     ->addHeaders(['content-type' => 'application/json'])
-                    ->addHeaders(['Authorization' => 'Bearer uLF9THsOlQfvth3Y7bvLym0ZwPoEliKF7MszmJq4aymKwWJfYpknJ/zmWwOZsNzgrDXU0+Y7KGMrxCPi79NX1/g3iSeY5Mva1olEL4cwoJtDdznKV+7MjYP89tW6BO8/A//QjXTcoB6BdDt6ooFzB1GUYhWQfeY8sLGRXgo3xvw='])
+                    ->addHeaders(['Authorization' => 'Bearer FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU='])
                     ->send();
                 if ($response->isOk) {
                     $dataRichMenu = $response->data;

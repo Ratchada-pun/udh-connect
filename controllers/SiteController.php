@@ -177,4 +177,28 @@ class SiteController extends Controller
             return @rmdir($path);
         }
     }
+
+    public function actionLinkRichMenu($userId,$richMenuId,$token)
+    {
+        try {
+            // $userId = 'Ue5337b220743f592158018e2a0423ff3';
+            // $richMenuId = 'richmenu-349a649ee1b2e2f659ae2da8e24df4ef';
+            $dataRichMenu = '';
+            $client = new Client();
+            $response = $client->createRequest()
+                ->setMethod('POST')
+                ->setUrl('https://api.line.me/v2/bot/user/' . $userId . '/richmenu/' . $richMenuId)
+                ->addHeaders(['content-type' => 'application/json'])
+                ->addHeaders(['Authorization' => 'Bearer '.$token])
+                ->send();
+            if ($response->isOk) {
+                $dataRichMenu = $response->data;
+                print_r($dataRichMenu);
+            }
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+        }
+
+        //return $this->render('about');
+    }
 }
