@@ -28,7 +28,8 @@
         "bower-asset/sweetalert2": "^7.25.0",
         "dixonsatit/yii2-thai-year-formatter": "*",
         "linecorp/line-bot-sdk": "^4.5",
-        "monolog/monolog": "^2.1"
+        "monolog/monolog": "^2.1",
+        "yiisoft/yii2-httpclient": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

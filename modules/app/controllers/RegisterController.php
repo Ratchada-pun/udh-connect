@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
 use yii\web\HttpException;
+use yii\httpclient\Client;
 
 /**
  * RegisterController implements the CRUD actions for TblPatient model.
@@ -162,11 +163,26 @@ class RegisterController extends Controller
             //$model->hn = isset($posted['hn']) ? $posted['hn'] : null;
             $model->line_id = isset($posted['userId']) ? $posted['userId'] : null;
             if ($model->save()) {
+                $userId = 'Udeadbeefdeadbeefdeadbeefdeadbeef';
+                $richMenuId = 'richmenu-349a649ee1b2e2f659ae2da8e24df4ef';
+                $dataRichMenu = '';
+                $client = new Client();
+                $response = $client->createRequest()
+                    ->setMethod('POST')
+                    ->setUrl('https://api.line.me/v2/bot/user/'.$userId.'/richmenu/'.$richMenuId)
+                    ->addHeaders(['content-type' => 'application/json'])
+                    ->addHeaders(['Authorization' => 'Bearer uLF9THsOlQfvth3Y7bvLym0ZwPoEliKF7MszmJq4aymKwWJfYpknJ/zmWwOZsNzgrDXU0+Y7KGMrxCPi79NX1/g3iSeY5Mva1olEL4cwoJtDdznKV+7MjYP89tW6BO8/A//QjXTcoB6BdDt6ooFzB1GUYhWQfeY8sLGRXgo3xvw='])
+                    ->send();
+                if ($response->isOk) {
+                    $dataRichMenu = $response->data;
+                }
                 $session->set('user', $model->getAttributes());
                 return [
                     'model' => $model,
                     'success' => true,
-                    'message' => 'บันทึกสำเร็จ'
+                    'message' => 'บันทึกสำเร็จ',
+                    'dataRichMenu' => $dataRichMenu
+
                 ];
             } else {
                 return [

@@ -288,6 +288,7 @@ var \$form = $('#form-signup');
         dataType: 'JSON',
         success: function (data) {
             if(data.success){
+                //udhApp.LinkRichMenu();
                 Swal.fire({
                     title: data.message,
                     text: "ไปที่นัดหมายแพทย์",

@@ -222,13 +222,13 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                                     echo Html::activeHiddenInput($model, 'user_type', ['value' => $user_type])
                                     ?>
                                 </div>
-                                <div class="form-group">
+                                <!-- <div class="form-group">
                                     <div class="ml-auto">
                                         <button type="reset" class="btn btn-danger" id="reset-form">
                                             ล้างข้อมูล
                                         </button>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <div class="form-group">
@@ -301,6 +301,7 @@ var \$form = $('#form-search');
         success: function (data) {
             if(data.success){
                 clearForm()
+                //udhApp.LinkRichMenu();
                 Swal.fire({
                     title: data.message,
                     text: "ไปที่นัดหมายแพทย์",

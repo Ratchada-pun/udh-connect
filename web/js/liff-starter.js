@@ -9,13 +9,13 @@ var udhApp = {
   initializeLiff: function(myLiffId) {
     liff
       .init({
-        liffId: myLiffId
+        liffId: myLiffId,
       })
       .then(() => {
         // start to use LIFF's api
         this.initializeApp();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   },
@@ -23,23 +23,21 @@ var udhApp = {
     console.log(liff.isLoggedIn());
     if (!liff.isLoggedIn()) {
       // set `redirectUri` to redirect the user to a URL other than the front page of your LIFF app.
-      liff.login({ redirectUri: "https://www.udhconnect.info"});
+        liff.login({ redirectUri: "https://www.udhconnect.info"});  //บน host
+      // liff.login({ redirectUri: "https://3be6ec12e718.ngrok.io" }); // run บนเครื่อง
     } else if (liff.isLoggedIn()) {
       //window.location.reload();
-      //const accessToken = liff.getAccessToken();
+      //const accessToken = liff.getAccessToken();ืยท
       //const idToken = liff.getDecodedIDToken();
       //console.log(accessToken); // print decoded idToken object
       liff
         .getProfile()
-        .then(profile => {
-          window.localStorage.setItem(
-            this.LIFF_PROFILE,
-            JSON.stringify(profile)
-          );
+        .then((profile) => {
+          window.localStorage.setItem(this.LIFF_PROFILE, JSON.stringify(profile));
           $("#user-picture").attr("src", profile.pictureUrl);
           this.fetchProflie();
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("error", err);
         });
     }
@@ -51,7 +49,7 @@ var udhApp = {
       var path = ["/", "/app/register/policy", "/app/register/create-new-user"];
       $("body").waitMe({
         effect: "roundBounce",
-        color: "#ff518a"
+        color: "#ff518a",
       });
       $.ajax({
         method: "GET",
@@ -70,7 +68,7 @@ var udhApp = {
         error: function(jqXHR, textStatus, errorThrown) {
           $("body").waitMe("hide");
           console.log("error", errorThrown);
-        }
+        },
       });
     }
   },
@@ -100,24 +98,52 @@ var udhApp = {
       .then(() => {
         console.log("message sent");
       })
-      .catch(err => {
+      .catch((err) => {
         Swal.fire({
           title: "เกิดข้อผิดพลาดในการส่งข้อความไลน์",
           text: err,
           icon: "error",
           confirmButtonText: "ตกลง",
-          allowOutsideClick: false
+          allowOutsideClick: false,
         });
       });
   },
-  closeWindow: function(){
+  closeWindow: function() {
     liff.closeWindow();
   },
+  LinkRichMenu: function() {//เปลี่ยนเมนู
+    // var profile = this.getProfileStorage();
+    // var userId = profile.userId;
+    var userId = 'Udeadbeefdeadbeefdeadbeefdeadbeef';
+    //var richMenuId = "richmenu-349a649ee1b2e2f659ae2da8e24df4ef";
+    var richMenuId = "richmenu-349a649ee1b2e2f659ae2da8e24df4ef";
+    $.ajax({
+      method: "POST",
+      url: `https://api.line.me/v2/bot/user/${userId}/richmenu/${richMenuId}`,
+      dataType: "JSON",
+      beforeSend: function(xhr) {
+       //ไลน์พี่บอล
+       // xhr.setRequestHeader("Authorization", "Bearer FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=" );
+       xhr.setRequestHeader("Authorization", "Bearer uLF9THsOlQfvth3Y7bvLym0ZwPoEliKF7MszmJq4aymKwWJfYpknJ/zmWwOZsNzgrDXU0+Y7KGMrxCPi79NX1/g3iSeY5Mva1olEL4cwoJtDdznKV+7MjYP89tW6BO8/A//QjXTcoB6BdDt6ooFzB1GUYhWQfeY8sLGRXgo3xvw=" );
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        Swal.fire({
+          title: "เกิดข้อผิดพลาดในการผูกริชเมนู",
+          text: errorThrown,
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          allowOutsideClick: false,
+        });
+      },
+    });
+  },
+
   LIFF_PROFILE: "liff-profile",
-  UDH_PROFILE: "udh-profile"
+  UDH_PROFILE: "udh-profile",
 };
 
 $(window).on("load", function(e) {
-  udhApp.initializeLiff("1654023325-EkWmY9PA");
+ //udhApp.initializeLiff("1621638840-51pLveK0"); //PoonDevelopers
+  udhApp.initializeLiff("1654023325-EkWmY9PA");  //UDH-Connect
   // udhApp.initializeLiff("1654009422-Avg5LbQg");
 });
