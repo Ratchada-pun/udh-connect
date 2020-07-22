@@ -132,6 +132,9 @@ class RegisterController extends Controller
     public function actionCreateNewUser()
     {
         $session = Yii::$app->session;
+        // if ($session->get('user')) {
+        //     return $this->redirect(['/app/appoint/create-department']);
+        // }
         $model = new TblPatient();
         $user = Yii::$app->request->get('user');
 
@@ -180,7 +183,7 @@ class RegisterController extends Controller
                 return [
                     'model' => $model,
                     'success' => true,
-                    'message' => 'บันทึกสำเร็จ',
+                    'message' => 'ลงทะเบียนสำเร็จ!',
                     'dataRichMenu' => $dataRichMenu
 
                 ];
@@ -246,7 +249,21 @@ class RegisterController extends Controller
                     dbo.PATIENT.phone,
                     dbo.PATIENT.birthDay,
                     dbo.PATIENT.titleCode,
-                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID                    
+                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID,
+                    CONVERT (
+                    datetime,
+                    SUBSTRING ( CONVERT ( CHAR, dbo.PATIENT.birthDay - 5430000 ), 1, 4 ) + (
+                    CASE
+                    WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) = \'00\' THEN
+                    \'07\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) 
+                        END 
+                    ) + (
+                        CASE
+					WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) = \'00\' THEN
+					\'01\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) 
+				END 
+				    ) 
+			    ) AS bday                   
                 FROM
                     dbo.PATIENT
                     INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
@@ -284,7 +301,22 @@ class RegisterController extends Controller
                     dbo.PATIENT.phone,
                     dbo.PATIENT.birthDay,
                     dbo.PATIENT.titleCode,
-                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID  
+                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID,
+                    CONVERT (
+                    datetime,
+                    SUBSTRING ( CONVERT ( CHAR, dbo.PATIENT.birthDay - 5430000 ), 1, 4 ) + (
+                    CASE
+                    WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) = \'00\' THEN
+                    \'07\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) 
+                        END 
+                    ) + (
+                        CASE
+					WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) = \'00\' THEN
+					\'01\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) 
+				END 
+				    ) 
+			    ) AS bday 
+
                 FROM
                     dbo.PATIENT
                     INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 

@@ -66,8 +66,12 @@ class AppointController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreateDepartment()
+    public function actionCreateDepartment() //เลือกแผนก/คลีนิคหลัก
     {
+        $session = Yii::$app->session;
+        if (!$session->get('user')) {
+            return $this->redirect(['/']);
+        }
         // $session = Yii::$app->session;
         // $session->remove('user');
         // $response = Yii::$app->response;
@@ -81,7 +85,7 @@ class AppointController extends Controller
         //     '
         // )->queryAll();
 
-        $DeptGroups = Yii::$app->mssql->createCommand(
+        $DeptGroups = Yii::$app->mssql->createCommand( //รายชื่อแผนกหลัก
             'SELECT
                 REPLACE(dbo.DEPTGr.DeptGroup, \' \', \'\') as DeptGroup,
                 REPLACE(dbo.DEPTGr.DeptGrDesc, \' \', \'\') as DeptGrDesc
@@ -93,11 +97,11 @@ class AppointController extends Controller
         $DeptGroups = ArrayHelper::map($DeptGroups, 'DeptGroup', 'DeptGrDesc');
 
         return $this->render('_form_department.php', [
-            'DeptGroups' => $DeptGroups,
+           'DeptGroups' => $DeptGroups,
         ]);
     }
 
-    public function actionCreateSubDepartment($id)
+    public function actionCreateSubDepartment($id) //เลือกแผนกย่อย
     {
         $session = Yii::$app->session;
         if (!$session->get('user')) {
@@ -130,7 +134,7 @@ class AppointController extends Controller
             ->bindValues($params)
             ->queryOne();
 
-        $deptCodeSub = Yii::$app->mssql->createCommand(
+        $deptCodeSub = Yii::$app->mssql->createCommand(  //รายชื่อแผนกย่อย
             'SELECT
             REPLACE(dbo.DEPT.deptCode, \' \', \'\') as deptCode,
             dbo.DEPT.deptDesc
@@ -225,11 +229,18 @@ class AppointController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
+
+    /**
+     * @param {string} id > รหัสแผนก
+     * @param {number} doc_id รหัสประจำตัวแพทย์
+     */
     public function actionCreateAppointments($id, $doc_id = '')
     {
         $db_mssql = Yii::$app->mssql;
         $db_queue = Yii::$app->db_queue;
         $model = new AppointModel();
+
+        //ชื่อแผนกย่อย (ใช้ตรง header)
         $deptCodeSub = $db_mssql->createCommand(
             'SELECT
             REPLACE(dbo.DEPT.deptCode, \' \', \'\') as deptCode,
@@ -245,7 +256,9 @@ class AppointController extends Controller
                 ':deptCode' => $id
             ])
             ->queryOne();
-
+        
+    
+        //รายชื่อแพทย์ทั้งหมดตามแผนกที่เลือก
         $docCode = $db_mssql->createCommand(
             'SELECT
         REPLACE(dbo.DOCC.docCode, \' \', \'\') as docCode,
@@ -267,16 +280,21 @@ class AppointController extends Controller
             ])
             ->queryAll();
 
+            
         // รหัสแผนกที่เปิดให้บริการจองนัดหมาย
         $query_dept_codes = $db_mssql->createCommand('SELECT
             DEPTGROUP.*
         FROM
             DEPTGROUP')
             ->queryAll();
-
-        $dept_codes = $this->replaceEmptyString(ArrayHelper::getColumn($query_dept_codes, 'deptCode'));
+        //$dept_codes = $this->replaceEmptyString(ArrayHelper::getColumn($query_dept_codes, 'deptCode'));
+        
         $doctors_list = [];
-        $schedules = [];
+        //$schedules = [];
+
+
+
+        //รายชื่อแผนกในระบบคิว
         $service = $db_queue->createCommand('SELECT
         tbl_service.service_id,
         tbl_service.service_name,
@@ -291,7 +309,9 @@ class AppointController extends Controller
         tbl_service.service_code = ' . $id . '')
             ->queryOne();
 
-        // รหัสแพทย์
+
+
+        // ค้นหา รหัสแพทย์ตามแผนกที่เลือก
         $query_doc_codes = $db_mssql->createCommand('SELECT
             Appoint_dep_doc.docCode
         FROM
@@ -301,11 +321,14 @@ class AppointController extends Controller
             ->bindValues([':deptCode' => $id])
             ->queryAll();
 
+        //ลบช่องว่างรหัส
         $doc_codes = $this->replaceEmptyString(ArrayHelper::getColumn($query_doc_codes, 'docCode'));
 
-        // ข้อมูลแพทย์ในระบบคิว
+
+
+        // นำรหัสแพทย์ทั้งหมดตามแผนกที่เลือกมาค้นหาข้อมูลแพทย์ในระบบคิวที่ลงบันทึกตารางแพทย์ออกตรวจ
         $doctors = [];
-        if ($doc_codes) {
+        if ($doc_codes) { //มีแพทย์ในระบบ
             $doctors = $db_queue->createCommand(
                 'SELECT
                     tbl_doctor.*,
@@ -323,6 +346,7 @@ class AppointController extends Controller
                 ->queryAll();
         }
 
+        //นำรายการชื่อแพทย์ทั้งหมดมารวมกับรายชื่อแผนกในระบบคิว
         foreach ($doctors as $doctor) {
             $doctors_list = ArrayHelper::merge($doctors_list, [
                 ArrayHelper::merge($doctor, [
@@ -335,7 +359,7 @@ class AppointController extends Controller
 
         return $this->render('_form_appointments', [
             'deptCodeSub' => $deptCodeSub,
-            'docCode' => $docCode,
+            'docCode' => $docCode, //รายชื่อแพทย์ทั้งหมดตามแผนกที่เลือก
             'doctors' => $doctors_list,
             'service' => $service,
             'dept_code' => $id,
@@ -343,6 +367,9 @@ class AppointController extends Controller
 
         ]);
     }
+
+
+
 
 
     public function actionCreateAppointments1($id)
@@ -410,6 +437,8 @@ class AppointController extends Controller
         //         tbl_service.service_code IN (' . implode(",", $dept_codes) . ')')
         //     ->queryAll();
         // $group_services = ArrayHelper::index($services, null, 'service_group_name');
+       
+       
         $doctors_list = [];
         $schedules = [];
 
@@ -426,6 +455,7 @@ class AppointController extends Controller
             WHERE
                 tbl_service.service_code = ' . $id . '')
             ->queryOne();
+        
 
         // รหัสแพทย์
         $query_doc_codes = $db_mssql->createCommand('SELECT
@@ -769,12 +799,7 @@ class AppointController extends Controller
     {
         $response = Yii::$app->response;
         $response->format = \yii\web\Response::FORMAT_JSON;
-        $profile = (new \yii\db\Query())
-            ->select(['*'])
-            ->from('tbl_patient')
-            ->where(['tbl_patient.line_id' => $userId])
-            ->limit(10)
-            ->one();
+        $profile = TblPatient::findOne(['line_id' => $userId]);
 
         if ($profile) {
             $session = Yii::$app->session;

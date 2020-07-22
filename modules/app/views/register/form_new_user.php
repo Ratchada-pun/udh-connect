@@ -242,10 +242,11 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
 </div>
 
 <?php
-$this->registerJsFile(
-    'https://cdn.jsdelivr.net/npm/sweetalert2@9',
-    ['depends' => [\yii\web\JqueryAsset::className()]]
+$this->registerJs(<<<JS
+window.udhApp.initFormNewUser()
+JS
 );
+/*
 // $this->registerJsFile(
 //     '@web/js/waitMe/waitMe.min.js',
 //     ['depends' => [\yii\web\JqueryAsset::className()]]
@@ -325,7 +326,7 @@ var \$form = $('#form-signup');
 function mask(str){
     var pattern = '-'
     if (str) {
-        pattern = str.replace(/^(\d{1})(\d{4})(\d{5})(\d{2})(\d{1}).*/, '$1-$2-$3-$4-$5')
+        pattern = str.replace(/^(\d{1})(\d{4})(\d{5})(\d{2})(\d{1}).*\/, '$1-$2-$3-$4-$5')
         //pattern = pattern.substring(0, 10) + pattern.substring(10).replace(/[0-9]/g, 'X')
     }
     return pattern
@@ -356,4 +357,5 @@ $('#month').on('change',function(e) {
 
 JS
 );
+*/
 ?>

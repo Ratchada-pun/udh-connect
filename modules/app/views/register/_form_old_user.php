@@ -249,23 +249,15 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
 </div>
 
 <?php
-$this->registerJsFile(
-    '@web/js/moment.min.js',
-    ['depends' => [\yii\web\JqueryAsset::className()]]
-);
-$this->registerJsFile(
-    '@web/js/waitMe/waitMe.min.js',
-    ['depends' => [\yii\web\JqueryAsset::className()]]
-);
-$this->registerJsFile(
-    'https://cdn.jsdelivr.net/npm/sweetalert2@9',
-    ['depends' => [\yii\web\JqueryAsset::className()]]
+$this->registerJs(<<<JS
+moment.locale('th');
+window.udhApp.initFormOldUser()
+JS
 );
 
+/*
 $this->registerJs(
     <<<JS
-
-moment.locale('th');
 $('.form-content, #btn-submit').hide()
 
 // $('#reset-form').on('click',function(){
@@ -458,4 +450,5 @@ $('#btn-submit').on('click',function(){
 })
 JS
 )
+*/
 ?>
