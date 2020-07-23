@@ -1,12 +1,14 @@
 <?php
 namespace app\controllers;
 
+use app\models\TblPatient;
 use common\Line\EventHandler\FollowEventHandler;
 use common\Line\EventHandler\MessageHandler\AudioMessageHandler;
 use common\Line\EventHandler\MessageHandler\Flex\FlexContact;
 use common\Line\EventHandler\MessageHandler\Flex\FlexDepartment;
 use common\Line\EventHandler\MessageHandler\Flex\FlexQueueStatus;
 use common\Line\EventHandler\MessageHandler\Flex\FlexRegister;
+use common\Line\EventHandler\MessageHandler\Flex\FlexRegisterSuccess;
 use common\Line\EventHandler\MessageHandler\Flex\FlexSampleRestaurant;
 use common\Line\EventHandler\MessageHandler\Flex\FlexSampleShopping;
 use common\Line\EventHandler\MessageHandler\ImageMessageHandler;
@@ -165,7 +167,9 @@ class LineController extends Controller
         // ]);
         // $flexMessageBuilder = $component->get();
         // $flexMessageBuilder = FlexRegister::get();
-        $flexMessageBuilder = FlexDepartment::get();
+        $model = TblPatient::findOne(['line_id' => 'Ue5337b220743f592158018e2a0423ff3']);
+        $flexMessageBuilder = FlexRegisterSuccess::get($model);
+        // $flexMessageBuilder = FlexDepartment::get();
         return $flexMessageBuilder->buildMessage();
     }
 

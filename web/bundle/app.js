@@ -175,9 +175,7 @@ var udhApp = {
         success: function(data) {
           if (data.success) {
             if (liff.isInClient()) {
-              self.sendMessages([
-                data.FlexMessage
-              ]);
+              self.sendMessages(data.FlexMessage);
             }
 
             Swal.fire({
@@ -238,9 +236,7 @@ var udhApp = {
             self.clearFormOlduser();
             //udhApp.LinkRichMenu();
             if (liff.isInClient()) {
-              self.sendMessages([
-                data.FlexMessage
-              ]);
+              self.sendMessages(data.FlexMessage);
             }
 
             Swal.fire({
