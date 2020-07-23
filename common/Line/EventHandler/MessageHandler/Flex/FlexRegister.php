@@ -71,7 +71,7 @@ class FlexRegister
         $title = TextComponentBuilder::builder()
             ->setText('ไม่พบข้อมูลการลงทะเบียน')
             ->setWeight(ComponentFontWeight::BOLD)
-            ->setSize(ComponentFontSize::SM)
+            ->setSize(ComponentFontSize::LG)
             ->setAlign(ComponentAlign::CENTER)
             ->setColor('#ef5350');
 
@@ -81,29 +81,11 @@ class FlexRegister
             ->setSize(ComponentFontSize::LG)
             ->setAlign(ComponentAlign::CENTER);
 
-        $review = BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::VERTICAL)
-        // ->setMargin(ComponentMargin::LG)
-            ->setSpacing(ComponentSpacing::SM)
-            ->setContents([
-                TextComponentBuilder::builder()
-                    ->setText('หมายเหตุ')
-                    ->setSize(ComponentFontSize::XS)
-                    ->setColor('#aaaaaa'),
-                TextComponentBuilder::builder()
-                    ->setText('ผู้ป่วยเก่า หมายถึงผู้ป่วยที่เคยใช้บริการ')
-                    ->setMargin(ComponentMargin::XS)
-                    ->setWrap(true)
-                    ->setOffsetStart('lg')
-                    ->setSize(ComponentFontSize::XS)
-                    ->setColor('#aaaaaa'),
-            ]);
-
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
         // ->setBackgroundColor('#fafafa')
         // ->setPaddingAll('8%')
-            ->setContents([$title, $title2, $review]);
+            ->setContents([$title, $title2]);
     }
 
     private static function createFooterBlock()
@@ -130,6 +112,24 @@ class FlexRegister
             );
         $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
 
+        $review = BoxComponentBuilder::builder()
+        ->setLayout(ComponentLayout::VERTICAL)
+    // ->setMargin(ComponentMargin::LG)
+        ->setSpacing(ComponentSpacing::SM)
+        ->setContents([
+            TextComponentBuilder::builder()
+                ->setText('หมายเหตุ')
+                ->setSize(ComponentFontSize::XS)
+                ->setColor('#aaaaaa'),
+            TextComponentBuilder::builder()
+                ->setText('ผู้ป่วยเก่า หมายถึง ผู้ป่วยที่มีประวัติการรักษากับทางโรงพยาบาลแล้ว')
+                ->setMargin(ComponentMargin::XS)
+                ->setWrap(true)
+                ->setOffsetStart('lg')
+                ->setSize(ComponentFontSize::XS)
+                ->setColor('#aaaaaa'),
+        ]);
+
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
             ->setSpacing(ComponentSpacing::SM)
@@ -137,6 +137,6 @@ class FlexRegister
         // ->setBackgroundColor('#fafafa')
         // ->setBorderColor('#e0e0e0')
         // ->setBorderWidth('1px')
-            ->setContents([$oldButton, $newButton, $spacer]);
+            ->setContents([$oldButton, $newButton,$review,$spacer]);
     }
 }

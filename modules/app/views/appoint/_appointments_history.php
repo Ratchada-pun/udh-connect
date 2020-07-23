@@ -56,15 +56,16 @@ $this->title = "นัดหมายแพทย์";
                 <div class="row">
                     <div class="col-12">
 
-                        <div class="card  border-danger  mb-4">
-                            <div class="card-header ">
-                                <div class="card-title text-white">
-                                    <i class="fa fa-bullhorn"></i>
-                                    นัดหมายล่าสุด
+                        <?php if (!empty($history)) : ?>
+                            <div class="card  border-danger  mb-4">
+                                <div class="card-header ">
+                                    <div class="card-title text-white">
+                                        <i class="fa fa-bullhorn"></i>
+                                        นัดหมายล่าสุด
+                                    </div>
                                 </div>
-                            </div>
 
-                            <?php if ($history) : ?>
+
                                 <div class="card-body card_chart">
                                     <div style="padding-top:10px;">
                                         <h1 class="text-muted" style="padding-left:10%;font-size: 12pt;">
@@ -111,20 +112,27 @@ $this->title = "นัดหมายแพทย์";
                                             </small>
                                     </div>
                                 </div>
-                            <?php endif; ?>
-                            <br>
-                        </div>
+
+                                <br>
+                            </div>
+                        <?php else : ?>
+                            <div class="alert alert-danger border-0" role="alert">
+									ไม่พบประวัตินัดหมายของคุณ!
+							</div>
+                        <?php endif; ?>
 
                         <div class="btn-demo mb-4">
-                            <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $history['pre_dept_code'],'doc_id' => $history['doctor'] ]) ?>" class="btn btn-success btn-lg btn-block">
-                                <p style="font-size: 16pt;">
-                                    นัดหมายแพทย์จากประวัติล่าสุด
-                                </p>
-                            </a>
+                            <?php if (!empty($history)) : ?>
+                                <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $history['pre_dept_code'], 'doc_id' => $history['doctor']]) ?>" class="btn btn-success btn-lg btn-block">
+                                    <p style="font-size: 16pt;">
+                                        นัดหมายแพทย์จากประวัติล่าสุด
+                                    </p>
+                                </a>
+                            <?php endif; ?>
 
                             <a href="<?= Url::to(['/app/appoint/create-department']) ?>" class="btn btn-pill btn-danger btn-lg">
                                 <p style="font-size: 16pt;">
-                                    นัดหมายแพทย์ใหม่
+                                    ทำการนัดหมายแพทย์ใหม่
                                 </p>
                             </a>
 
