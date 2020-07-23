@@ -5,6 +5,7 @@ namespace app\modules\app\controllers;
 use Yii;
 use app\models\TblPatient;
 use app\models\TblPatientSearch;
+use common\Line\EventHandler\MessageHandler\Flex\FlexRegisterSuccess;
 use kartik\form\ActiveForm;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -180,11 +181,14 @@ class RegisterController extends Controller
                     $dataRichMenu = $response->data;
                 }
                 $session->set('user', $model->getAttributes());
+
+                $FlexMessage = FlexRegisterSuccess::get($model);
                 return [
                     'model' => $model,
                     'success' => true,
                     'message' => 'ลงทะเบียนสำเร็จ!',
-                    'dataRichMenu' => $dataRichMenu
+                    'dataRichMenu' => $dataRichMenu,
+                    'FlexMessage' => $FlexMessage->buildMessage()
 
                 ];
             } else {

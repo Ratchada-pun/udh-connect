@@ -176,10 +176,7 @@ var udhApp = {
           if (data.success) {
             if (liff.isInClient()) {
               self.sendMessages([
-                {
-                  type: "text",
-                  text: "ลงทะเบียนสำเร็จ !",
-                },
+                data.FlexMessage
               ]);
             }
 
@@ -242,10 +239,7 @@ var udhApp = {
             //udhApp.LinkRichMenu();
             if (liff.isInClient()) {
               self.sendMessages([
-                {
-                  type: "text",
-                  text: "ลงทะเบียนสำเร็จ !",
-                },
+                data.FlexMessage
               ]);
             }
 

@@ -27,47 +27,54 @@ use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\BubbleContainerBuilder;
 use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\Uri\AltUriBuilder;
 
-class FlexContact
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
+class FlexRegisterSuccess
 {
     /**
      * Create sample restaurant flex message
      *
      * @return \LINE\LINEBot\MessageBuilder\FlexMessageBuilder
      */
-    public static function get()
+
+
+    public static function get($profile)
     {
         return FlexMessageBuilder::builder()
             ->setAltText('ลงทะเบียนผู้ป่วย')
             ->setContents(
                 BubbleContainerBuilder::builder()
                     ->setHero(self::createHeroBlock())
-                    ->setBody(self::createBodyBlock())
-                    ->setFooter(self::createFooterBlock())
+                    ->setBody(self::createBodyBlock($profile))
                     ->setSize(BubleContainerSize::MEGA)
-                    // ->setStyles(
-                    //     BubbleStylesBuilder::builder()
-                    //         ->setHero(
-                    //             BlockStyleBuilder::builder()
-                    //                 ->setBackgroundColor('#fafafa')
-                    //         )
-                    // )
+                    ->setStyles(
+                        BubbleStylesBuilder::builder()
+                            ->setHero(
+                                BlockStyleBuilder::builder()
+                                    ->setBackgroundColor('#fafafa')
+                            )
+                    )
             );
     }
+
 
     private static function createHeroBlock()
     {
         return ImageComponentBuilder::builder()
             ->setUrl('https://udhconnect.info/images/call-center.png')
-            ->setSize(ComponentImageSize::FULL)
+            ->setSize("3xl")
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
             ->setAspectMode(ComponentImageAspectMode::FIT)
             ->setOffsetTop("sm");
     }
 
-    private static function createBodyBlock()
+
+    private static function createBodyBlock($profile)
     {
+
         $title = TextComponentBuilder::builder()
-            ->setText('ติดต่อสอบถาม')
+            ->setText('UDH Connect')
             ->setWeight(ComponentFontWeight::BOLD)
             ->setSize(ComponentFontSize::XL)
             ->setAlign(ComponentAlign::CENTER);
@@ -77,66 +84,86 @@ class FlexContact
             ->setMargin(ComponentMargin::LG)
             ->setSpacing(ComponentSpacing::SM)
             ->setContents([
+                TextComponentBuilder::builder()
+                    ->setText('ลงทะเบียนสำเร็จ!')
+                    ->setSize(ComponentFontSize::XXL)
+                    ->setColor('#1DB446')
+                    ->setAlign(ComponentAlign::CENTER)
+            ]);
+
+        $profile = BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::VERTICAL)
+            ->setMargin(ComponentMargin::XXL)
+            ->setSpacing(ComponentSpacing::SM)
+            ->setContents([
                 BoxComponentBuilder::builder()
-                    ->setLayout(ComponentLayout::BASELINE)
-                    ->setSpacing(ComponentSpacing::SM)
+                    ->setLayout(ComponentLayout::HORIZONTAL)
                     ->setContents([
                         TextComponentBuilder::builder()
-                            ->setText('ที่อยู่')
-                            ->setSize(ComponentFontSize::SM)
+                            ->setText('ชื่อ-นามสุกล')
                             ->setColor('#aaaaaa')
-                            ->setFlex(1),
+                            ->setSize(ComponentFontSize::MD)
+                            ->setFlex(0),
                         TextComponentBuilder::builder()
-                            ->setText('33 ถ.เพาะนิยม ต.หมากแข้ง อ.เมืองอุดรธานี จ.อุดรธานี')
+                            ->setText($profile['first_name'].' '.$profile['last_name'])
                             ->setWrap(true)
-                            ->setSize(ComponentFontSize::XS)
                             ->setColor('#666666')
+                            ->setSize(ComponentFontSize::SM)
+                            ->setFlex(5),
+                    ]),
+                BoxComponentBuilder::builder()
+                    ->setLayout(ComponentLayout::HORIZONTAL)
+                    ->setContents([
+                        TextComponentBuilder::builder()
+                            ->setText('ประเภท')
+                            ->setColor('#aaaaaa')
+                            ->setSize(ComponentFontSize::MD)
+                            ->setFlex(0),
+                        TextComponentBuilder::builder()
+                            ->setText($profile['user_type'] == 'new' ? 'ผู้ป่วยใหม่' : 'ผู้ป่วยเก่า')
+                            ->setWrap(true)
+                            ->setColor('#666666')
+                            ->setSize(ComponentFontSize::SM)
+                            ->setFlex(5),
+                    ]),
+                BoxComponentBuilder::builder()
+                    ->setLayout(ComponentLayout::HORIZONTAL)
+                    ->setContents([
+                        TextComponentBuilder::builder()
+                            ->setText('โทรศัพท์')
+                            ->setColor('#aaaaaa')
+                            ->setSize(ComponentFontSize::MD)
+                            ->setFlex(0),
+                        TextComponentBuilder::builder()
+                            ->setText(empty($profile['phone_number']) ? '-' : $profile['phone_number'])
+                            ->setWrap(true)
+                            ->setColor('#666666')
+                            ->setSize(ComponentFontSize::SM)
+                            ->setFlex(5),
+                    ]),
+                BoxComponentBuilder::builder()
+                    ->setLayout(ComponentLayout::HORIZONTAL)
+                    ->setContents([
+                        TextComponentBuilder::builder()
+                            ->setText('วันที่ลงทะเบียน')
+                            ->setColor('#aaaaaa')
+                            ->setSize(ComponentFontSize::MD)
+                            ->setFlex(0),
+                        TextComponentBuilder::builder()
+                            ->setText(\Yii::$app->formatter->asDate($profile['created_at'], 'php:d-m-Y'))
+                            ->setWrap(true)
+                            ->setColor('#666666')
+                            ->setSize(ComponentFontSize::SM)
                             ->setFlex(5),
                     ]),
 
-                BoxComponentBuilder::builder()
-                    ->setLayout(ComponentLayout::BASELINE)
-                    ->setSpacing(ComponentSpacing::SM)
-                    ->setContents([
-                        TextComponentBuilder::builder()
-                            ->setText('Tel')
-                            ->setSize(ComponentFontSize::SM)
-                            ->setColor('#aaaaaa')
-                            ->setFlex(1),
-                        TextComponentBuilder::builder()
-                            ->setText('042-245-555')
-                            ->setWrap(true)
-                            ->setSize(ComponentFontSize::XS)
-                            ->setColor('#666666')
-                            ->setFlex(5),
-                    ])
             ]);
+
 
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
             // ->setBackgroundColor('#fafafa')
             // ->setPaddingAll('8%')
-            ->setContents([$title,  $review]);
-    }
-
-    private static function createFooterBlock()
-    {
-        $oldButton = ButtonComponentBuilder::builder()
-            ->setStyle(ComponentButtonStyle::PRIMARY)
-            ->setHeight(ComponentButtonHeight::SM)
-            ->setAction(
-                new UriTemplateActionBuilder(
-                    'CALL',
-                    'tel:042245555',
-                    new AltUriBuilder('tel:042245555')
-                )
-            );
-        $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
-
-        return BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::VERTICAL)
-            ->setSpacing(ComponentSpacing::SM)
-            ->setFlex(0)
-            ->setContents([$oldButton, $spacer]);
+            ->setContents([$title, $review, $profile]);
     }
 }
