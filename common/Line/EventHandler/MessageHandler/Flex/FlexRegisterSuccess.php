@@ -62,7 +62,7 @@ class FlexRegisterSuccess
     private static function createHeroBlock()
     {
         return ImageComponentBuilder::builder()
-            ->setUrl('https://udhconnect.info/images/call-center.png')
+            ->setUrl('https://udhconnect.info/images/udh_logo.png')
             ->setSize("3xl")
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
             ->setAspectMode(ComponentImageAspectMode::FIT)
@@ -109,7 +109,7 @@ class FlexRegisterSuccess
                             ->setWrap(true)
                             ->setColor('#666666')
                             ->setSize(ComponentFontSize::SM)
-                            ->setFlex(5),
+                            ->setAlign(ComponentAlign::END)
                     ]),
                 BoxComponentBuilder::builder()
                     ->setLayout(ComponentLayout::HORIZONTAL)
@@ -123,8 +123,8 @@ class FlexRegisterSuccess
                             ->setText($profile['user_type'] == 'new' ? 'ผู้ป่วยใหม่' : 'ผู้ป่วยเก่า')
                             ->setWrap(true)
                             ->setColor('#666666')
-                            ->setSize(ComponentFontSize::SM)
-                            ->setFlex(5),
+                            ->setSize(ComponentFontSize::MD)
+                            ->setAlign(ComponentAlign::END)
                     ]),
                 BoxComponentBuilder::builder()
                     ->setLayout(ComponentLayout::HORIZONTAL)
@@ -138,8 +138,8 @@ class FlexRegisterSuccess
                             ->setText(empty($profile['phone_number']) ? '-' : $profile['phone_number'])
                             ->setWrap(true)
                             ->setColor('#666666')
-                            ->setSize(ComponentFontSize::SM)
-                            ->setFlex(5),
+                            ->setSize(ComponentFontSize::MD)
+                            ->setAlign(ComponentAlign::END)
                     ]),
                 BoxComponentBuilder::builder()
                     ->setLayout(ComponentLayout::HORIZONTAL)
@@ -153,8 +153,8 @@ class FlexRegisterSuccess
                             ->setText(\Yii::$app->formatter->asDate($profile['created_at'], 'php:d-m-Y'))
                             ->setWrap(true)
                             ->setColor('#666666')
-                            ->setSize(ComponentFontSize::SM)
-                            ->setFlex(5),
+                            ->setSize(ComponentFontSize::MD)
+                            ->setAlign(ComponentAlign::END)
                     ]),
 
             ]);
