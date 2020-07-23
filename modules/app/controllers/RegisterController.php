@@ -181,7 +181,7 @@ class RegisterController extends Controller
                     $dataRichMenu = $response->data;
                 }
                 $session->set('user', $model->getAttributes());
-
+                $model = TblPatient::findOne($model->id);
                 $FlexMessage = FlexRegisterSuccess::get($model);
                 return [
                     'model' => $model,
