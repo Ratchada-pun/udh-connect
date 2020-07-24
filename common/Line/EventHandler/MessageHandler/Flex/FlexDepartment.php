@@ -59,16 +59,17 @@ class FlexDepartment
             );
     }
 
+
     private static function createHeroBlock()
     {
         return ImageComponentBuilder::builder()
             ->setUrl('https://udhconnect.info/images/udh_logo.png')
-            ->setSize(ComponentImageSize::FULL)
+            ->setSize("lg")
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
-            ->setAspectMode(ComponentImageAspectMode::FIT);
+            ->setAspectMode(ComponentImageAspectMode::FIT)
+            ->setOffsetTop("sm");
             
     }
-
 
     private static function createBodyBlock()
     {
@@ -76,7 +77,7 @@ class FlexDepartment
             ->setText('เลือกแผนกที่ต้องการนัดหมาย')
             ->setWeight(ComponentFontWeight::BOLD)
             ->setSize(ComponentFontSize::LG)
-            ->setAlign(ComponentAlign::CENTER);
+            ->setAlign(ComponentAlign::START);
 
         $separator = SeparatorComponentBuilder::builder()
             ->setMargin(ComponentMargin::XXL);
