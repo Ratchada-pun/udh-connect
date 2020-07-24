@@ -48,7 +48,8 @@ class FlexDepartment
                     ->setHero(self::createHeroBlock())
                     ->setBody(self::createBodyBlock())
                     ->setFooter(self::createFooterBlock())
-                    ->setSize(BubleContainerSize::GIGA)
+                   // ->setSize(BubleContainerSize::GIGA)  // ขนาด flex
+                    ->setSize(BubleContainerSize::MEGA)
                     ->setStyles(
                         BubbleStylesBuilder::builder()
                             ->setHero(
