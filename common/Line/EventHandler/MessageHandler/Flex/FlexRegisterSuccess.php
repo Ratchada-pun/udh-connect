@@ -52,7 +52,7 @@ class FlexRegisterSuccess
                         BubbleStylesBuilder::builder()
                             ->setHero(
                                 BlockStyleBuilder::builder()
-                                    ->setBackgroundColor('#fafafa')
+                                    ->setBackgroundColor('#fce4ec')
                             )
                     )
             );
@@ -67,6 +67,7 @@ class FlexRegisterSuccess
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
             ->setAspectMode(ComponentImageAspectMode::FIT)
             ->setOffsetTop("sm");
+            
     }
 
 
