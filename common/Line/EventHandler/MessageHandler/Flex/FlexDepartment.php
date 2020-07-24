@@ -80,8 +80,8 @@ class FlexDepartment
             ->setSize(ComponentFontSize::LG)
             ->setAlign(ComponentAlign::START);
 
-        $separator = SeparatorComponentBuilder::builder()
-            ->setMargin(ComponentMargin::XXL);
+        // $separator = SeparatorComponentBuilder::builder()  //เส้น
+        //     ->setMargin(ComponentMargin::XXL);
 
         $contents = [];
 
@@ -116,7 +116,7 @@ class FlexDepartment
                 ->setContents([
                     ImageComponentBuilder::builder()
                         ->setUrl('https://www.udhconnect.info/images/menu3.png')
-                        ->setSize(ComponentImageSize::LG)
+                        ->setSize(ComponentImageSize::SM)
                         ->setAspectMode(ComponentImageAspectMode::COVER)
                         ->setAlign(ComponentAlign::CENTER)
                         ->setGravity(ComponentGravity::CENTER)
@@ -249,7 +249,7 @@ class FlexDepartment
 
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
-            ->setContents([$title, $separator,  $review]);
+            ->setContents([$title, $review]);
     }
 
     private static function createFooterBlock()
