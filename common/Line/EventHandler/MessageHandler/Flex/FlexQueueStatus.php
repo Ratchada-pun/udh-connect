@@ -88,7 +88,7 @@ class FlexQueueStatus extends BaseObject
                         BubbleStylesBuilder::builder()
                             ->setHero(
                                 BlockStyleBuilder::builder()
-                                    ->setBackgroundColor('#fafafa')
+                                    ->setBackgroundColor('#fce4ec')
                             )
                     )
             );

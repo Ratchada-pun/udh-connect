@@ -48,6 +48,13 @@ class FlexDepartment
                     ->setBody(self::createBodyBlock())
                     ->setFooter(self::createFooterBlock())
                     ->setSize(BubleContainerSize::GIGA)
+                    ->setStyles(
+                        BubbleStylesBuilder::builder()
+                            ->setHero(
+                                BlockStyleBuilder::builder()
+                                    ->setBackgroundColor('#fce4ec')
+                            )
+                    )
             );
     }
 

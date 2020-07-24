@@ -50,7 +50,7 @@ class FlexRegister
                         BubbleStylesBuilder::builder()
                             ->setHero(
                                 BlockStyleBuilder::builder()
-                                    ->setBackgroundColor('#fafafa')
+                                    ->setBackgroundColor('#fce4ec')
                             )
                     )
             );
