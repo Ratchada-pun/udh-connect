@@ -255,7 +255,7 @@ class FlexDepartment
     private static function createFooterBlock()
     {
         $separator = SeparatorComponentBuilder::builder()
-            ->setColor('#905c44')
+           // ->setColor('#905c44')
             ->setMargin(ComponentMargin::SM);
 
         $button = ButtonComponentBuilder::builder()
@@ -268,7 +268,9 @@ class FlexDepartment
                     'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department',
                     new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department')
                 )
-            );
+            )
+            ->setColor('#f50057');
+         
         // $spacer = new SpacerComponentBuilder(ComponentSpaceSize::XXL);
 
         return BoxComponentBuilder::builder()
