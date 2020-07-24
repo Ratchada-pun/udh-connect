@@ -62,8 +62,7 @@ class FlexRegister
             ->setUrl('https://udhconnect.info/images/udh_logo.png')
             ->setSize(ComponentImageSize::LG)
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
-            ->setAspectMode(ComponentImageAspectMode::FIT)
-        ;
+            ->setAspectMode(ComponentImageAspectMode::FIT);
     }
 
     private static function createBodyBlock()

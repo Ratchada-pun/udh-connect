@@ -45,6 +45,7 @@ class FlexDepartment
             ->setAltText('นัดหมายแพทย์')
             ->setContents(
                 BubbleContainerBuilder::builder()
+                    ->setHero(self::createHeroBlock())
                     ->setBody(self::createBodyBlock())
                     ->setFooter(self::createFooterBlock())
                     ->setSize(BubleContainerSize::GIGA)
@@ -57,6 +58,17 @@ class FlexDepartment
                     )
             );
     }
+
+    private static function createHeroBlock()
+    {
+        return ImageComponentBuilder::builder()
+            ->setUrl('https://udhconnect.info/images/udh_logo.png')
+            ->setSize(ComponentImageSize::FULL)
+            ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
+            ->setAspectMode(ComponentImageAspectMode::FIT);
+            
+    }
+
 
     private static function createBodyBlock()
     {
