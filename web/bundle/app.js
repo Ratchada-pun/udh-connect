@@ -50,9 +50,9 @@ var udhApp = {
       if (response.data) {
         window.localStorage.setItem(UDH_PROFILE, JSON.stringify(response.data));
 
-        if (paths.includes(window.location.pathname)) {
-          window.location.href = "/app/appoint/create-department";
-        }
+        // if (paths.includes(window.location.pathname)) {
+        //   window.location.href = "/app/appoint/create-department";
+        // }
       }
 
       this.stopLoading();
