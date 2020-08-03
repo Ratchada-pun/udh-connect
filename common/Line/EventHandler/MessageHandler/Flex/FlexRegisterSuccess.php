@@ -173,18 +173,12 @@ class FlexRegisterSuccess
 
     private static function createFooterBlock()
     {
-        $text = BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::VERTICAL)
-            ->setSpacing(ComponentSpacing::SM)
-            ->setContents([
-                ButtonComponentBuilder::builder()
-                    ->setStyle(ComponentButtonStyle::PRIMARY)
-                    ->setHeight(ComponentFontSize::MD)
-                    ->setAction(
-                        new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมายแพทย์')
-                    )
-                   
-            ]);
+        $text = ButtonComponentBuilder::builder()
+        ->setStyle(ComponentButtonStyle::PRIMARY)
+        ->setHeight(ComponentFontSize::MD)
+        ->setAction(
+            new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมายแพทย์')
+        );
          
 
         $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
