@@ -179,7 +179,7 @@ class FlexRegisterSuccess
         ->setHeight(ComponentButtonHeight::SM)
         ->setAction(
             new MessageTemplateActionBuilder(
-                'นัดหมายแพทย์',
+                'ไปที่นัดหมายแพทย์',
                 'นัดหมายแพทย์'
             )
         );
@@ -188,8 +188,7 @@ class FlexRegisterSuccess
 
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
-            ->setSpacing(ComponentSpacing::SM)
-            ->setFlex(0)
+            ->setSpacing(ComponentSpacing::MD)
             ->setContents([$text, $spacer]);
 
     }
