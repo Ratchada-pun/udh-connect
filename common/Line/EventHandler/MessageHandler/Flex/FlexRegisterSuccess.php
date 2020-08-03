@@ -175,12 +175,12 @@ class FlexRegisterSuccess
     private static function createFooterBlock()
     {
         $text = ButtonComponentBuilder::builder()
-        ->setStyle(ComponentButtonStyle::PRIMARY)
+        ->setStyle(ComponentButtonStyle::LINK)
+        ->setHeight(ComponentButtonHeight::SM)
         ->setAction(
-            new UriTemplateActionBuilder(
-                'CALL',
-                'tel:042245555',
-                new AltUriBuilder('tel:042245555')
+            new MessageTemplateActionBuilder(
+                'นัดหมายแพทย์',
+                'นัดหมายแพทย์'
             )
         );
 
