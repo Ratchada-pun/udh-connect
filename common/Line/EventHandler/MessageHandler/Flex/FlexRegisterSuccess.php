@@ -50,7 +50,7 @@ class FlexRegisterSuccess
                 BubbleContainerBuilder::builder()
                     ->setHero(self::createHeroBlock())
                     ->setBody(self::createBodyBlock($profile))
-                    ->setFooter(self::createFooterBlock())
+                   // ->setFooter(self::createFooterBlock())
                     ->setSize(BubleContainerSize::MEGA)
                     ->setStyles(
                         BubbleStylesBuilder::builder()
