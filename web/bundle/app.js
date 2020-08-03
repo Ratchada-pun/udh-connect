@@ -11,8 +11,10 @@ const UDH_PROFILE = "udh-profile";
  * @param {string} myLiffId The LIFF ID of the selected element
  */
 var config = {
-  redirectUri: "https://www.udhconnect.info",
-  liffId: "1654023325-EkWmY9PA",
+//  redirectUri: "https://www.udhconnect.info",
+  //liffId: "1654023325-EkWmY9PA",
+  redirectUri: "https://0ce5b6f456db.ngrok.io",
+  liffId: "1653428124-5P8ad2x3"
 };
 
 var udhApp = {
@@ -33,7 +35,7 @@ var udhApp = {
   initializeApp: function() {
     if (!liff.isLoggedIn()) {
       // set `redirectUri` to redirect the user to a URL other than the front page of your LIFF app.
-      liff.login({ redirectUri: config.redirectUri }); //บน host
+      liff.login({ redirectUri: config.redirectUri }); //บน Longin บน host
     } else {
       this.setProflie();
     }
@@ -103,9 +105,9 @@ var udhApp = {
   },
   LinkRichMenu: function() {
     //เปลี่ยนเมนู
-    // var profile = this.getProfileStorage();
-    // var userId = profile.userId;
-    var userId = "Udeadbeefdeadbeefdeadbeefdeadbeef";
+     var profile = this.getProfileStorage();
+     var userId = profile.userId;
+    //var userId = "Udeadbeefdeadbeefdeadbeefdeadbeef";
     //var richMenuId = "richmenu-349a649ee1b2e2f659ae2da8e24df4ef";
     var richMenuId = "richmenu-349a649ee1b2e2f659ae2da8e24df4ef";
     $.ajax({

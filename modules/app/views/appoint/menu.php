@@ -29,7 +29,7 @@ $profile = $session->get('user');
                     </div>
                     <div class="h1 no-margin">
                         <span class="menu-label">
-                            นัดหมายแพทย์
+                            นัดหมาย
                         </span>
                         <p data-v-0dbf6a13=""></p>
                     </div>
