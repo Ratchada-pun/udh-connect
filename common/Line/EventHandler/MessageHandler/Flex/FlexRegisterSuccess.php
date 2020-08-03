@@ -175,7 +175,7 @@ class FlexRegisterSuccess
     private static function createFooterBlock()
     {
         $text = ButtonComponentBuilder::builder()
-        ->setStyle(ComponentButtonStyle::LINK)
+        ->setStyle(ComponentButtonStyle::PRIMARY)
         ->setHeight(ComponentButtonHeight::SM)
         ->setAction(
             new MessageTemplateActionBuilder(
