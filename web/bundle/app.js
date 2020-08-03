@@ -11,10 +11,9 @@ const UDH_PROFILE = "udh-profile";
  * @param {string} myLiffId The LIFF ID of the selected element
  */
 var config = {
-//  redirectUri: "https://www.udhconnect.info",
-  //liffId: "1654023325-EkWmY9PA",
-  redirectUri: "https://0ce5b6f456db.ngrok.io",
-  liffId: "1653428124-5P8ad2x3"
+  redirectUri: "https://www.udhconnect.info",
+  liffId: "1654023325-EkWmY9PA",
+
 };
 
 var udhApp = {
