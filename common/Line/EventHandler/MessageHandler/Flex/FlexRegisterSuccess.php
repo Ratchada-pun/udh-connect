@@ -15,6 +15,7 @@ use LINE\LINEBot\Constant\Flex\ComponentLayout;
 use LINE\LINEBot\Constant\Flex\ComponentMargin;
 use LINE\LINEBot\Constant\Flex\ComponentSpaceSize;
 use LINE\LINEBot\Constant\Flex\ComponentSpacing;
+use LINE\LINEBot\MessageBuilder;
 use LINE\LINEBot\MessageBuilder\FlexMessageBuilder;
 use LINE\LINEBot\MessageBuilder\Flex\BlockStyleBuilder;
 use LINE\LINEBot\MessageBuilder\Flex\BubbleStylesBuilder;
@@ -24,6 +25,7 @@ use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\ImageComponentBuilder;
 use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\SpacerComponentBuilder;
 use LINE\LINEBot\MessageBuilder\Flex\ComponentBuilder\TextComponentBuilder;
 use LINE\LINEBot\MessageBuilder\Flex\ContainerBuilder\BubbleContainerBuilder;
+use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\Uri\AltUriBuilder;
 
@@ -171,26 +173,26 @@ class FlexRegisterSuccess
 
     private static function createFooterBlock()
     {
-        
-        $websiteButton = ButtonComponentBuilder::builder()
-            ->setStyle(ComponentButtonStyle::LINK)
-            ->setHeight(ComponentButtonHeight::SM)
-            ->setAction(
-                new UriTemplateActionBuilder(
-                    'นัดหมายแพทย์',
-                    'https://www.udhconnect.info/app/appoint/create-department',
-                    new AltUriBuilder('https://www.udhconnect.info/app/appoint/create-departmentp')
-                )
-            );
+        $text = BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::VERTICAL)
+            ->setSpacing(ComponentSpacing::SM)
+            ->setContents([
+                ButtonComponentBuilder::builder()
+                    ->setStyle(ComponentButtonStyle::PRIMARY)
+                    ->setHeight(ComponentFontSize::MD)
+                    ->setAction(
+                        new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมายแพทย์')
+                    )
+                   
+            ]);
+         
+
         $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
 
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
             ->setSpacing(ComponentSpacing::SM)
             ->setFlex(0)
-            ->setBackgroundColor('#fafafa')
-            ->setBorderColor('#e0e0e0')
-            ->setBorderWidth('1px')
-            ->setContents([$websiteButton, $spacer]);
+            ->setContents([$text, $spacer]);
     }
 }
