@@ -47,6 +47,7 @@ class FlexRegisterSuccess
                 BubbleContainerBuilder::builder()
                     ->setHero(self::createHeroBlock())
                     ->setBody(self::createBodyBlock($profile))
+                    ->setFooter(self::createFooterBlock())
                     ->setSize(BubleContainerSize::MEGA)
                     ->setStyles(
                         BubbleStylesBuilder::builder()
@@ -166,5 +167,30 @@ class FlexRegisterSuccess
             // ->setBackgroundColor('#fafafa')
             // ->setPaddingAll('8%')
             ->setContents([$title, $review, $profile]);
+    }
+
+    private static function createFooterBlock()
+    {
+        
+        $websiteButton = ButtonComponentBuilder::builder()
+            ->setStyle(ComponentButtonStyle::LINK)
+            ->setHeight(ComponentButtonHeight::SM)
+            ->setAction(
+                new UriTemplateActionBuilder(
+                    'นัดหมายแพทย์',
+                    'https://www.udhconnect.info/app/appoint/create-department',
+                    new AltUriBuilder('https://www.udhconnect.info/app/appoint/create-departmentp')
+                )
+            );
+        $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
+
+        return BoxComponentBuilder::builder()
+            ->setLayout(ComponentLayout::VERTICAL)
+            ->setSpacing(ComponentSpacing::SM)
+            ->setFlex(0)
+            ->setBackgroundColor('#fafafa')
+            ->setBorderColor('#e0e0e0')
+            ->setBorderWidth('1px')
+            ->setContents([$websiteButton, $spacer]);
     }
 }
