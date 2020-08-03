@@ -178,7 +178,7 @@ class FlexRegisterSuccess
         ->setStyle(ComponentButtonStyle::PRIMARY)
         ->setHeight(ComponentFontSize::MD)
         ->setAction(
-            new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมายแพทย์')
+            new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมาย')
         );
 
         $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
