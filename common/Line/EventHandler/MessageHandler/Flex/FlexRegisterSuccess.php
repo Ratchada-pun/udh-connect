@@ -174,12 +174,17 @@ class FlexRegisterSuccess
 
     private static function createFooterBlock()
     {
-        $text = ButtonComponentBuilder::builder()
-        ->setStyle(ComponentButtonStyle::PRIMARY)
-        ->setHeight(ComponentFontSize::MD)
-        ->setAction(
-            new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมาย')
-        );
+        $text = BoxComponentBuilder::builder()
+        ->setLayout(ComponentLayout::VERTICAL)
+        ->setSpacing(ComponentSpacing::SM)
+        ->setContents([
+            ButtonComponentBuilder::builder()
+            ->setStyle(ComponentButtonStyle::PRIMARY)
+            ->setHeight(ComponentButtonHeight::MD)
+            ->setAction(
+                new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมายแพทย์')
+            )
+        ]);
 
         $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
 
@@ -188,5 +193,25 @@ class FlexRegisterSuccess
             ->setSpacing(ComponentSpacing::SM)
             ->setFlex(0)
             ->setContents([$text, $spacer]);
+
     }
+
+
+    // private static function createFooterBlock()
+    // {
+    //     $text = ButtonComponentBuilder::builder()
+    //     ->setStyle(ComponentButtonStyle::PRIMARY)
+    //     ->setHeight(ComponentFontSize::MD)
+    //     ->setAction(
+    //         new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมาย')
+    //     );
+
+    //     $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
+
+    //     return BoxComponentBuilder::builder()
+    //         ->setLayout(ComponentLayout::VERTICAL)
+    //         ->setSpacing(ComponentSpacing::SM)
+    //         ->setFlex(0)
+    //         ->setContents([$text, $spacer]);
+    // }
 }
