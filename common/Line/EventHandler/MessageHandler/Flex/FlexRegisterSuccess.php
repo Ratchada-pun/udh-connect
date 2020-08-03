@@ -109,7 +109,7 @@ class FlexRegisterSuccess
                             ->setText($profile['first_name'].' '.$profile['last_name'])
                             ->setWrap(true)
                             ->setColor('#666666')
-                            ->setSize(ComponentFontSize::SM)
+                            ->setSize(ComponentFontSize::MD)
                             ->setAlign(ComponentAlign::END)
                     ]),
                 BoxComponentBuilder::builder()
