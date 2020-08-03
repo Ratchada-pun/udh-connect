@@ -179,7 +179,6 @@ class FlexRegisterSuccess
         ->setAction(
             new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมายแพทย์')
         );
-         
 
         $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
 
