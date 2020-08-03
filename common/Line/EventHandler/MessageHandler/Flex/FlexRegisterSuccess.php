@@ -172,26 +172,26 @@ class FlexRegisterSuccess
             ->setContents([$title, $review, $profile]);
     }
 
-    private static function createFooterBlock()
-    {
-        $text = ButtonComponentBuilder::builder()
-        ->setStyle(ComponentButtonStyle::PRIMARY)
-        ->setHeight(ComponentButtonHeight::SM)
-        ->setAction(
-            new MessageTemplateActionBuilder(
-                'ไปที่นัดหมายแพทย์',
-                'นัดหมายแพทย์'
-            )
-        );
+    // private static function createFooterBlock()
+    // {
+    //     $text = ButtonComponentBuilder::builder()
+    //     ->setStyle(ComponentButtonStyle::PRIMARY)
+    //     ->setHeight(ComponentButtonHeight::SM)
+    //     ->setAction(
+    //         new MessageTemplateActionBuilder(
+    //             'ไปที่นัดหมายแพทย์',
+    //             'นัดหมายแพทย์'
+    //         )
+    //     );
 
-        $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
+    //     $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
 
-        return BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::VERTICAL)
-            ->setSpacing(ComponentSpacing::MD)
-            ->setContents([$text, $spacer]);
+    //     return BoxComponentBuilder::builder()
+    //         ->setLayout(ComponentLayout::VERTICAL)
+    //         ->setSpacing(ComponentSpacing::MD)
+    //         ->setContents([$text, $spacer]);
 
-    }
+    // }
 
 
     // private static function createFooterBlock()
