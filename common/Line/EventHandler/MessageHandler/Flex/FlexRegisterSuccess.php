@@ -172,21 +172,23 @@ class FlexRegisterSuccess
             ->setContents([$title, $review, $profile]);
     }
 
+
     private static function createFooterBlock()
     {
         $textButton = ButtonComponentBuilder::builder()
             ->setStyle(ComponentButtonStyle::PRIMARY)
             ->setHeight(ComponentButtonHeight::MD)
             ->setAction(
-                new MessageTemplateActionBuilder (
-                    'ทำการ นัดหมายแพทย์',
-                    'นัดหมายแพทย์'
+                new UriTemplateActionBuilder(
+                    'ไปที่ นัดหมายแพทย์',
+                    'https://www.udhconnect.info/app/appoint/create-department',
+                    new AltUriBuilder('https://www.udhconnect.info/app/appoint/create-department')
                 )
             );
-
         return BoxComponentBuilder::builder()
             ->setLayout(ComponentLayout::VERTICAL)
             ->setSpacing(ComponentSpacing::SM)
+            ->setFlex(0)
             ->setContents([$textButton]);
     }
 
