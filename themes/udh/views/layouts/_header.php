@@ -46,13 +46,13 @@
                 </div>
                 <div class=" col-9 d-flex justify-content-end">
                     <div class="right_bar_top d-flex align-items-center">
-
                         <!-- Dropdown_User -->
-                        <div class="dropdown dropdown-user">
+                        //profile-user
+                        <!-- <div class="dropdown dropdown-user">
                             <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" aria-expanded="true"> 
                                 <img id="user-picture" class="img-circle pro_pic" src="<?= Yii::getAlias('@web/images/about-1.jpg') ?>" alt=""> 
                             </a>
-                        </div>
+                        </div> -->
                         <!-- Dropdown_User_End -->
                     </div>
                 </div>
