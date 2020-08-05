@@ -11,23 +11,26 @@ $('input[name="doc_option"]').on("change", function(e) {
     $("#doctor").removeClass("hidden");
   }
 });
-$('input[name="docname"]').on("change", function(e) {
-  e.preventDefault();
-  $(".appoint-time").html("");
-  if ($(this).is(":checked")) {
-    $("#doctor").val($(this).data("docname"));
-    $("#doctor_id").val($(this).val());
-    $(this).prop("checked", true);
-    $("#exampleModal3").modal("hide");
-    dateList = [];
-    GetSchedules($(this).val());
-  } else {
-    $("#doctor").val("");
-    $("#doctor_id").val("");
-    $(this).prop("checked", false);
-    $("#exampleModal3").modal("hide");
-  }
-});
+function inputEvent(){
+  $('input[name="docname"]').on("change", function(e) {
+    e.preventDefault();
+    $(".appoint-time").html("");
+    if ($(this).is(":checked")) {
+      $("#doctor").val($(this).data("docname"));
+      $("#doctor_id").val($(this).val());
+      $(this).prop("checked", true);
+      $("#exampleModal3").modal("hide");
+      dateList = [];
+      GetSchedules($(this).val());
+    } else {
+      $("#doctor").val("");
+      $("#doctor_id").val("");
+      $(this).prop("checked", false);
+      $("#exampleModal3").modal("hide");
+    }
+  });
+}
+inputEvent();
 
 function GetSchedules(docId) {
   $("#appoint-form").waitMe({
@@ -109,16 +112,18 @@ function GetScheduleTimes(date) {
     success: function(data) {
       $("#doctor").removeClass("hidden");
       $(".appoint-time").html("");
-      if (data.length) {
-        for (let index = 0; index < data.length; index++) {
+      if (data.schedule_times.length) {
+        for (let index = 0; index < data.schedule_times.length; index++) {
           $(".appoint-time").append(`<label class="control control-solid control-solid-success control--radio">
-                        ${data[index].text}
-                        <input type="radio" name="AppointModel[appoint_time]" value="${data[index].value}" />
+                        ${data.schedule_times[index].text}
+                        <input type="radio" name="AppointModel[appoint_time]" value="${data.schedule_times[index].value}" />
                             <span class="control__indicator"></span>
                     </label>`);
         }
       }
+      $("#doctor-list").html(data.list);
       $("#appoint-form").waitMe("hide");
+      inputEvent();
     },
     error: function(jqXHR, textStatus, errorThrown) {
       $("#appoint-form").waitMe("hide");
