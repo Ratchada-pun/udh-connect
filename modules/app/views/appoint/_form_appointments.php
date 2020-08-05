@@ -100,7 +100,43 @@ JS
                                     </div>
                                     <br>
 
-                                      <br>
+                            <div class="form-group field-appoint_date">
+                                <?php
+                                echo '<label class="control-label" style="font-size:14pt;"><b>วันที่นัดแพทย์</b></label>';
+                                echo '<p style="margin:0;"><small class="text-danger" style="font-size: 10pt;"> <i class="fa fa-bullhorn"></i>โปรดเลือกวันที่</small></p>';
+
+                                echo DatePicker::widget([
+                                    'model' => $model,
+                                    'attribute' => 'appoint_date',
+                                    //'type' => DatePicker::TYPE_INLINE,
+                                    'readonly' => true,
+                                    'pickerIcon' => '<i class="fa fa-calendar"></i>',
+                                    'removeIcon' => '<i class="fa fa-trash"></i>',
+                                    'language' => 'th',
+                                    'pluginOptions' => [
+                                        'autoclose' => true,
+                                        'format' => 'dd/mm/yyyy',
+                                        //'todayHighlight' => true,
+                                        'todayBtn' => true,
+                                        'startDate' => Yii::$app->formatter->asDate('now', 'php:d-m-Y'),
+                                        'daysOfWeekDisabled' => "0,6",
+                                        'beforeShowDay' => $beforeShowDay,
+                                        'zIndexOffset' => 1050,
+                                        'style' => 'font-size:14pt;',
+                                        'todayHighlight' => false
+                                        // 'datesDisabled' => [
+                                        //     "20/03/2020"
+                                        // ],
+                                        // "endDate" => "25/03/2020"
+                                    ],
+                                    'options' => ['placeholder' => 'เลือกวันที่ต้องการนัด....'],
+
+                                ]);
+                                ?>
+                            <div class="help-block invalid-feedback"></div>
+                            </div>
+
+                                    <br>
                                     <p style="margin:0;">
                                         <small class="text-danger" style="font-size: 10pt;">
                                             <i class="fa fa-bullhorn"></i>
@@ -147,7 +183,7 @@ JS
                                 ?>
                             </div>
             
-                       
+                     <?php /*  
                             <div class="form-group field-appoint_date">
                                 <?php
                                 echo '<label class="control-label" style="font-size:14pt;"><b>วันที่นัดแพทย์</b></label>';
@@ -183,6 +219,7 @@ JS
                                 ?>
                                 <div class="help-block invalid-feedback"></div>
                             </div>
+                            */?>
                                
                             <div class="form-group">
                                 <p class="fw-600" style="font-size:14pt;">ระบุเวลานัด</p>
@@ -233,6 +270,8 @@ JS
                             echo '<h1 class="text-center" style="color:red">ไม่พบรายชื่อแพทย์</h1>';
                         }
                     ?>
+                    <div id="doctor-list"></div>
+                    <?php /*
                     <?php foreach ($doctors as $key => $value) : ?>
                         <li class="list-group-item list-group-doc-name" style="padding: 5px;">
                             <label class="control control-outline control-outline-danger control--radio" style="margin-bottom: 0;">
@@ -242,6 +281,7 @@ JS
                             </label>
                         </li>
                     <?php endforeach; ?>
+                    */?>
                 </div>
             </div>
 
