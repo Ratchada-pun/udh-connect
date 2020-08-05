@@ -175,6 +175,7 @@ var udhApp = {
         dataType: "JSON",
         success: function(data) {
           if (data.success) {
+            self.setProflie();
             if (liff.isInClient()) {
               self.sendMessages(data.FlexMessage);
             }
