@@ -130,8 +130,8 @@ CSS
                     <ul class="no-margin">
                         <li><strong>{{ item.service_type_name }}</strong> </li>
                         <li><strong>แผนก : </strong>{{ item.service_name }}</li>
-                        <li><strong>ห้องตรวจ/ช่องบริการ :</strong> {{ item.counter_service_name }}</li>
-                        <li v-if="item.doctor_name"><strong>แพทย์:</strong> {{ item.doctor_name ? item.doctor_title + item.doctor_name : ''  }}</li>
+                        <li><strong>ห้องตรวจ/ช่องบริการ :</strong> {{ item.counter_service_name }} </li>
+                        <li v-if="item.doctor_name"><strong>แพทย์ : </strong> {{ item.doctor_name ? item.doctor_title + item.doctor_name : ''  }}</li>
                     </ul>
                 </div>
                 
@@ -213,8 +213,8 @@ var app = new Vue({
             queueList = queueList.map(row => {
                 var history = historys.find(r => Number(r.counter_service_id)  === Number(row.counter_service_id))
                 var examination = examinations.find(r => Number(r.counter_service_id)  === Number(row.counter_service_id1))
-                return _this.updateObject(row, {
-                    count: _this.count[row.queue_detail_id] || 0,
+                return _this.updateObject(row, { //2 = กำลังเรียก,4 = เสร็จสิ้น
+                    count: (row.queue_status_id === '2' || row.queue_status_id === '4') ? 0 : _this.count[row.queue_detail_id] || 0, 
                     last_queue: history ? (historys[0].queue_no || '-') : (examination ? (examinations[0].queue_no || '-') : '-')
                 })
             })

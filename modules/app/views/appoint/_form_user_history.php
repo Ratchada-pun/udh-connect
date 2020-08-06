@@ -55,9 +55,9 @@ $this->title = "ประวัตินัดหมายแพทย์";
                     <div class="media-body">
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
-                                <p style="font-size: 16pt;margin-top:5px;">
+                                <!-- <p style="font-size: 16pt;margin-top:5px;">
                                     โรงพยาบาลอุดรธานี
-                                </p>
+                                </p> -->
                                 <p style="font-size: 16pt;margin-bottom:5px;">
                                     ประวัตินัดหมายแพทย์
                                 </p>
@@ -115,34 +115,17 @@ $this->title = "ประวัตินัดหมายแพทย์";
                                                     </small>
 
                                                 </div>
-
-                                                <div>
-                                                    <h class="text-muted" style="font-size: 12pt; ">
-                                                        แผนก :
-                                                    </h>
-                                                    <small style="font-size: 12pt;padding-left:5% ">
-                                                        <?= $value['deptDesc'] ?>
-                                                    </small>
-                                                </div>
-
-                                                <div>
-                                                    <h class="text-muted" style="font-size: 12pt; ">
-                                                        แพทย์ :
-                                                    </h>
-                                                    <small style="font-size: 12pt;padding-left:5% ">
-                                                        <?= $value['docName'] . ' ' . $value['docLName'] ?>
-                                                    </small>
-                                                </div>
+                             
                                             </button>
                                         </h2>
 
                                         <div id="collapseOne<?= $key ?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
 
-                                            <h5 class="card-header" style="color:#3e3737;;text-align:center;background-color:#f48fb1;">
+                                            <h5 class="card-header" style="color:#3e3737;;text-align:center;background-color:#ffc1e3">
                                                 ใบนัดหมาย
                                             </h5>
 
-                                            <div class="card-body" style="padding-top:5px;background-color:#ffc1e3;">
+                                            <div class="card-body" style="padding-top:5px;background-color:#fce4ec;">
                                                 <div style="padding-top:10px;">
                                                     <h1 class="text-muted" style="padding-left:5%;font-size: 12pt;">
                                                         ชื่อ :
