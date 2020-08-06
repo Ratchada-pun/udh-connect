@@ -889,13 +889,14 @@ class AppointController extends Controller
                 'dbo.Appoint.appoint_date' => $appoint_date,
                 'dbo.Appoint.maker' => 'queue online',
                 'dbo.Appoint.CID' => $cid,
-                'dbo.Appoint.doctor' => sprintf("% 6s", $doctor)
-            ]);
-        if (!empty($hn)) {
-            $query->andWhere([
+                'dbo.Appoint.doctor' => sprintf("% 6s", $doctor),
                 'dbo.Appoint.hn' => sprintf("% 7s", $hn)
             ]);
-        }
+        // if (!empty($hn)) {
+        //     $query->andWhere([
+        //         'dbo.Appoint.hn' => sprintf("% 7s", $hn)
+        //     ]);
+        // }
         $appoint = $query->one($db_mssql);
 
         if ($appoint && empty($hn)) {
