@@ -11,7 +11,7 @@ $('input[name="doc_option"]').on("change", function(e) {
     $("#doctor").removeClass("hidden");
   }
 });
-function inputEvent(){
+function inputEvent() {
   $('input[name="docname"]').on("change", function(e) {
     e.preventDefault();
     $(".appoint-time").html("");
@@ -35,13 +35,13 @@ inputEvent();
 function GetSchedules(docId) {
   $("#appoint-form").waitMe({
     effect: "roundBounce",
-    color: "#ff518a"
+    color: "#ff518a",
   });
   $.ajax({
     method: "GET",
     url: "/app/appoint/schedules",
     data: {
-      doc_id: docId
+      doc_id: docId,
     },
     dataType: "json",
     success: function(data) {
@@ -89,16 +89,16 @@ function GetSchedules(docId) {
         title: "Error!",
         text: errorThrown,
         icon: "error",
-        confirmButtonText: "ตกลง"
+        confirmButtonText: "ตกลง",
       });
-    }
+    },
   });
 }
 
 function GetScheduleTimes(date) {
   $("#appoint-form").waitMe({
     effect: "roundBounce",
-    color: "#ff518a"
+    color: "#ff518a",
   });
   var formArray = objectifyForm();
   $.ajax({
@@ -106,7 +106,7 @@ function GetScheduleTimes(date) {
     url: "/app/appoint/schedule-times",
     data: {
       ...formArray,
-      appoint_date: date
+      appoint_date: date,
     },
     dataType: "json",
     success: function(data) {
@@ -131,9 +131,9 @@ function GetScheduleTimes(date) {
         title: "Error!",
         text: errorThrown,
         icon: "error",
-        confirmButtonText: "ตกลง"
+        confirmButtonText: "ตกลง",
       });
-    }
+    },
   });
 }
 var form = $("#appoint-form");
@@ -194,11 +194,11 @@ function randomDoctor() {
     docIds.push($(this).val());
     docNames.push({
       id: $(this).val(),
-      name: $(this).data("docname")
+      name: $(this).data("docname"),
     });
   });
   var doctorId = docIds[Math.floor(Math.random() * docIds.length)];
-  var doctor = docNames.find(d => d.id === doctorId);
+  var doctor = docNames.find((d) => d.id === doctorId);
   $("#doctor").val(doctor.name);
   $("#doctor_id").val(doctorId);
   $(`input[value="${doctorId}"]`).prop("checked", true);
@@ -238,7 +238,7 @@ $form.on("beforeSubmit", function() {
       title: "Oops...!",
       text: "กรุณาระบุวันที่นัด",
       icon: "warning",
-      confirmButtonText: "ตกลง"
+      confirmButtonText: "ตกลง",
     });
     return false;
   }
@@ -247,13 +247,13 @@ $form.on("beforeSubmit", function() {
       title: "Oops...!",
       text: "กรุณาระบุเวลานัด",
       icon: "warning",
-      confirmButtonText: "ตกลง"
+      confirmButtonText: "ตกลง",
     });
     return false;
   }
   $("#appoint-form").waitMe({
     effect: "roundBounce",
-    color: "#ff518a"
+    color: "#ff518a",
   });
   $.ajax({
     url: "/app/appoint/save-appoint",
@@ -265,213 +265,216 @@ $form.on("beforeSubmit", function() {
         : "",
       appoint_time_to: formArray["AppointModel[appoint_time]"]
         ? formArray["AppointModel[appoint_time]"].substring(6, 11)
-        : ""
+        : "",
     },
     success: function(data) {
       // Implement successful
       ClearForm();
       var appoint = data.appoint;
-      udhApp.sendMessages([
-        {
-          type: "flex",
-          altText: "ข้อมูลการจอง",
-          contents: {
-            type: "bubble",
-            size: "giga",
-            hero: {
-              type: "image",
-              url: "https://docs.google.com/uc?id=1741EturA17E9hZSNGiWkoQ6ri-T28oQe",
-              size: "full",
-              aspectRatio: "30:13",
-              aspectMode: "fit",
-              backgroundColor: "#eeeeee"
+      if (liff.isInClient()) {
+        udhApp.sendMessages([
+          {
+            type: "flex",
+            altText: "ข้อมูลการจอง",
+            contents: {
+              type: "bubble",
+              size: "giga",
+              hero: {
+                type: "image",
+                url: "https://docs.google.com/uc?id=1741EturA17E9hZSNGiWkoQ6ri-T28oQe",
+                size: "full",
+                aspectRatio: "30:13",
+                aspectMode: "fit",
+                backgroundColor: "#eeeeee",
+              },
+              body: {
+                type: "box",
+                layout: "vertical",
+                spacing: "md",
+                backgroundColor: "#eeeeee",
+                contents: [
+                  {
+                    type: "text",
+                    text: "ใบนัดหมาย",
+                    wrap: true,
+                    weight: "bold",
+                    gravity: "center",
+                    size: "xxl",
+                    align: "center",
+                    color: "#62cb31",
+                  },
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    margin: "lg",
+                    spacing: "sm",
+                    contents: [
+                      {
+                        type: "box",
+                        layout: "baseline",
+                        spacing: "sm",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "HN :",
+                            color: "#aaaaaa",
+                            size: "lg",
+                            flex: 1,
+                          },
+                          {
+                            type: "text",
+                            text: appoint.hn || "ยังไม่มี hn",
+                            wrap: true,
+                            size: "lg",
+                            color: "#666666",
+                            flex: 4,
+                          },
+                        ],
+                      },
+                      {
+                        type: "box",
+                        layout: "baseline",
+                        spacing: "sm",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "ชื่อ",
+                            color: "#aaaaaa",
+                            size: "lg",
+                            flex: 1,
+                          },
+                          {
+                            type: "text",
+                            text: appoint.fullname,
+                            wrap: true,
+                            size: "lg",
+                            color: "#666666",
+                            flex: 4,
+                          },
+                        ],
+                      },
+                      {
+                        type: "box",
+                        layout: "baseline",
+                        spacing: "sm",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "แผนก",
+                            color: "#aaaaaa",
+                            size: "lg",
+                            flex: 1,
+                          },
+                          {
+                            type: "text",
+                            text: appoint.department_name,
+                            wrap: true,
+                            color: "#666666",
+                            size: "lg",
+                            flex: 4,
+                          },
+                        ],
+                      },
+                      {
+                        type: "box",
+                        layout: "baseline",
+                        spacing: "sm",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "แพทย์",
+                            color: "#aaaaaa",
+                            size: "lg",
+                            flex: 1,
+                          },
+                          {
+                            type: "text",
+                            text: appoint.doctor_name,
+                            wrap: true,
+                            color: "#666666",
+                            size: "lg",
+                            flex: 4,
+                          },
+                        ],
+                      },
+                      {
+                        type: "box",
+                        layout: "baseline",
+                        spacing: "sm",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "วันที่",
+                            color: "#aaaaaa",
+                            size: "lg",
+                            flex: 1,
+                          },
+                          {
+                            type: "text",
+                            text: appoint.appoint_date,
+                            wrap: true,
+                            color: "#666666",
+                            size: "lg",
+                            flex: 4,
+                          },
+                        ],
+                      },
+                      {
+                        type: "box",
+                        layout: "baseline",
+                        spacing: "sm",
+                        contents: [
+                          {
+                            type: "text",
+                            text: "เวลา",
+                            color: "#aaaaaa",
+                            size: "lg",
+                            flex: 1,
+                          },
+                          {
+                            type: "text",
+                            text: appoint.appoint_time + " น.",
+                            wrap: true,
+                            size: "lg",
+                            color: "#666666",
+                            flex: 4,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              footer: {
+                type: "box",
+                layout: "vertical",
+                backgroundColor: "#eeeeee",
+                contents: [
+                  {
+                    type: "text",
+                    text: appoint.hn
+                      ? "กดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่นัดหมาย!"
+                      : "กรุณาติดต่อห้องบัตร ตามวันและเวลาที่นัดหมาย!",
+                    margin: "xl",
+                    size: "xs",
+                    color: "#ff0000",
+                    style: "normal",
+                    align: "center",
+                  },
+                ],
+              },
             },
-            body: {
-              type: "box",
-              layout: "vertical",
-              spacing: "md",
-              backgroundColor: "#eeeeee",
-              contents: [
-                {
-                  type: "text",
-                  text: "ใบนัดหมาย",
-                  wrap: true,
-                  weight: "bold",
-                  gravity: "center",
-                  size: "xxl",
-                  align: "center",
-                  color: "#62cb31"
-                },
-                {
-                  type: "box",
-                  layout: "vertical",
-                  margin: "lg",
-                  spacing: "sm",
-                  contents: [
-                    {
-                      type: "box",
-                      layout: "baseline",
-                      spacing: "sm",
-                      contents: [
-                        {
-                          type: "text",
-                          text: "HN :",
-                          color: "#aaaaaa",
-                          size: "lg",
-                          flex: 1
-                        },
-                        {
-                          type: "text",
-                          text: appoint.hn || "ยังไม่มี hn",
-                          wrap: true,
-                          size: "lg",
-                          color: "#666666",
-                          flex: 4
-                        }
-                      ]
-                    },
-                    {
-                      type: "box",
-                      layout: "baseline",
-                      spacing: "sm",
-                      contents: [
-                        {
-                          type: "text",
-                          text: "ชื่อ",
-                          color: "#aaaaaa",
-                          size: "lg",
-                          flex: 1
-                        },
-                        {
-                          type: "text",
-                          text: appoint.fullname,
-                          wrap: true,
-                          size: "lg",
-                          color: "#666666",
-                          flex: 4
-                        }
-                      ]
-                    },
-                    {
-                      type: "box",
-                      layout: "baseline",
-                      spacing: "sm",
-                      contents: [
-                        {
-                          type: "text",
-                          text: "แผนก",
-                          color: "#aaaaaa",
-                          size: "lg",
-                          flex: 1
-                        },
-                        {
-                          type: "text",
-                          text: appoint.department_name,
-                          wrap: true,
-                          color: "#666666",
-                          size: "lg",
-                          flex: 4
-                        }
-                      ]
-                    },
-                    {
-                      type: "box",
-                      layout: "baseline",
-                      spacing: "sm",
-                      contents: [
-                        {
-                          type: "text",
-                          text: "แพทย์",
-                          color: "#aaaaaa",
-                          size: "lg",
-                          flex: 1
-                        },
-                        {
-                          type: "text",
-                          text: appoint.doctor_name,
-                          wrap: true,
-                          color: "#666666",
-                          size: "lg",
-                          flex: 4
-                        }
-                      ]
-                    },
-                    {
-                      type: "box",
-                      layout: "baseline",
-                      spacing: "sm",
-                      contents: [
-                        {
-                          type: "text",
-                          text: "วันที่",
-                          color: "#aaaaaa",
-                          size: "lg",
-                          flex: 1
-                        },
-                        {
-                          type: "text",
-                          text: appoint.appoint_date,
-                          wrap: true,
-                          color: "#666666",
-                          size: "lg",
-                          flex: 4
-                        }
-                      ]
-                    },
-                    {
-                      type: "box",
-                      layout: "baseline",
-                      spacing: "sm",
-                      contents: [
-                        {
-                          type: "text",
-                          text: "เวลา",
-                          color: "#aaaaaa",
-                          size: "lg",
-                          flex: 1
-                        },
-                        {
-                          type: "text",
-                          text: appoint.appoint_time + " น.",
-                          wrap: true,
-                          size: "lg",
-                          color: "#666666",
-                          flex: 4
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            footer: {
-              type: "box",
-              layout: "vertical",
-              backgroundColor: "#eeeeee",
-              contents: [
-                {
-                  type: "text",
-                  text: appoint.hn
-                    ? "กดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่นัดหมาย!"
-                    : "กรุณาติดต่อห้องบัตร ตามวันและเวลาที่นัดหมาย!",
-                  margin: "xl",
-                  size: "xs",
-                  color: "#ff0000",
-                  style: "normal",
-                  align: "center"
-                }
-              ]
-            }
-          }
-        }
-      ]);
+          },
+        ]);
+      }
+
       Swal.fire({
         title: "นัดแพทย์สำเร็จ",
         text: "",
         icon: "success",
         confirmButtonText: "ตกลง",
-        allowOutsideClick: false
-      }).then(result => {
+        allowOutsideClick: false,
+      }).then((result) => {
         if (result.value) {
           window.location.href = `/app/appoint/follow-up?hn=${data.hn || ""}&appoint_date=${data.appoint_date}&doctor=${
             data.doctor
@@ -486,9 +489,9 @@ $form.on("beforeSubmit", function() {
         title: "ไม่สามารถบันทึกข้อมูลได้!",
         text: errorThrown,
         icon: "error",
-        confirmButtonText: "ตกลง"
+        confirmButtonText: "ตกลง",
       });
-    }
+    },
   });
   return false; // prevent default submit
 });
