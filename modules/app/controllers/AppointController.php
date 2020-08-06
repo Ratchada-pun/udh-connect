@@ -892,25 +892,19 @@ class AppointController extends Controller
                 'dbo.Appoint.doctor' => sprintf("% 6s", $doctor),
                 'dbo.Appoint.hn' => sprintf("% 7s", $hn)
             ]);
-            if (!empty($hn)) {
-                $query->andWhere([
-                    'dbo.Appoint.hn' => sprintf("% 7s", $hn)
-                ]);
-            }
+        if (!empty($hn)) {
+            $query->andWhere([
+                'dbo.Appoint.hn' => sprintf("% 7s", $hn)
+            ]);
+        }
         $appoint = $query->one($db_mssql);
 
-        if ($appoint) {
+        if ($appoint && empty($hn)) {
             $appoint = ArrayHelper::merge($appoint, [
                 'firstName' => $profile['first_name'],
                 'lastName' => $profile['last_name'],
             ]);
         }
-        // if ($appoint && empty($hn)) {
-        //     $appoint = ArrayHelper::merge($appoint, [
-        //         'firstName' => $profile['first_name'],
-        //         'lastName' => $profile['last_name'],
-        //     ]);
-        // }
 
         return  $this->render('_form_follow_up', [
             'appoint' => $appoint,
