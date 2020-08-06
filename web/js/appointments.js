@@ -75,10 +75,10 @@ function GetSchedules(docId) {
         jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", startDate);
         GetScheduleTimes(data[0].schedule_date);
       } else {
-        var startDate = moment().format("DD/MM/YYYY");
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", null);
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", []);
+        // var startDate = moment().format("DD/MM/YYYY");
+        // jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
+        // jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", null);
+        // jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", []);
         //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", startDate);
         $("#appoint-form").waitMe("hide");
       }
