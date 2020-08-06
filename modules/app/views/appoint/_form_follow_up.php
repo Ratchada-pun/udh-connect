@@ -109,7 +109,10 @@ $this->title = "ใบนัดหมาย";
                                             HN :
                                         </h>
                                         <small style="font-size: 12pt; padding-left:10%">
-                                        <?= empty($appoint['hn'] ) ? : 'ไม่มี hn' ?>
+                                            <?= empty($appoint['hn'] ) ? : 'ไม่มี hn' ?>
+                                        <?php /*
+                                            <?= empty($appoint['hn'] ) ? : 'ไม่มี hn' ?>
+                                            */?>
                                         </small>
                                     </div>
                                     <div style="padding-top:15px;">

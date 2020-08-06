@@ -892,11 +892,16 @@ class AppointController extends Controller
                 'dbo.Appoint.doctor' => sprintf("% 6s", $doctor),
                 'dbo.Appoint.hn' => sprintf("% 7s", $hn)
             ]);
-        // if (!empty($hn)) {
-        //     $query->andWhere([
-        //         'dbo.Appoint.hn' => sprintf("% 7s", $hn)
-        //     ]);
-        // }
+            if (empty($hn)) {
+                $query->andWhere([
+                    'dbo.Appoint.hn' => sprintf("% 7s", $hn)
+                ]);
+            }
+            // if (!empty($hn)) {
+            //     $query->andWhere([
+            //         'dbo.Appoint.hn' => sprintf("% 7s", $hn)
+            //     ]);
+            // }
         $appoint = $query->one($db_mssql);
 
         if ($appoint && empty($hn)) {
