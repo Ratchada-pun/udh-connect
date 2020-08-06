@@ -582,13 +582,14 @@ class AppointController extends Controller
             ->innerJoin('tbl_med_schedule', 'tbl_med_schedule.med_schedule_id = tbl_med_schedule_time.med_schedule_id')
             ->innerJoin('tbl_doctor', 'tbl_doctor.doctor_id = tbl_med_schedule.doctor_id')
             ->innerJoin('tbl_service', 'tbl_service.service_id = tbl_med_schedule.service_id')
-            ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
             ->where([
                 //'tbl_doctor.doctor_code = :doctor_id' ,
                 //'tbl_service.service_code' => $attributes['dept_code'],
                 'tbl_med_schedule.schedule_date' => $appoint_date,
                 'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
             ])
+            ->andWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= UNIX_TIMESTAMP()')
+            ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
             ->orderBy('tbl_med_schedule_time.start_time ASC');
         if (!empty($attributes['doc_code'])) {
             $query->andWhere([
