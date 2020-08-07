@@ -588,7 +588,8 @@ class AppointController extends Controller
                 'tbl_med_schedule.schedule_date' => $appoint_date,
                 'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
             ])
-            ->andWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= UNIX_TIMESTAMP()')
+            ->andWhere('UNIX_TIMESTAMP() >= UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time ))')
+            ->andWhere('UNIX_TIMESTAMP() <= UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time ))')
             ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
             ->orderBy('tbl_med_schedule_time.start_time ASC');
         if (!empty($attributes['doc_code'])) {
