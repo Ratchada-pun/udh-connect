@@ -2,20 +2,22 @@
 
 $('input[name="doc_option"]').on("change", function(e) {
   e.preventDefault();
-  if ($(this).val() === "0") {
-    $("#doctor").addClass("hidden");
-    $("#doctor, #doctor_id").val("");
-    $('input[name="docname"]').prop("checked", false);
-    ClearForm();
-  } else {
-    $("#doctor").removeClass("hidden");
-  }
+  // if ($(this).val() === "0") {
+  //   $("#doctor").addClass("hidden");
+  //   $("#doctor, #doctor_id").val("");
+  //   $('input[name="docname"]').prop("checked", false);
+  //   ClearForm();
+  // } else {
+  //   $("#doctor").removeClass("hidden");
+  // }
 });
+
 function inputEvent() {
   $('input[name="docname"]').on("change", function(e) {
     e.preventDefault();
     $(".appoint-time").html("");
     if ($(this).is(":checked")) {
+      $("#doctor").removeClass("hidden");
       $("#doctor").val($(this).data("docname"));
       $("#doctor_id").val($(this).val());
       $(this).prop("checked", true);
@@ -34,6 +36,7 @@ inputEvent();
 
 function GetSchedules(docId) {
   $("#appoint-form").waitMe({
+
     effect: "roundBounce",
     color: "#ff518a",
   });
@@ -72,14 +75,15 @@ function GetSchedules(docId) {
         jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
         jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", endDate);
         jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", datesDisabled);
-        //jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", startDate);
-        GetScheduleTimes(data[0].schedule_date);
+        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", '');
+        //GetScheduleTimes(data[0].schedule_date);
+        $("#appoint-form").waitMe("hide");
       } else {
         var startDate = moment().format("DD/MM/YYYY");
         jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
         jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", null);
         jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", []);
-        //jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", startDate);
+        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", '');
         $("#appoint-form").waitMe("hide");
       }
     },
@@ -114,12 +118,23 @@ function GetScheduleTimes(date) {
       $(".appoint-time").html("");
       if (data.schedule_times.length) {
         for (let index = 0; index < data.schedule_times.length; index++) {
-          $(".appoint-time").append(`<label class="control control-solid control-solid-success control--radio">
-                        ${data.schedule_times[index].text}
-                        <input type="radio" name="AppointModel[appoint_time]" value="${data.schedule_times[index].value}" />
-                            <span class="control__indicator"></span>
-                    </label>`);
+          if(data.schedule_times[index].disabled){
+            $(".appoint-time").append(`<label class="control control-solid control-solid-success control--radio">
+            ${data.schedule_times[index].text}
+            <input type="radio" name="AppointModel[appoint_time]" value="${data.schedule_times[index].value}" disabled />
+                <span class="control__indicator"></span>
+        </label>`);
+          }else{
+            $(".appoint-time").append(`<label class="control control-solid control-solid-success control--radio">
+            ${data.schedule_times[index].text}
+            <input type="radio" name="AppointModel[appoint_time]" value="${data.schedule_times[index].value}"  />
+                <span class="control__indicator"></span>
+        </label>`);
+          }
+         
         }
+      }else{
+        $(".appoint-time").html(`<div style="text-align: center;font-size:16pt;color:#ff0000;">ไม่พบเวลาทำการแพทย์ กรุณาเลือกวันนัดหมายใหม่</div>`);
       }
       $("#doctor-list").html(data.list);
       $("#appoint-form").waitMe("hide");
@@ -177,7 +192,7 @@ jQuery("#appointmodel-appoint_date-kvdate").on("hide", function() {
 $("#appointmodel-appoint_date-kvdate")
   .kvDatepicker()
   .on("changeDate", function(e) {
-    GetScheduleTimes(e.format("yyyy-mm-dd"));
+    GetScheduleTimes(e.format("yyyy-mm-dd")); //เรียกดูตารางเวลาแพทย์
     $("#appointmodel-appoint_date-kvdate").kvDatepicker("hide");
   });
 
@@ -485,9 +500,11 @@ $form.on("beforeSubmit", function() {
     },
     error: function(jqXHR, textStatus, errorThrown) {
       $("#appoint-form").waitMe("hide");
+      console.log(jqXHR)
+      var message = jqXHR.hasOwnProperty('responseJSON') && jqXHR.responseJSON.hasOwnProperty('message') ? jqXHR.responseJSON.message : errorThrown
       Swal.fire({
         title: "ไม่สามารถบันทึกข้อมูลได้!",
-        text: errorThrown,
+        text: message,
         icon: "error",
         confirmButtonText: "ตกลง",
       });
