@@ -10,12 +10,13 @@ const UDH_PROFILE = "udh-profile";
  * Initialize LIFF
  * @param {string} myLiffId The LIFF ID of the selected element
  */
-var config = {
+var config = { //ไลน์พี่บอล
   redirectUri: "https://www.udhconnect.info",
   liffId: "1654023325-EkWmY9PA",
   ChannelAccessToken:"FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=",
   RichMenuId:"richmenu-349a649ee1b2e2f659ae2da8e24df4ef"
 };
+
 
 var udhApp = {
   initializeLiff: async function(myLiffId) {
