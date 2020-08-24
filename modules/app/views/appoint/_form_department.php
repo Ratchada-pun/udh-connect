@@ -104,6 +104,38 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                                 <input type="text" class="form-control" placeholder="ค้นหาแผนก..." id="myInput" autofocus autocomplete="off">
                             </div>
                             <br>
+                    <?php /*
+                            <?php if(!empty($DeptGroups)): ?>
+                                <div class="list-group" id="list-group">
+                                    <?php foreach ($DeptGroups as $key => $value) : ?>
+                                        <div class="input-group">
+                                            <a href="<?= Url::to(['/app/appoint/create-sub-department', 'id' => $key]) ?>" class="list-group-item btn btn-outline-success list-group-department">
+                                                <img src="<?= Yii::getAlias('@web/images/doctor.png') ?>" class="img-responsive" style="display: inline-block;">
+                                                <?= $value ?>
+                                                <span class="icon-input">
+                                                </span>
+                                            </a>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if(empty($DeptGroups)) : ?>
+                                <div class="list-group" id="list-group">
+                                    <?php foreach ($DeptGroups as $key => $value) : ?>
+                                        <div class="input-group">
+                                            <a href="<?= Url::to(['/app/appoint/create-sub-department', 'id' => $key]) ?>" class="list-group-item btn btn-outline-success list-group-department">
+                                                <img src="<?= Yii::getAlias('@web/images/doctor.png') ?>" class="img-responsive" style="display: inline-block;">
+                                                <?= $value ?>
+                                                <span class="icon-input">
+                                                </span>
+                                            </a>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                            */?>                   
+                                    
                             <div class="list-group" id="list-group">
                                 <?php foreach ($DeptGroups as $key => $value) : ?>
                                     <div class="input-group">
@@ -116,6 +148,8 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                                     </div>
                                 <?php endforeach; ?>
                             </div>
+
+                         
                         </div>
 
                     </div>

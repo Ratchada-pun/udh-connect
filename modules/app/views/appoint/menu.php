@@ -17,7 +17,7 @@ $profile = $session->get('user');
 
 <div class="hidden-lg hidden-md">
     <div data-toggle="tab" data-target="#tab-settings" class="content-menu-logo center-block">
-        <div class="card-icon-border-large border-pink"><img src="/images/udh_logo.png" alt="logo" class="img-responsive center-block logo-menu"></div>
+        <div class="card-icon-border-large border-pink"><img src="/images/logonew.png" alt="logo" class="img-responsive center-block logo-menu"></div>
     </div>
     <div id="mobile-menu-bs" class="mobile-menu-bs bootstrap">
         <ul class="nav nav-tabs">

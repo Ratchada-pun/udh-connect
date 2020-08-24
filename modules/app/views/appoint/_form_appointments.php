@@ -72,9 +72,6 @@ JS
                     <div class="media-body">
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
-                                <!-- <p style="font-size: 16pt;margin-top:5px;">
-                                    โรงพยาบาลอุดรธานี
-                                </p> -->
                                 <p style="font-size: 16pt;margin-bottom:5px;">
                                     นัดหมายแพทย์
                                 </p>
@@ -99,96 +96,68 @@ JS
                                         </a>
                                     </div>
                                     <br>
-
-                            <div class="form-group field-appoint_date">
-                                <?php
-                                echo '<label class="control-label" style="font-size:14pt;"><b>วันที่นัดแพทย์</b></label>';
-                                echo '<p style="margin:0;"><small class="text-danger" style="font-size: 10pt;"> <i class="fa fa-bullhorn"></i>โปรดเลือกวันที่</small></p>';
-
-                                echo DatePicker::widget([
-                                    'model' => $model,
-                                    'attribute' => 'appoint_date',
-                                    //'type' => DatePicker::TYPE_INLINE,
-                                    'readonly' => true,
-                                    'pickerIcon' => '<i class="fa fa-calendar"></i>',
-                                    'removeIcon' => '<i class="fa fa-trash"></i>',
-                                    'language' => 'th',
-                                    'pluginOptions' => [
-                                        'autoclose' => true,
-                                        'format' => 'dd/mm/yyyy',
-                                        //'todayHighlight' => true,
-                                        'todayBtn' => true,
-                                        'startDate' => Yii::$app->formatter->asDate('now', 'php:d-m-Y'),
-                                        'daysOfWeekDisabled' => "0,6",
-                                        'beforeShowDay' => $beforeShowDay,
-                                        'zIndexOffset' => 1050,
-                                        'style' => 'font-size:14pt;',
-                                        'todayHighlight' => false
-                                        // 'datesDisabled' => [
-                                        //     "20/03/2020"
-                                        // ],
-                                        // "endDate" => "25/03/2020"
-                                    ],
-                                    'options' => ['placeholder' => 'เลือกวันที่ต้องการนัด....'],
-
-                                ]);
-                                ?>
-                            <div class="help-block invalid-feedback"></div>
-                            </div>
-
-                                    <br>
-                                    <p style="margin:0;">
-                                        <small class="text-danger" style="font-size: 10pt;">
-                                            <i class="fa fa-bullhorn"></i>
-                                            โปรดเลือก
-                                        </small>
-                                    </p>  
-
-                                    <div class="btn-group" data-toggle="buttons">
-                                        <label class="btn btn-pill btn-outline-success btn-doc-option" style="border: 1px solid #e5e9ec;text-align:center;font-size:14pt;">
-                                            <input type="radio" name="doc_option" id="option" value="0">
-                                            ไม่ระบุแพทย์
-                                        </label>
-                                        <label class="btn btn-pill btn-outline-success btn-doc-option" style="border: 1px solid #e5e9ec;text-align:center;font-size:14pt;">
-                                            <input type="radio" name="doc_option" id="option1" data-toggle="modal" data-target="#exampleModal3" value="selection">
-                                            ระบุแพทย์
-                                        </label>
-                                        <!-- <label id="btn-random" class="btn btn-pill btn-outline-success btn-doc-option" style="border: 1px solid #e5e9ec;">
-                                            <input type="radio" name="doc_option" id="option2"  value="random">
-                                            แนะนำแพทย์ให้
-                                        </label> -->
-                                    </div>
+             
+                                <div class="form-group">
+                                    <p class="fw-600" style="font-size:14pt;">
+                                        แพทย์ที่ต้องการนัด
+                                    </p>
+                                </div>
+                                <p style="margin:0;">
+                                    <small class="text-danger" style="font-size: 10pt;">
+                                    <i class="fa fa-bullhorn"></i> กดเพื่อเลือกแพทย์
+                                    </small>
+                                </p>
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-pill btn-success btn-doc-option" style="border: 1px solid #e5e9ec;text-align:center;font-size:14pt;">
+                                        <input type="radio" name="doc_option" id="option1" data-toggle="modal" data-target="#exampleModal3" value="selection">
+                                            เลือกแพทย์
+                                    </label>
+                                    <!-- <label class="btn btn-pill btn-outline-success btn-doc-option" style="border: 1px solid #e5e9ec;text-align:center;font-size:14pt;">
+                                        <input type="radio" name="doc_option" id="option" value="0">
+                                        ไม่ระบุแพทย์
+                                    </label> -->
+                                
+                                    <!-- <label id="btn-random" class="btn btn-pill btn-outline-success btn-doc-option" style="border: 1px solid #e5e9ec;">
+                                        <input type="radio" name="doc_option" id="option2"  value="random">
+                                        แนะนำแพทย์ให้
+                                    </label> -->
+                                </div>
 
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <?= Html::input('text', 'doctor', '', [
-                                    'id' => 'doctor',
-                                    'class' => 'form-control hidden',
-                                    'placeholder' => 'ไม่ระบุแพทย์',
-                                    'readonly' => 'readonly',
-                                    'style' =>'font-size:12pt;'
-                                ]) ?>
-                                <?=
-                                    Html::activeHiddenInput($model, 'doc_code', [
-                                        'id' => 'doctor_id'
-                                    ]);
-                                ?>
-                                <?=
-                                    Html::activeHiddenInput($model, 'dept_code', [
-                                        'id' => 'dept_code',
-                                        'value' => $dept_code
-                                    ]);
-                                ?>
+                                <?php if (!empty($doctors)) : ?>
+                                    <label class="control-label" for="" style="font-size: 14pt; color: #53505f;">
+                                        <b>
+                                            ชื่อแพทย์
+                                        </b>
+                                    </label>
+                                    <?= Html::input('text', 'doctor', '', [
+                                        'id' => 'doctor',
+                                        'class' => 'form-control ',
+                                        'placeholder' => 'กรุณา เลือกแพทย์',
+                                        'readonly' => 'readonly',
+                                        'style' =>'font-size:12pt;'
+                                    ]) ?>
+                                    <?=
+                                        Html::activeHiddenInput($model, 'doc_code', [
+                                            'id' => 'doctor_id'
+                                        ]);
+                                    ?>
+                                    <?=
+                                        Html::activeHiddenInput($model, 'dept_code', [
+                                            'id' => 'dept_code',
+                                            'value' => $dept_code,
+                                        ]);
+                                    ?>
+                                    <?php endif; ?>
                             </div>
-            
-                     <?php /*  
+                            <br>
                             <div class="form-group field-appoint_date">
                                 <?php
-                                echo '<label class="control-label" style="font-size:14pt;"><b>วันที่นัดแพทย์</b></label>';
-                                echo '<p style="margin:0;"><small class="text-danger" style="font-size: 10pt;"> <i class="fa fa-bullhorn"></i>โปรดเลือกวันที่แพทย์ออกตรวจ</small></p>';
-
+                                echo '<label class="control-label" style="font-size:14pt; color: #53505f;"><b>วันที่นัดแพทย์</b></label>';
+                                echo '<p style="margin:0;"><small class="text-danger" style="font-size: 10pt;"> <i class="fa fa-bullhorn"></i> โปรดเลือกวันที่แพทย์ออกตรวจ</small></p>';
                                 echo DatePicker::widget([
                                     'model' => $model,
                                     'attribute' => 'appoint_date',
@@ -219,7 +188,7 @@ JS
                                 ?>
                                 <div class="help-block invalid-feedback"></div>
                             </div>
-                            */?>
+                            
                                
                             <div class="form-group">
                                 <p class="fw-600" style="font-size:14pt;">ระบุเวลานัด</p>
@@ -270,8 +239,7 @@ JS
                             echo '<h1 class="text-center" style="color:red">ไม่พบรายชื่อแพทย์</h1>';
                         }
                     ?>
-                    <div id="doctor-list"></div>
-                    <?php /*
+                    <!-- <div id="doctor-list"></div> -->
                     <?php foreach ($doctors as $key => $value) : ?>
                         <li class="list-group-item list-group-doc-name" style="padding: 5px;">
                             <label class="control control-outline control-outline-danger control--radio" style="margin-bottom: 0;">
@@ -281,7 +249,6 @@ JS
                             </label>
                         </li>
                     <?php endforeach; ?>
-                    */?>
                 </div>
             </div>
 

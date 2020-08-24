@@ -75,7 +75,7 @@ $this->title = "ใบนัดหมาย";
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-top:5px;">
-                                    โรงพยาบาลอุดรธานี
+                                ใบนัดหมาย
                                 </p>
                             </strong>
                         </p>
@@ -97,11 +97,11 @@ $this->title = "ใบนัดหมาย";
                             </div>
                             */ ?>
                             <br>
-                            <div class="card card-shadow ">
+                            <!-- <div class="card card-shadow ">
                                 <h5 class="card-header" style="color: #ffff;text-align:center;">
                                     ใบนัดหมาย
                                 </h5>
-                            </div>
+                            </div> -->
                             <div class="card-body card_chart">
                                 <address>
                                     <div style="padding-top:15px;">
@@ -109,9 +109,10 @@ $this->title = "ใบนัดหมาย";
                                             HN :
                                         </h>
                                         <small style="font-size: 12pt; padding-left:10%">
-                                            <?= empty($appoint['hn'] ) ?  'ไม่มี hn' : $appoint['hn']  ?>
+                                            <?= empty($appoint['hn']) ?  'ไม่มี hn' : $appoint['hn']  ?>
                                         </small>
                                     </div>
+
                                     <div style="padding-top:15px;">
                                         <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
                                             ชื่อ :

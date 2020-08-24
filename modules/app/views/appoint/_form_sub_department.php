@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use kartik\form\ActiveForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use app\assets\SweetAlert2Asset;
 
 
 /* @var $this yii\web\View */
@@ -11,8 +12,7 @@ use yii\helpers\Url;
 /* @var $form yii\widgets\ActiveForm */
 
 $this->title = "นัดหมายแพทย์";
-
-
+SweetAlert2Asset::register($this);
 ?>
 
 <style>
@@ -110,6 +110,8 @@ $this->title = "นัดหมายแพทย์";
                                     <input type="text" class="form-control" placeholder="ค้นหาแผนก..."  id="myInput" autofocus autocomplete="off">
                                 </div>
                                 <br>
+                              
+                                <?php /*
                                 <?php foreach ($deptCodeSub as $key => $value) : ?>
                                     <div class="input-group">
                                         <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $value['deptCode']]) ?>" class="list-group-item btn btn-outline-success list-group-dept">
@@ -118,11 +120,21 @@ $this->title = "นัดหมายแพทย์";
                                         </a>
                                     </div>
                                 <?php endforeach; ?>
+                           */ ?>
+                                <?php foreach ($deptCodeSub as $key => $value) : ?>
+                                    <div class="input-group">
+                                        <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $value['deptCode']]) ?>" data-key="<?=$value['deptCode']?>" class="list-group-item btn btn-outline-success list-group-dept">
+                                            <img src="<?= ArrayHelper::getValue($images, $value['deptCode']) ?>" class="img-responsive" style="display: inline-block;">
+                                            <?= $value['deptDesc'] ?>
+                                        </a>
+                                    </div>
+                                <?php endforeach; ?>
+                           
                             </div>
                             <br>
                             <div>
                                 <p>
-                                    <a href="/app/appoint/create-department" class="btn btn-info btn-lg btn-block text-center">
+                                    <a href="/app/appoint/create-department" class="btn btn-secondary btn-lg btn-block text-center">
                                         <i class="fa fa-reply"></i>
                                         ย้อนกลับ
                                     </a>
@@ -182,6 +194,26 @@ $('#myInput').on('keyup', function(){
     if(!filterKey){
         $(listDept).show()
     }
+})
+
+$('.list-group-dept').on('click', function(e){
+    e.preventDefault();
+    var key = $(this).data('key')
+    Swal.fire({
+        title: '',
+        text: "ต้องการระบุแพทย์หรือไม่?",
+        icon: 'question',
+        showCancelButton: true,
+        allowOutsideClick: false,
+        confirmButtonText: 'ต้องการ',
+        cancelButtonText: 'ไม่ต้องการ',
+    }).then((result) => {
+        if (result.value) {
+            window.location.href = '/app/appoint/create-appointments?id='+key
+        }else{
+            window.location.href = '/app/appoint/appointments-undocter?id='+key
+        }
+    })
 })
 JS
 );

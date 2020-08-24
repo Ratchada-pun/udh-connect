@@ -73,7 +73,7 @@ class AppointController extends Controller
         // if (!$session->get('user')) {
         //     return $this->redirect(['/']);
         // }
-        
+
         // $session = Yii::$app->session;
         // $session->remove('user');
         // $response = Yii::$app->response;
@@ -100,8 +100,11 @@ class AppointController extends Controller
 
         return $this->render('_form_department.php', [
             'DeptGroups' => $DeptGroups,
+            //  'DeptCodeSub' => $DeptCodeSub
         ]);
     }
+
+
 
     public function actionCreateSubDepartment($id) //เลือกแผนกย่อย
     {
@@ -236,7 +239,7 @@ class AppointController extends Controller
      * @param {string} id > รหัสแผนก
      * @param {number} doc_id รหัสประจำตัวแพทย์
      */
-    public function actionCreateAppointments($id, $doc_id = '')
+    public function actionCreateAppointments($id, $doc_id = '')  //ระบุแพทย์
     {
         $db_mssql = Yii::$app->mssql;
         $db_queue = Yii::$app->db_queue;
@@ -293,7 +296,6 @@ class AppointController extends Controller
 
         $doctors_list = [];
         //$schedules = [];
-
 
 
         //รายชื่อแผนกในระบบคิว
@@ -372,9 +374,92 @@ class AppointController extends Controller
 
 
 
+    public function actionAppointmentsUndocter($id, $doc_id = '') //ไม่ระบุแพทย์
+    {
+        $db_mssql = Yii::$app->mssql;
+        $db_queue = Yii::$app->db_queue;
+        $model = new AppointModel();
+
+        //ชื่อแผนกย่อย (ใช้ตรง header)
+        $deptCodeSub = $db_mssql->createCommand(
+            'SELECT
+            REPLACE(dbo.DEPT.deptCode, \' \', \'\') as deptCode,
+            dbo.DEPT.deptDesc
+            FROM
+            dbo.DEPTGROUP
+            INNER JOIN dbo.DEPT ON dbo.DEPT.deptCode = dbo.DEPTGROUP.deptCode
+            WHERE
+            dbo.DEPT.deptCode = :deptCode
+            '
+        )
+            ->bindValues([
+                ':deptCode' => $id
+            ])
+            ->queryOne();
 
 
-    public function actionCreateAppointments1($id)
+        //รายชื่อแพทย์ทั้งหมดตามแผนกที่เลือก
+        $docCode = $db_mssql->createCommand(
+            'SELECT
+        REPLACE(dbo.DOCC.docCode, \' \', \'\') as docCode,
+        REPLACE(dbo.DOCC.doctitle, \' \', \'\') as doctitle,
+        REPLACE(dbo.DOCC.docName, \' \', \'\') as docName,
+        REPLACE(dbo.DOCC.docLName, \' \', \'\') as docLName,
+        dbo.DEPT.deptDesc,
+        dbo.DEPT.deptCode
+        FROM
+        dbo.DOCC
+        INNER JOIN dbo.Appoint_dep_doc ON dbo.Appoint_dep_doc.docCode = dbo.DOCC.docCode
+        LEFT JOIN dbo.DEPT ON dbo.DEPT.deptCode = dbo.Appoint_dep_doc.deptCode
+        WHERE
+        dbo.DEPT.deptCode = :deptCode
+        '
+        )
+            ->bindValues([
+                ':deptCode' => $id
+            ])
+            ->queryAll();
+
+
+        // รหัสแผนกที่เปิดให้บริการจองนัดหมาย
+        $query_dept_codes = $db_mssql->createCommand('SELECT
+            DEPTGROUP.*
+        FROM
+            DEPTGROUP')
+            ->queryAll();
+
+        $doctors_list = [];
+
+        $dept_codes = $this->replaceEmptyString(ArrayHelper::getColumn($query_dept_codes, 'deptCode'));
+
+        //รายชื่อแผนกในระบบคิว
+        $service = $db_queue->createCommand('SELECT
+        tbl_service.service_id,
+        tbl_service.service_name,
+        tbl_service.service_code,
+        tbl_service_group.service_group_name,
+        tbl_service.icon_path,
+        tbl_service.icon_base_url
+    FROM
+        tbl_service
+        INNER JOIN tbl_service_group ON tbl_service.service_group_id = tbl_service_group.service_group_id
+    WHERE
+        tbl_service.service_code = ' . $id . '')
+            ->queryOne();
+
+        return $this->render('_form_undocter_appointments', [
+            'deptCodeSub' => $deptCodeSub,
+            'docCode' => $docCode, //รายชื่อแพทย์ทั้งหมดตามแผนกที่เลือก
+            'service' => $service,
+            'dept_code' => $id,
+            'model' => $model,
+
+        ]);
+    }
+
+
+
+    public function actionCreateAppointments1($id) 
     {
         $db_mssql = Yii::$app->mssql;
         $db_queue = Yii::$app->db_queue;
@@ -520,41 +605,23 @@ class AppointController extends Controller
 
     public function actionScheduleTimes()  //ตารางแพทย์
     {
+        $formatter = Yii::$app->formatter;
+        $date = new \DateTime($formatter->asDate('now', 'php:Y-m-d H:i:s'));
+        $date->modify('+' . 1 . ' hours'); // เวลาปัจจุบัน + นาทีที่หาได้
+        $unix_time = $formatter->asTimestamp($date);
+
         $attributes = \Yii::$app->request->post('AppointModel', []);
-        $appoint_date = \Yii::$app->request->post('appoint_date', '');
+        $appoint_date = \Yii::$app->request->post('appoint_date', '');  //;วันที่แพทย์ออกตรวจ
+        $current_date = Yii::$app->formatter->asDate('now', 'php:Y-m-d'); //;วัน/เวลา/ปัจจุบัน
+        $appoint_date_th = explode("-",$appoint_date);
+        $appoint_date_th = ($appoint_date_th[0] + 543).$appoint_date_th[1].$appoint_date_th[2];
 
         $db_mssql = Yii::$app->mssql;
         $db_queue = Yii::$app->db_queue;
-        // $schedule_times = $db_queue->createCommand('SELECT
-        //     tbl_med_schedule.schedule_date,
-        //     tbl_med_schedule_time.start_time,
-        //     tbl_med_schedule_time.end_time,
-        //     tbl_doctor.doctor_id,
-        //     tbl_doctor.doctor_title,
-        //     tbl_doctor.doctor_name,
-        //     tbl_med_schedule.service_id,
-        //     tbl_service.service_code,
-        //     tbl_service.service_name,
-        //     tbl_med_schedule_time.med_schedule_time_qty
-        //     FROM
-        //     tbl_med_schedule_time
-        //     INNER JOIN tbl_med_schedule ON tbl_med_schedule.med_schedule_id = tbl_med_schedule_time.med_schedule_id
-        //     INNER JOIN tbl_doctor ON tbl_doctor.doctor_id = tbl_med_schedule.doctor_id
-        //     INNER JOIN tbl_service ON tbl_service.service_id = tbl_med_schedule.service_id
-        //     WHERE
-        //     tbl_doctor.doctor_code = :doctor_id AND
-        //     tbl_med_schedule.schedule_date = :schedule_date  AND
-        //     LEFT(tbl_service.service_name,8) = \'ห้องตรวจ\'
+        $set_time = 60;
 
 
-        //     ORDER BY
-        //     tbl_med_schedule_time.start_time ASC')
-        //     ->bindValues([
-        //         ':doctor_id' => $attributes['doc_code'],
-        //         ':schedule_date' => $appoint_date,
-        //     ])
-        //     ->queryAll();
-        $query_doc_codes = $db_mssql->createCommand('SELECT
+        $query_doc_codes = $db_mssql->createCommand('SELECT   
                 REPLACE(Appoint_dep_doc.docCode, \' \', \'\') as docCode
             FROM
                 Appoint_dep_doc
@@ -562,9 +629,9 @@ class AppointController extends Controller
                 Appoint_dep_doc.deptCode = :deptCode')
             ->bindValues([':deptCode' => $attributes['dept_code']])
             ->queryAll();
-        $doc_codes = $this->replaceEmptyString(ArrayHelper::getColumn($query_doc_codes, 'docCode'));
+        $doc_codes = $this->replaceEmptyString(ArrayHelper::getColumn($query_doc_codes, 'docCode')); //แพทย์
 
-        $query = (new \yii\db\Query())
+        $query = (new \yii\db\Query())  //ตารางเวลาแพทย์
             ->select([
                 'tbl_med_schedule.schedule_date',
                 'tbl_med_schedule_time.start_time',
@@ -576,27 +643,38 @@ class AppointController extends Controller
                 'tbl_med_schedule.service_id',
                 'tbl_service.service_code',
                 'tbl_service.service_name',
-                'tbl_med_schedule_time.med_schedule_time_qty'
+                'tbl_med_schedule_time.med_schedule_time_qty',
+                'tbl_med_schedule_time.med_schedule_time_online_qty',
             ])
             ->from('tbl_med_schedule_time')
             ->innerJoin('tbl_med_schedule', 'tbl_med_schedule.med_schedule_id = tbl_med_schedule_time.med_schedule_id')
             ->innerJoin('tbl_doctor', 'tbl_doctor.doctor_id = tbl_med_schedule.doctor_id')
             ->innerJoin('tbl_service', 'tbl_service.service_id = tbl_med_schedule.service_id')
             ->where([
-                //'tbl_doctor.doctor_code = :doctor_id' ,
-                //'tbl_service.service_code' => $attributes['dept_code'],
                 'tbl_med_schedule.schedule_date' => $appoint_date,
                 'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
             ])
-            ->andWhere('UNIX_TIMESTAMP() >= UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time ))')
-            ->andWhere('UNIX_TIMESTAMP() <= UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time ))')
+
             ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
             ->orderBy('tbl_med_schedule_time.start_time ASC');
+
+        if ($current_date == $appoint_date) {  //ถ้าวันที่นัดแพทย์ เท่ากับ วันที่แพทย์ออกตรวจ
+            $query->andWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= ' . $unix_time); //;เวลาเริ่มต้นที่แพย์ออกตรวจ มากกว่าเท่ากับ เวลาปัจุบัน
+            $query->orWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time )) >= ' . $unix_time); //;เวลาสิ้นสุดที่แพย์ออกตรวจ มากกว่าเท่ากับ เวลาปัจุบัน
+        }
+
+
         if (!empty($attributes['doc_code'])) {
             $query->andWhere([
                 'tbl_doctor.doctor_code' =>  $attributes['doc_code']
             ]);
         }
+        if (empty($attributes['doc_code'])) {
+            $query->andWhere([
+                'tbl_doctor.doctor_code' =>  '0'
+            ]);
+        }
+
         $schedule_times = $query->all($db_queue);
 
         $result = [];
@@ -604,102 +682,58 @@ class AppointController extends Controller
         $doctorids = [];
         $list = '';
 
-        $rows = (new \yii\db\Query())
-            ->select([
-                'tbl_med_schedule.schedule_date',
-                'tbl_med_schedule_time.start_time',
-                'tbl_med_schedule_time.end_time',
-                'tbl_doctor.doctor_id',
-                'tbl_doctor.doctor_title',
-                'tbl_doctor.doctor_name',
-                'tbl_doctor.doctor_code',
-                'tbl_med_schedule.service_id',
-                'tbl_service.service_code',
-                'tbl_service.service_name',
-                'tbl_med_schedule_time.med_schedule_time_qty'
-            ])
-            ->from('tbl_med_schedule_time')
-            ->innerJoin('tbl_med_schedule', 'tbl_med_schedule.med_schedule_id = tbl_med_schedule_time.med_schedule_id')
-            ->innerJoin('tbl_doctor', 'tbl_doctor.doctor_id = tbl_med_schedule.doctor_id')
-            ->innerJoin('tbl_service', 'tbl_service.service_id = tbl_med_schedule.service_id')
-            ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
-            ->where([
-                'tbl_med_schedule.schedule_date' => $appoint_date,
-                'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
-            ])
-            ->orderBy('tbl_med_schedule_time.start_time ASC')
-            ->all($db_queue);
-
-        foreach ($rows as $schedule_time) {
-            if (ArrayHelper::isIn($schedule_time['doctor_code'], $doc_codes)) {
-                if (!ArrayHelper::isIn($schedule_time['doctor_id'], $doctorids)) {
-                    $doctor[] = [
-                        'doctor_id' => $schedule_time['doctor_id'],
-                        'doctor_name' => $schedule_time['doctor_title'] . $schedule_time['doctor_name'],
-                    ];
-                    if ($attributes['doc_code'] == $schedule_time['doctor_code']) {
-                        $list .= '<li class="list-group-item list-group-doc-name" style="padding: 5px;">
-                    <label class="control control-outline control-outline-danger control--radio" style="margin-bottom: 0;">
-                        ' . $schedule_time['doctor_title'] . $schedule_time['doctor_name'] . '
-                        <input type="radio" id="' . $schedule_time['doctor_code'] . '" name="docname" value="' . $schedule_time['doctor_code'] . '" data-docname="' . $schedule_time['doctor_title'] . $schedule_time['doctor_name'] . '" checked="checked">
-                        <span class="control__indicator"></span>
-                    </label>
-                </li>';
-                    } else {
-                        $list .= '<li class="list-group-item list-group-doc-name" style="padding: 5px;">
-                        <label class="control control-outline control-outline-danger control--radio" style="margin-bottom: 0;">
-                            ' . $schedule_time['doctor_title'] . $schedule_time['doctor_name'] . '
-                            <input type="radio" id="' . $schedule_time['doctor_code'] . '" name="docname" value="' . $schedule_time['doctor_code'] . '" data-docname="' . $schedule_time['doctor_title'] . $schedule_time['doctor_name'] . '">
-                            <span class="control__indicator"></span>
-                        </label>
-                    </li>';
-                    }
-
-                    $doctorids[] = $schedule_time['doctor_id'];
-                }
-            }
-        }
 
         foreach ($schedule_times as $key => $schedule_time) {
-            if (ArrayHelper::isIn($schedule_time['doctor_code'], $doc_codes)) {
+            if (ArrayHelper::isIn($schedule_time['doctor_code'], $doc_codes) ||  empty($attributes['doc_code'])) {
+                $query_appoints = $db_mssql->createCommand('SELECT
+                dbo.Appoint.app_type,
+                dbo.Appoint.doctor,
+                dbo.Appoint.hn,
+                dbo.Appoint.appoint_date,
+                dbo.Appoint.appoint_time_from,
+                dbo.Appoint.appoint_time_to,
+                dbo.Appoint.appoint_note,
+                dbo.Appoint.pre_dept_code,
+                dbo.Appoint.maker,
+                dbo.Appoint.keyin_time,
+                dbo.Appoint.delete_flag,
+                dbo.DEPT.deptDesc,
+                dbo.DOCC.docName,
+                dbo.DOCC.docLName
+                
+                FROM
+                dbo.Appoint
+                INNER JOIN dbo.DEPT ON dbo.DEPT.deptCode = dbo.Appoint.pre_dept_code
+                INNER JOIN dbo.DOCC ON dbo.DOCC.docCode = dbo.Appoint.doctor
+                LEFT JOIN dbo.Appoint_dep_doc ON dbo.Appoint_dep_doc.docCode = dbo.DOCC.docCode
+                WHERE
+                dbo.Appoint.maker = \'queue online\' AND
+                dbo.Appoint.appoint_date = :appoint_date AND
+                dbo.Appoint.appoint_time_from = :appoint_time_from AND
+                dbo.Appoint.appoint_time_to = :appoint_time_to AND
+                dbo.Appoint.doctor = :doctor AND
+                dbo.Appoint.pre_dept_code = :pre_dept_code')
+                    ->bindValues([
+                        ':appoint_date' => $appoint_date_th,
+                        ':appoint_time_from' => Yii::$app->formatter->asDate($schedule_time['start_time'], 'php:H:i'),
+                        ':appoint_time_to' => Yii::$app->formatter->asDate($schedule_time['end_time'], 'php:H:i'),
+                        ':doctor' => sprintf("% 6s", $attributes['doc_code']),
+                        ':pre_dept_code' => $attributes['dept_code'],
+
+                    ])
+                    ->queryAll();
+
+                $text = count($query_appoints) >= $schedule_time['med_schedule_time_online_qty'] ? '(<span class="text-danger">เต็ม</span>)' : '';
                 $result[] = [
-                    'text' => Yii::$app->formatter->asDate($schedule_time['start_time'], 'php:H:i') . '-' . Yii::$app->formatter->asDate($schedule_time['end_time'], 'php:H:i') . ' น.',
+                    'text' => Yii::$app->formatter->asDate($schedule_time['start_time'], 'php:H:i') . '-' . Yii::$app->formatter->asDate($schedule_time['end_time'], 'php:H:i') . ' น. ' . $text,
                     'value' => Yii::$app->formatter->asDate($schedule_time['start_time'], 'php:H:i') . '-' . Yii::$app->formatter->asDate($schedule_time['end_time'], 'php:H:i'),
+                    'disabled' => count($query_appoints) >= $schedule_time['med_schedule_time_online_qty']
                 ];
             }
         }
-        if (empty($schedule_times) && empty($attributes['doc_code'])) {
-            $result = [
-                [
-                    'text' => '08:00-09:00 น.',
-                    'value' => '08:00-09:00'
-                ],
-                [
-                    'text' => '09:00-10:00 น.',
-                    'value' => '09:00-10:00'
-                ],
-                [
-                    'text' => '10:00-11:00 น.',
-                    'value' => '10:00-11:00'
-                ],
-                [
-                    'text' => '11:00-12:00 น.',
-                    'value' => '11:00-12:00'
-                ],
-                [
-                    'text' => '13:00-14:00 น.',
-                    'value' => '13:00-14:00'
-                ],
-                [
-                    'text' => '14:00-15:00 น.',
-                    'value' => '14:00-15:00'
-                ],
-                [
-                    'text' => '15:00-16:00 น.',
-                    'value' => '15:00-16:00'
-                ],
-            ];
-        }
+
+
+
         return Json::encode([
             'schedule_times' => $result,
             'doctor' => $doctor,
@@ -877,6 +911,7 @@ class AppointController extends Controller
             ->select([
                 'dbo.Appoint.*',
                 'dbo.DEPT.deptDesc',
+                'REPLACE( dbo.Appoint.hn, \' \', \'\') as hn',
                 'REPLACE( dbo.DOCC.docName, \' \', \'\') as docName',
                 'REPLACE( dbo.DOCC.docLName, \' \', \'\') as docLName',
                 'REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName',
@@ -907,10 +942,10 @@ class AppointController extends Controller
                 'lastName' => $profile['last_name'],
             ]);
         }
-
+ 
         return  $this->render('_form_follow_up', [
             'appoint' => $appoint,
-            'message' => empty($hn) ? 'กรุณาติดต่อห้องบัตร ตามวันและเวลาที่ท่านนัดหมาย!' : 'กดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่ท่านนัดหมาย!'
+            'message' => empty($hn) ? 'กรุณาติดต่อห้องบัตร ตามวันและเวลาที่ท่านนัดหมาย!' : ' กดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่ท่านนัดหมาย!'
         ]);
     }
 
