@@ -60,7 +60,7 @@ class FlexGreeting
     private static function createHeroBlock()
     {
         return ImageComponentBuilder::builder()
-            ->setUrl('https://udhconnect.info/images/udh_logo.png')
+            ->setUrl('https://udhconnect.info/images/logonew.png')
             ->setSize(ComponentImageSize::FULL)
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
             ->setAspectMode(ComponentImageAspectMode::FIT);

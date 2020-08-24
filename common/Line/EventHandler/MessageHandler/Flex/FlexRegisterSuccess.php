@@ -30,6 +30,8 @@ use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\Uri\AltUriBuilder;
 use yii\base\Component;
 
+
+
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
@@ -40,7 +42,7 @@ class FlexRegisterSuccess
      *
      * @return \LINE\LINEBot\MessageBuilder\FlexMessageBuilder
      */
-
+    
 
     public static function get($profile)
     {
@@ -66,7 +68,7 @@ class FlexRegisterSuccess
     private static function createHeroBlock()
     {
         return ImageComponentBuilder::builder()
-            ->setUrl('https://udhconnect.info/images/udh_logo.png')
+            ->setUrl('https://udhconnect.info/images/logonew.png')
             ->setSize("3xl")
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
             ->setAspectMode(ComponentImageAspectMode::FIT)
