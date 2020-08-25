@@ -65,7 +65,7 @@ class FlexDepartment
     {
         return ImageComponentBuilder::builder()
             ->setUrl('https://udhconnect.info/images/logonew.png')
-            ->setSize("md")
+            ->setSize("lg")
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
             ->setAspectMode(ComponentImageAspectMode::FIT);
             
