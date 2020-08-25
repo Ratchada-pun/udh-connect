@@ -65,7 +65,7 @@ class FlexDepartment
     {
         return ImageComponentBuilder::builder()
             ->setUrl('https://udhconnect.info/images/logonew.png')
-            ->setSize("lg")
+            ->setSize("md")
             ->setAspectRatio(ComponentImageAspectRatio::R20TO13)
             ->setAspectMode(ComponentImageAspectMode::FIT)
             ->setOffsetTop("sm");
@@ -78,7 +78,7 @@ class FlexDepartment
             ->setText('เลือกแผนกที่ต้องการนัดหมาย')
             ->setWeight(ComponentFontWeight::BOLD)
             ->setSize(ComponentFontSize::LG)
-            ->setAlign(ComponentAlign::START);
+            ->setAlign(ComponentAlign::CENTER);
 
         // $separator = SeparatorComponentBuilder::builder()  //เส้น
         //     ->setMargin(ComponentMargin::XXL);
