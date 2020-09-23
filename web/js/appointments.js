@@ -296,7 +296,8 @@ $form.on("beforeSubmit", function() {
               size: "giga",
               hero: {
                 type: "image",
-                url: "https://docs.google.com/uc?id=1741EturA17E9hZSNGiWkoQ6ri-T28oQe",
+               // url: "https://docs.google.com/uc?id=1741EturA17E9hZSNGiWkoQ6ri-T28oQe",
+                url: "https://www.udhconnect.info/images/logonew.png", //logoใหม่
                 size: "full",
                 aspectRatio: "30:13",
                 aspectMode: "fit",
@@ -468,7 +469,7 @@ $form.on("beforeSubmit", function() {
                   {
                     type: "text",
                     text: appoint.hn
-                      ? "กดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่นัดหมาย!"
+                      ? "กรุณากดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่นัดหมาย!"
                       : "กรุณาติดต่อห้องบัตร ตามวันและเวลาที่นัดหมาย!",
                     margin: "xl",
                     size: "xs",
