@@ -607,7 +607,7 @@ class AppointController extends Controller
     {
         $formatter = Yii::$app->formatter;
         $date = new \DateTime($formatter->asDate('now', 'php:Y-m-d H:i:s'));
-        $date->modify('+' . 1 . ' hours'); // เวลาปัจจุบัน + นาทีที่หาได้
+        $date->modify('+' . 2 . ' hours'); // เวลาปัจจุบัน + นาทีที่หาได้
         $unix_time = $formatter->asTimestamp($date);
 
         $attributes = \Yii::$app->request->post('AppointModel', []);

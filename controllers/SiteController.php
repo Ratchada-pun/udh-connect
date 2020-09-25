@@ -67,6 +67,7 @@ class SiteController extends Controller
         $session = Yii::$app->session;
         $profile = $session->get('user');
         return $this->render('index');
+     
     }
 
     /**
@@ -129,7 +130,7 @@ class SiteController extends Controller
     public function actionAbout()
     {
         try {
-            $userId = 'Ue5337b220743f592158018e2a0423ff3';
+            $userId = 'U58540d4c14d8e1897fa4e436e1f4fd5d'; //Line พี่บอล
             $richMenuId = 'richmenu-349a649ee1b2e2f659ae2da8e24df4ef';
             $dataRichMenu = '';
             $client = new Client();

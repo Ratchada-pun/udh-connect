@@ -150,7 +150,7 @@ class LineController extends Controller
         return 'OK';
     }
 
-    public function actionFlexMessage()
+    public function actionFlexMessage() //test line
     {
         $response = Yii::$app->response;
         $response->format = \yii\web\Response::FORMAT_JSON;
@@ -167,9 +167,10 @@ class LineController extends Controller
         // ]);
         // $flexMessageBuilder = $component->get();
         // $flexMessageBuilder = FlexRegister::get();
-        $model = TblPatient::findOne(['line_id' => 'Ue5337b220743f592158018e2a0423ff3']);
-        $flexMessageBuilder = FlexRegisterSuccess::get($model);
+        $model = TblPatient::findOne(['line_id' => 'U96643244c543d8d72b711fe5985e20d5']);
+        // $flexMessageBuilder = FlexRegisterSuccess::get($model);
         // $flexMessageBuilder = FlexDepartment::get();
+        $flexMessageBuilder = FlexRegisterSuccess::get($model);
         return $flexMessageBuilder->buildMessage();
     }
 
