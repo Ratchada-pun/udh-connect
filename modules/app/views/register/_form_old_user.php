@@ -38,16 +38,15 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
             <div class="card-header text-white bg-danger border-0  text-center">
                 <div class="media p-6">
                     <div class="media-body">
-                        <p class="btn-flat m-b-30 m-t-30">
-                            <strong class="">
-                                <p style="font-size: 16pt;margin-top:5px;">
+                         <strong class="">
+                                <span style="font-size: 14pt;margin-top:5px;">
                                     นัดหมายแพทย์
-                                </p>
-                                <p style="font-size: 16pt;margin-bottom:5px;">
+                                </span>
+                                <br>
+                                <span style="font-size: 14pt;margin-top:5px;">
                                     ลงทะเบียนผู้ป่วยเก่า
-                                </p>
+                                </span>
                             </strong>
-                        </p>
                     </div>
                 </div>
             </div>
@@ -67,7 +66,7 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                                     <span class="input-group-addon">
                                         <i class="fa fa-id-card-o"></i>
                                     </span>
-                                    <input type="text" id="input-filter" name="filter" class="form-control" placeholder="กรอก HN หรือ เลขบัตรประจำตัวประชาชน" aria-label="ชื่อ">
+                                    <input type="text" id="input-filter" name="filter" class="form-control" placeholder="HN/เลขบัตรประจำตัวประชาชน" aria-label="ชื่อ">
                                 </div>
                             </div>
 
