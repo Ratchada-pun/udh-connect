@@ -286,6 +286,7 @@ $form.on("beforeSubmit", function() {
       // Implement successful
       ClearForm();
       var appoint = data.appoint;
+      alert(JSON.stringify(appoint));
       if (liff.isInClient()) {
         udhApp.sendMessages([
           {
