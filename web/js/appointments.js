@@ -286,7 +286,7 @@ $form.on("beforeSubmit", function() {
       // Implement successful
       ClearForm();
       var appoint = data.appoint;
-     // if (liff.isInClient()) {
+      if (liff.isInClient()) {
         udhApp.sendMessages([
           {
             type: "flex",
@@ -482,7 +482,7 @@ $form.on("beforeSubmit", function() {
             },
           },
         ]);
-    //  }
+      }
 
       Swal.fire({
         title: "นัดแพทย์สำเร็จ",
