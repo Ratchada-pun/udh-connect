@@ -293,7 +293,7 @@ $form.on("beforeSubmit", function() {
             altText: "ข้อมูลการจอง",
             contents: {
               type: "bubble",
-              size: "giga",
+              size: "mega",
               hero: {
                 type: "image",
                // url: "https://docs.google.com/uc?id=1741EturA17E9hZSNGiWkoQ6ri-T28oQe",
