@@ -396,7 +396,9 @@ class AppQuery
             ->innerJoin('tbl_service', 'tbl_service.service_id = tbl_med_schedule.service_id')
             ->where([
                 'tbl_med_schedule.schedule_date' => $appoint_date,
-                'tbl_med_schedule.service_id' => $service_ids,
+                'tbl_doctor.doctor_id' =>  1,
+
+                // 'tbl_med_schedule.service_id' => $service_ids,
                 //'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
             ])
             ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
@@ -408,15 +410,15 @@ class AppQuery
         }
 
 
-        if (!empty($doc_code)) {
-            $query->andWhere([
-                'tbl_doctor.doctor_code' =>  $doc_code
-            ]);
-        } else {
-            $query->andWhere([
-                'tbl_doctor.doctor_code' =>  '0'
-            ]);
-        }
+        // if (!empty($doc_code)) {
+        //     $query->andWhere([
+        //         'tbl_doctor.doctor_code' =>  $doc_code
+        //     ]);
+        // } else {
+        //     $query->andWhere([
+        //         'tbl_doctor.doctor_code' =>  '0'
+        //     ]);
+        // }
 
         $schedule_times = $query->all(Yii::$app->db_queue);
         return $schedule_times;
