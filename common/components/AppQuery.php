@@ -403,7 +403,7 @@ class AppQuery
                 //'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
             ])
             ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
-            ->orderBy('tbl_med_schedule_time.start_time1 ASC');
+            ->orderBy('tbl_med_schedule_time.start_time ASC');
 
         if ($current_date == $appoint_date) {  //ถ้าวันที่นัดแพทย์ เท่ากับ วันที่แพทย์ออกตรวจ
             $query->andWhere('(
