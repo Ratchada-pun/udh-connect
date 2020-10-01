@@ -403,11 +403,16 @@ class AppQuery
                 //'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
             ])
             ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
-            ->orderBy('tbl_med_schedule_time.start_time ASC');
+            ->orderBy('tbl_med_schedule_time.start_time1 ASC');
 
         if ($current_date == $appoint_date) {  //ถ้าวันที่นัดแพทย์ เท่ากับ วันที่แพทย์ออกตรวจ
-            $query->andWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= ' . $unix_time); //;เวลาเริ่มต้นที่แพย์ออกตรวจ มากกว่าเท่ากับ เวลาปัจุบัน
-            $query->orWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time )) >= ' . $unix_time); //;เวลาสิ้นสุดที่แพย์ออกตรวจ มากกว่าเท่ากับ เวลาปัจุบัน
+            $query->andWhere('(
+                UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= '.$unix_time.' 
+                OR 
+                UNIX_TIMESTAMP( CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time )) >= '.$unix_time.'
+                )');
+            // $query->andWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= ' . $unix_time); //;เวลาเริ่มต้นที่แพย์ออกตรวจ มากกว่าเท่ากับ เวลาปัจุบัน
+            // $query->orWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time )) >= ' . $unix_time); //;เวลาสิ้นสุดที่แพย์ออกตรวจ มากกว่าเท่ากับ เวลาปัจุบัน
         }
 
 
