@@ -351,7 +351,7 @@ class AppQuery
         return $doctors_list;
     }
 
-    public static function getSubScheduleTimes($appoint_date, $doc_code)
+    public static function getSubScheduleTimes($appoint_date, $doc_code, $dept_code)
     {
         $formatter = Yii::$app->formatter;
         $date = new \DateTime($formatter->asDate('now', 'php:Y-m-d H:i:s'));
@@ -364,6 +364,22 @@ class AppQuery
             $appoint_date_th = explode("-", $appoint_date);
             $appoint_date_th = ($appoint_date_th[0] + 543) . $appoint_date_th[1] . $appoint_date_th[2];
         }
+        $DeptGroup = (new \yii\db\Query())
+            ->select([
+                'REPLACE(DEPTGROUP.deptCode, \' \', \'\') as deptCode',
+                'REPLACE(DEPTGROUP.DeptGroup, \' \', \'\') as DeptGroup'
+            ])
+            ->from('DEPTGROUP')
+            ->where(['REPLACE(DEPTGROUP.deptCode, \' \', \'\')' => $dept_code])
+            ->one(Yii::$app->mssql);
+
+        $DeptGroupQueue = (new \yii\db\Query())
+            ->select(['tbl_dept_group.*'])
+            ->from('tbl_dept_group')
+            ->where(['dept_group' => $DeptGroup['DeptGroup']])
+            ->all(Yii::$app->db_queue);
+
+        $service_ids = ArrayHelper::getColumn($DeptGroupQueue, 'service_id');
         $query = (new \yii\db\Query())  //ตารางเวลาแพทย์
             ->select([
                 'tbl_med_schedule.schedule_date',
@@ -385,9 +401,9 @@ class AppQuery
             ->innerJoin('tbl_service', 'tbl_service.service_id = tbl_med_schedule.service_id')
             ->where([
                 'tbl_med_schedule.schedule_date' => $appoint_date,
+                'tbl_med_schedule.service_id' => $service_ids,
                 'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
             ])
-
             ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
             ->orderBy('tbl_med_schedule_time.start_time ASC');
 

@@ -431,7 +431,7 @@ class AppointController extends Controller
 
         $doctors = AppQuery::getDoctorByDeptcode($attributes['dept_code']);
         $doc_codes = ArrayHelper::getValue($doctors, 'doc_codes', []);
-        $schedule_times = AppQuery::getSubScheduleTimes($appoint_date, $doc_code);
+        $schedule_times = AppQuery::getSubScheduleTimes($appoint_date, $doc_code, $attributes['dept_code']);
 
         $result = [];
         $doctor = [];
