@@ -131,7 +131,7 @@ class FlexRegister
                 ->setSize(ComponentFontSize::XS)
                 ->setColor('#aaaaaa'),
             TextComponentBuilder::builder()
-                ->setText('ผู้ป่วยเก่า หมายถึง ผู้ป่วยที่มีประวัติการรักษากับทางโรงพยาบาลแล้ว')
+                ->setText('ผู้ป่วยเก่า หมายถึง มีประวัติการรักษากับทางโรงพยาบาล')
                 ->setMargin(ComponentMargin::XS)
                 ->setWrap(true)
                 ->setOffsetStart('lg')

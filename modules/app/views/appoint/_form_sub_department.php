@@ -123,7 +123,7 @@ SweetAlert2Asset::register($this);
                            */ ?>
                                 <?php foreach ($deptCodeSub as $key => $value) : ?>
                                     <div class="input-group">
-                                        <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $value['deptCode']]) ?>" data-key="<?=$value['deptCode']?>" class="list-group-item btn btn-outline-success list-group-dept">
+                                        <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $value['deptCode']]) ?>" data-key="<?=$value['deptCode']?>" data-service-id="<?=$value['service_id']?>" class="list-group-item btn btn-outline-success list-group-dept">
                                             <img src="<?= ArrayHelper::getValue($images, $value['deptCode']) ?>" class="img-responsive" style="display: inline-block;">
                                             <?= $value['deptDesc'] ?>
                                         </a>
@@ -198,22 +198,53 @@ $('#myInput').on('keyup', function(){
 
 $('.list-group-dept').on('click', function(e){
     e.preventDefault();
-    var key = $(this).data('key')
-    Swal.fire({
-        title: '',
-        text: "ต้องการระบุแพทย์หรือไม่?",
-        icon: 'question',
-        showCancelButton: true,
-        allowOutsideClick: false,
-        confirmButtonText: 'ต้องการ',
-        cancelButtonText: 'ไม่ต้องการ',
-    }).then((result) => {
-        if (result.value) {
-            window.location.href = '/app/appoint/create-appointments?id='+key
-        }else{
-            window.location.href = '/app/appoint/appointments-undocter?id='+key
-        }
-    })
+    var key = $(this).data('key')//รหัสแผนก
+    $.ajax({
+        method: "GET",
+        url: "/app/appoint/check-schedule-doctor?dept_code=" + key,
+        dataType: "json",
+        beforeSend: function( jqXHR,  settings ){
+            Swal.fire({
+                title: 'กรุณารอสักครู่!',
+                html: 'ระบบกำลังตรวจสอบข้อมูลแพทย์',
+                timerProgressBar: true,
+                onBeforeOpen: () => {
+                    Swal.showLoading()
+                },
+            })
+        },
+        success: function(result){
+            Swal.close();
+            if (result.value) {//ถ้ามีไม่ระบุแพทย์
+                Swal.fire({
+                    title: '',
+                    text: "ต้องการระบุแพทย์หรือไม่?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    allowOutsideClick: false,
+                    confirmButtonText: 'ต้องการ',
+                    cancelButtonText: 'ไม่ต้องการ',
+                }).then((result) => {
+                    if (result.value) {
+                        window.location.href = '/app/appoint/create-appointments?id='+key //ระบุแพทย์
+                    }else{
+                        window.location.href = '/app/appoint/appointments-undocter?id='+key //ไม่ระบุแพทย์
+                    }
+                })
+            } else { //ระบุแพทย์
+                window.location.href = '/app/appoint/create-appointments?id='+key
+            }
+        },
+        error: function( jqXHR,  textStatus,  errorThrown){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: errorThrown,
+                confirmButtonText: 'ตกลง'
+            })
+        },
+    });
+    
 })
 JS
 );

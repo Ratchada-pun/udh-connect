@@ -18,6 +18,7 @@ $last_day = Yii::$app->formatter->asDate($last_day_str, 'php:d');
 
 use yii\web\JsExpression;
 use yii\web\View;
+use yii\helpers\Json;
 
 $this->title = 'นัดหมายแพทย์';
 $this->registerCssFile("@web/css/style.css", [
@@ -28,13 +29,13 @@ $this->registerCss(<<<CSS
 CSS
 );
 $this->registerJs(
-    "var dateList= [];",
+    "var dateList= ".Json::encode($dateList).";",
     View::POS_HEAD
 );
 $beforeShowDay = new JsExpression(
     <<<JS
 function(date){
-    if (dateList.includes(moment(date).format('YYYY-MM-DD'))) {
+    if (dateList.includes(moment(date).format('DD/MM/YYYY'))) {
          return {
             tooltip: 'วันที่แพทย์ออกตรวจ',
             classes: 'appoint-dot'
@@ -46,6 +47,9 @@ JS
 
 ?>
 <style>
+.hidden{
+    display: none !important;
+}
 @media (max-width: 767px) {
     .quick-links-grid .ql-grid-item {
         width: 100% !important;
@@ -73,7 +77,7 @@ JS
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-bottom:5px;">
-                                    นัดหมายแพทย์
+                                    นัดหมายไม่ระบุแพทย์
                                 </p>
                             </strong>
                         </p>
@@ -99,12 +103,12 @@ JS
                             </div>
 
                             <div class="form-group">
-                                <?= Html::input('text', 'doctor', '', [
+                                <?= Html::input('text', 'doctor', '0', [
                                     'id' => 'doctor',
                                     'class' => 'form-control hidden',
                                     'placeholder' => 'ไม่ระบุแพทย์',
                                     'readonly' => 'readonly',
-                                    'style' =>'font-size:12pt;'
+                                    'style' =>'font-size:12pt;display: none;'
                                 ]) ?>
                                 <?=
                                     Html::activeHiddenInput($model, 'doc_code', [
@@ -121,7 +125,7 @@ JS
                        
                             <div class="form-group field-appoint_date">
                                     <p class="fw-600" style="font-size:14pt;">
-                                        วันที่นัดแพทย์
+                                        วันที่นัด
                                     </p>
                                 <?php
                              //  echo '<p style="margin:0;"><small class="text-danger" style="font-size: 10pt;"> <i class="fa fa-bullhorn"></i>โปรดเลือกวันที่นัดหมายแพทย์</small></p>';
@@ -143,7 +147,9 @@ JS
                                         'beforeShowDay' => $beforeShowDay,
                                         'zIndexOffset' => 1050,
                                         'style' => 'font-size:14pt;',
-                                        'todayHighlight' => false
+                                        'todayHighlight' => false,
+                                        'startDate' => $startDate,
+                                        'endDate' => $endDate,
                                     ],
                                     'options' => ['placeholder' => 'โปรดเลือกวันที่นัดหมายแพทย์...'],
 

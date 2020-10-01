@@ -156,7 +156,7 @@ JS
                             <br>
                             <div class="form-group field-appoint_date">
                                 <?php
-                                echo '<label class="control-label" style="font-size:14pt; color: #53505f;"><b>วันที่นัดแพทย์</b></label>';
+                                echo '<label class="control-label" style="font-size:14pt; color: #53505f;"><b>วันที่นัดหมาย</b></label>';
                                 echo '<p style="margin:0;"><small class="text-danger" style="font-size: 10pt;"> <i class="fa fa-bullhorn"></i> โปรดเลือกวันที่แพทย์ออกตรวจ</small></p>';
                                 echo DatePicker::widget([
                                     'model' => $model,
