@@ -359,11 +359,6 @@ class AppQuery
         $unix_time = $formatter->asTimestamp($date);
 
         $current_date = Yii::$app->formatter->asDate('now', 'php:Y-m-d'); //;วัน/เวลา/ปัจจุบัน
-        $appoint_date_th = '';
-        if ($appoint_date) {
-            $appoint_date_th = explode("-", $appoint_date);
-            $appoint_date_th = ($appoint_date_th[0] + 543) . $appoint_date_th[1] . $appoint_date_th[2];
-        }
         $DeptGroup = (new \yii\db\Query())
             ->select([
                 'REPLACE(DEPTGROUP.deptCode, \' \', \'\') as deptCode',
@@ -402,7 +397,7 @@ class AppQuery
             ->where([
                 'tbl_med_schedule.schedule_date' => $appoint_date,
                 'tbl_med_schedule.service_id' => $service_ids,
-                'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
+                //'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
             ])
             ->groupBy('tbl_med_schedule_time.med_schedule_time_id')
             ->orderBy('tbl_med_schedule_time.start_time ASC');
