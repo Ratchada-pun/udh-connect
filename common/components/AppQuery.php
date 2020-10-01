@@ -396,6 +396,7 @@ class AppQuery
             ->innerJoin('tbl_service', 'tbl_service.service_id = tbl_med_schedule.service_id')
             ->where([
                 'tbl_med_schedule.schedule_date' => $appoint_date,
+                'tbl_med_schedule.service_id' => $service_ids,
                 'tbl_doctor.doctor_id' =>  1,
 
                 // 'tbl_med_schedule.service_id' => $service_ids,
