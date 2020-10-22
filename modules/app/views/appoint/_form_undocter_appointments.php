@@ -77,7 +77,10 @@ JS
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-bottom:5px;">
-                                    นัดหมายไม่ระบุแพทย์
+                                    นัดหมายล่วงหน้า
+                                </p>
+                                <p style="font-size: 16pt;margin-bottom:5px;">
+                                    ไม่ระบุแพทย์
                                 </p>
                             </strong>
                         </p>

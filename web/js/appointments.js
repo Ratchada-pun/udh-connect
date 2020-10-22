@@ -311,7 +311,7 @@ $form.on("beforeSubmit", function() {
                 contents: [
                   {
                     type: "text",
-                    text: "ใบนัดหมาย",
+                    text: "ใบนัดหมายล่วงหน้า",
                     wrap: true,
                     weight: "bold",
                     gravity: "center",
@@ -484,7 +484,7 @@ $form.on("beforeSubmit", function() {
       }
 
       Swal.fire({
-        title: "นัดแพทย์สำเร็จ",
+        title: "ทำรายการนัดหมายสำเร็จ",
         text: "",
         icon: "success",
         confirmButtonText: "ตกลง",

@@ -30,12 +30,12 @@ $this->title = "ข้อตกลงและเงื่อนไขการ�
 								<div class="media-body">
 									<p class="btn-flat m-b-30 m-t-30">
 										<strong class="">
-                                            <span style="font-size: 14pt;">
+                                            <p style="font-size: 14pt;">
                                                  ข้อตกลงและเงื่อนไขการใช้งาน
-                                            </span>
-											<span style="font-size: 14pt;">
+                                            </p>
+											<p style="font-size: 14pt;">
                                                 บริการนัดหมาย
-                                            </span>
+                                            </p>
 										</strong>
 									</p>
 								</div>

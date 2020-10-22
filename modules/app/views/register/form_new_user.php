@@ -61,9 +61,9 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                 <div class="media p-6">
                     <div class="media-body">
                          <strong class="">
-                                <span style="font-size: 14pt;margin-top:5px;">
-                                    นัดหมายแพทย์
-                                </span>
+                                <!-- <span style="font-size: 14pt;margin-top:5px;">
+                                    นัดหมายล่วงหน้า
+                                </span> -->
                                 <br>
                                 <span style="font-size: 14pt;margin-top:5px;">
                                     ลงทะเบียนผู้ป่วยใหม่

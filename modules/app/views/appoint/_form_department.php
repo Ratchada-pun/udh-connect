@@ -9,7 +9,7 @@ use yii\helpers\Url;
 /* @var $model app\models\TblPatient */
 /* @var $form yii\widgets\ActiveForm */
 
-$this->title = "นัดหมายแพทย์";
+$this->title = "นัดหมาย";
 $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
     'depends' => [\yii\bootstrap\BootstrapAsset::className()],
 ]);
@@ -76,7 +76,7 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-top:5px;">
-                                    นัดหมายแพทย์
+                                    นัดหมายล่วงหน้า
                                 </p>
                             </strong>
                         </p>

@@ -4,7 +4,7 @@ use kartik\form\ActiveForm;
 use yii\helpers\Url;
 
 
-$this->title = "นัดหมายแพทย์";
+$this->title = "นัดหมายล่วงหน้า";
 ?>
 
 <style>
@@ -39,11 +39,11 @@ $this->title = "นัดหมายแพทย์";
                     <div class="media-body">
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
-                                <p style="font-size: 16pt;margin-top:5px;">
+                                <!-- <p style="font-size: 16pt;margin-top:5px;">
                                     โรงพยาบาลอุดรธานี
-                                </p>
+                                </p> -->
                                 <p style="font-size: 16pt;margin-top:5px;">
-                                    นัดหมายแพทย์
+                                    นัดหมาย
                                 </p>
                             </strong>
                         </p>
@@ -125,14 +125,14 @@ $this->title = "นัดหมายแพทย์";
                             <?php if (!empty($history)) : ?>
                                 <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $history['pre_dept_code'], 'doc_id' => $history['doctor']]) ?>" class="btn btn-success btn-lg btn-block">
                                     <p style="font-size: 16pt;">
-                                        นัดหมายแพทย์จากประวัติล่าสุด
+                                        นัดหมายจากประวัติล่าสุด
                                     </p>
                                 </a>
                             <?php endif; ?>
 
                             <a href="<?= Url::to(['/app/appoint/create-department']) ?>" class="btn btn-pill btn-danger btn-lg">
                                 <p style="font-size: 16pt;">
-                                    ทำการนัดหมายแพทย์ใหม่
+                                    ทำการนัดหมายใหม่
                                 </p>
                             </a>
 

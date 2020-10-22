@@ -7,7 +7,7 @@ use yii\helpers\Url;
 /* @var $model app\models\TblPatient */
 /* @var $form yii\widgets\ActiveForm */
 
-$this->title = "ใบนัดหมาย";
+$this->title = "ใบนัดหมายล่วงหน้า";
 ?>
 
 <style>
@@ -75,7 +75,7 @@ $this->title = "ใบนัดหมาย";
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-top:5px;">
-                                ใบนัดหมาย
+                                ใบนัดหมายล่วงหน้า
                                 </p>
                             </strong>
                         </p>

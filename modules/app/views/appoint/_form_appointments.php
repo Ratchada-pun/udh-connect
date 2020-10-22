@@ -19,7 +19,7 @@ $last_day = Yii::$app->formatter->asDate($last_day_str, 'php:d');
 use yii\web\JsExpression;
 use yii\web\View;
 
-$this->title = 'นัดหมายแพทย์';
+$this->title = 'นัดหมาย';
 $this->registerCssFile("@web/css/style.css", [
     'depends' => [\yii\bootstrap\BootstrapAsset::className()],
 ]);
@@ -73,7 +73,10 @@ JS
                         <p class="btn-flat m-b-30 m-t-30">
                             <strong class="">
                                 <p style="font-size: 16pt;margin-bottom:5px;">
-                                    นัดหมายแพทย์
+                                    นัดหมายล่วงหน้า
+                                </p>
+                                <p style="font-size: 16pt;margin-bottom:5px;">
+                                    ระบุแพทย์
                                 </p>
                             </strong>
                         </p>

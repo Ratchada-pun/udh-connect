@@ -42,12 +42,12 @@ class FlexDepartment
     public static function get()
     {
         return FlexMessageBuilder::builder()
-            ->setAltText('นัดหมายแพทย์')
+            ->setAltText('นัดหมายล่วงหน้า')
             ->setContents(
                 BubbleContainerBuilder::builder()
                     ->setHero(self::createHeroBlock())
                     ->setBody(self::createBodyBlock())
-                    ->setFooter(self::createFooterBlock())
+                  //  ->setFooter(self::createFooterBlock())
                    // ->setSize(BubleContainerSize::GIGA)  // ขนาด flex
                     ->setSize(BubleContainerSize::MEGA)
                     ->setStyles(
@@ -120,14 +120,14 @@ class FlexDepartment
                         ->setAlign(ComponentAlign::CENTER)
                         ->setGravity(ComponentGravity::CENTER)
 
-                ])
-                ->setAction(
-                    new UriTemplateActionBuilder(
-                        'เลือกแผนกอื่นๆ >',
-                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'],
-                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'])
-                    )
-                );
+                ]);
+                // ->setAction(
+                //     new UriTemplateActionBuilder(
+                //         'เลือกแผนกอื่นๆ >',
+                //         'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'],
+                //         new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'])
+                //     )
+                // );
 
             $boxTextContents[]   = TextComponentBuilder::builder()
                 ->setText($item['DeptGrDesc'])
@@ -137,14 +137,14 @@ class FlexDepartment
                 ->setGravity(ComponentGravity::TOP)
                 ->setMargin(ComponentMargin::XS)
                 ->setWrap(true)
-                ->setWeight(ComponentFontWeight::BOLD)
-                ->setAction(
-                    new UriTemplateActionBuilder(
-                        'เลือกแผนกอื่นๆ >',
-                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'],
-                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'])
-                    )
-                );
+                ->setWeight(ComponentFontWeight::BOLD);
+                // ->setAction(
+                //     new UriTemplateActionBuilder(
+                //         'เลือกแผนกอื่นๆ >',
+                //         'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'],
+                //         new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'])
+                //     )
+                // );
 
             if (count($boxImageContents) === 3 || $key + 1 === count($items)) {
                 $boximage =  BoxComponentBuilder::builder()
@@ -251,29 +251,29 @@ class FlexDepartment
             ->setContents([$title, $review]);
     }
 
-    private static function createFooterBlock()
-    {
-        $separator = SeparatorComponentBuilder::builder()
-           // ->setColor('#905c44')
-            ->setMargin(ComponentMargin::SM);
+    // private static function createFooterBlock()
+    // {
+    //     $separator = SeparatorComponentBuilder::builder()
+    //        // ->setColor('#905c44')
+    //         ->setMargin(ComponentMargin::SM);
 
-        $button = ButtonComponentBuilder::builder()
-            ->setStyle(ComponentButtonStyle::LINK)
-            ->setHeight(ComponentButtonHeight::SM)
-            ->setMargin(ComponentMargin::XS)
-            ->setAction(
-                new UriTemplateActionBuilder(
-                    'เลือกแผนกอื่นๆ >',
-                    'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department',
-                    new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department')
-                )
-            )
-            ->setColor('#f50057');
+    //     $button = ButtonComponentBuilder::builder()
+    //         ->setStyle(ComponentButtonStyle::LINK)
+    //         ->setHeight(ComponentButtonHeight::SM)
+    //         ->setMargin(ComponentMargin::XS)
+    //         ->setAction(
+    //             new UriTemplateActionBuilder(
+    //                 'เลือกแผนกอื่นๆ >',
+    //                 'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department',
+    //                 new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-department')
+    //             )
+    //         )
+    //         ->setColor('#f50057');
          
-        // $spacer = new SpacerComponentBuilder(ComponentSpaceSize::XXL);
+    //     // $spacer = new SpacerComponentBuilder(ComponentSpaceSize::XXL);
 
-        return BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::VERTICAL)
-            ->setContents([$separator, $button]);
-    }
+    //     return BoxComponentBuilder::builder()
+    //         ->setLayout(ComponentLayout::VERTICAL)
+    //         ->setContents([$separator, $button]);
+    // }
 }

@@ -14,7 +14,7 @@ $startYear = $currentYear - 100;
 $last_day_str = strtotime('last day of this month', Yii::$app->formatter->asTimestamp(Yii::$app->formatter->asDate('now', 'php:Y-m-d H:i:s')));
 $last_day = Yii::$app->formatter->asDate($last_day_str, 'php:d');
 
-$this->title = "ประวัตินัดหมายแพทย์";
+$this->title = "ประวัตินัดหมาย";
 
 
 ?>
@@ -59,7 +59,7 @@ $this->title = "ประวัตินัดหมายแพทย์";
                                     โรงพยาบาลอุดรธานี
                                 </p> -->
                                 <p style="font-size: 16pt;margin-bottom:5px;">
-                                    ประวัตินัดหมายแพทย์
+                                    ประวัตินัดหมาย
                                 </p>
                             </strong>
                         </p>
@@ -122,7 +122,7 @@ $this->title = "ประวัตินัดหมายแพทย์";
                                         <div id="collapseOne<?= $key ?>" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
 
                                             <h5 class="card-header" style="color:#3e3737;;text-align:center;background-color:#ffc1e3">
-                                                ใบนัดหมาย
+                                                ใบนัดหมายล่วงหน้า
                                             </h5>
 
                                             <div class="card-body" style="padding-top:5px;background-color:#fce4ec;">

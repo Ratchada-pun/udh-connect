@@ -52,7 +52,7 @@ class FlexRegisterSuccess
                 BubbleContainerBuilder::builder()
                     ->setHero(self::createHeroBlock())
                     ->setBody(self::createBodyBlock($profile))
-                    ->setFooter(self::createFooterBlock())
+                //    ->setFooter(self::createFooterBlock())
                     ->setSize(BubleContainerSize::MEGA)
                     ->setStyles(
                         BubbleStylesBuilder::builder()
@@ -175,40 +175,25 @@ class FlexRegisterSuccess
     }
 
 
-    private static function createFooterBlock()
-    {
-        $textButton = ButtonComponentBuilder::builder()
-            ->setStyle(ComponentButtonStyle::PRIMARY)
-            ->setHeight(ComponentButtonHeight::MD)
-            ->setAction(
-                new UriTemplateActionBuilder(
-                    'ไปที่ นัดหมายแพทย์',
-                    'https://www.udhconnect.info/app/appoint/create-department',
-                    new AltUriBuilder('https://www.udhconnect.info/app/appoint/create-department')
-                )
-            );
-        return BoxComponentBuilder::builder()
-            ->setLayout(ComponentLayout::VERTICAL)
-            ->setSpacing(ComponentSpacing::SM)
-            ->setFlex(0)
-            ->setContents([$textButton]);
-    }
-
     // private static function createFooterBlock()
     // {
-    //     $text = ButtonComponentBuilder::builder()
-    //     ->setStyle(ComponentButtonStyle::PRIMARY)
-    //     ->setHeight(ComponentFontSize::MD)
-    //     ->setAction(
-    //         new MessageTemplateActionBuilder('นัดหมายแพทย์','นัดหมาย')
-    //     );
-
-    //     $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
+    //     $textButton = ButtonComponentBuilder::builder()
+    //         ->setStyle(ComponentButtonStyle::PRIMARY)
+    //         ->setHeight(ComponentButtonHeight::MD)
+    //         ->setAction(
+    //             new UriTemplateActionBuilder(
+    //                 'ไปที่ นัดหมายแพทย์',
+    //                 'https://www.udhconnect.info/app/appoint/create-department',
+    //                 new AltUriBuilder('https://www.udhconnect.info/app/appoint/create-department')
+    //             )
+    //         );
+    //     // $spacer = new SpacerComponentBuilder(ComponentSpaceSize::SM);
 
     //     return BoxComponentBuilder::builder()
     //         ->setLayout(ComponentLayout::VERTICAL)
     //         ->setSpacing(ComponentSpacing::SM)
     //         ->setFlex(0)
-    //         ->setContents([$text, $spacer]);
+    //         ->setContents([$textButton]);
     // }
+
 }
