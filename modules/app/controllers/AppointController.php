@@ -676,7 +676,7 @@ class AppointController extends Controller
             $profile = [
                 'firstName' => ArrayHelper::getValue($user, 'first_name', '-'),
                 'lastName' => ArrayHelper::getValue($user, 'last_name', '-'),
-                'hn' => $hn
+                'hn' => $hn ? $hn : '-'
             ];
         }
 
