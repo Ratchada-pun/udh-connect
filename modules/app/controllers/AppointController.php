@@ -673,9 +673,11 @@ class AppointController extends Controller
 
         if (!$profile && $session->get('user')) {
             $profile = $session->get('user');
-            $profile['firstName'] = ArrayHelper::getValue($profile, 'first_name', '-');
-            $profile['lastName'] = ArrayHelper::getValue($profile, 'last_name', '-');
-            $profile['hn'] = $hn;
+            $profile = ArrayHelper::merge($profile, [
+                'firstName' => ArrayHelper::getValue($profile, 'first_name', '-'),
+                'lastName' => ArrayHelper::getValue($profile, 'last_name', '-'),
+                'hn' => $hn
+            ]);
         }
 
         return $this->render('form_detail_status', [
