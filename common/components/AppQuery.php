@@ -652,7 +652,7 @@ class AppQuery
                 'REPLACE(PatSS.CardID, \' \', \'\') as CardID'
             ])
             ->from('PATIENT')
-            ->innerJoin('PatSS', 'PatSS.hn', 'PATIENT.hn')
+            ->innerJoin('PatSS', 'PatSS.hn = PATIENT.hn')
             ->where(['PATIENT.hn' => sprintf("% 7s", $hn)])
             ->one(Yii::$app->mssql);
         return $rows;
