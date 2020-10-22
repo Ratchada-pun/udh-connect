@@ -669,6 +669,14 @@ class AppointController extends Controller
         if ($hn) {
             $profile = AppQuery::getQueueStatus($hn);
         }
+        $session = Yii::$app->session;
+
+        if (!$profile && $session->get('user')) {
+            $profile = $session->get('user');
+            $profile['firstName'] = ArrayHelper::getValue($profile, 'first_name', '-');
+            $profile['lastName'] = ArrayHelper::getValue($profile, 'last_name', '-');
+            $profile['hn'] = $hn;
+        }
 
         return $this->render('form_detail_status', [
             'profile' => $profile
