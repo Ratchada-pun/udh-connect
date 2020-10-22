@@ -90,10 +90,16 @@ CSS
         </div>
     </div>
     <div class="card-body" style="background: #f6f6f6;">
+        <?php if($profile): ?>
         <ul class="no-margin mt-10" style="list-style: none;padding-inline-start: 40px;font-size: 16px;">
             <li><strong>ชื่อ:</strong> <?= $profile['firstName'] . ' ' . $profile['lastName'] ?></li>
             <li><strong>NH:</strong> <?= $profile['hn'] ?> </li>
         </ul>
+        <?php else: ?>
+            <h4 class="text-center text-danger" style="font-size: 20px;">
+                ไม่พบข้อมูล สถานะคิวของท่าน!!
+            </h4>
+        <?php endif; ?>
     </div>
 </div>
 <div id="app" class="d-flex align-content-center flex-wrap">

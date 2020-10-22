@@ -56,7 +56,7 @@ $profile = $session->get('user');
                     <div class="h1 no-margin"><span class="menu-label">สถานะคิว</span>
                         <p data-v-0dbf6a13=""></p>
                     </div>
-                </>
+                </a>
             </li>
 
             <li class="menu-item border-bottom-info" style="width: 20%;">

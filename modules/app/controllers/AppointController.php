@@ -663,9 +663,13 @@ class AppointController extends Controller
         ]);
     }
 
-    public function actionQueueStatus($hn)
+    public function actionQueueStatus($hn = null)
     {
-        $profile = AppQuery::getQueueStatus($hn);
+        $profile = null;
+        if ($hn) {
+            $profile = AppQuery::getQueueStatus($hn);
+        }
+
         return $this->render('form_detail_status', [
             'profile' => $profile
         ]);
