@@ -57,15 +57,18 @@ var udhApp = {
 
       var paths = ["/", "/app/register/policy", "/app/register/create-new-user"];
       var response = await axios.get("/app/appoint/profile?userId=" + profile.userId);
+      var isMatchRoute =
+        RegExp("/", "g").test(window.location.pathname) &&
+        RegExp("/app/register/*", "g").test(window.location.pathname);
       if (response.data) {
         window.localStorage.setItem(UDH_PROFILE, JSON.stringify(response.data));
 
         // if (paths.includes(window.location.pathname)) {
         //   window.location.href = "/app/appoint/create-department";
         // }
-      } else if (!window.localStorage.getItem(UDH_PROFILE) && window.location.pathname !== "/") {
+      } else if (!window.localStorage.getItem(UDH_PROFILE) && !isMatchRoute) {
         window.location.href = "/";
-      } else if (!response.data && window.location.pathname !== "/") {
+      } else if (!response.data && !isMatchRoute) {
         window.location.href = "/";
       }
 
