@@ -137,14 +137,14 @@ class FlexDepartment
                 ->setGravity(ComponentGravity::TOP)
                 ->setMargin(ComponentMargin::XS)
                 ->setWrap(true)
-                ->setWeight(ComponentFontWeight::BOLD);
-                // ->setAction(
-                //     new UriTemplateActionBuilder(
-                //         'เลือกแผนกอื่นๆ >',
-                //         'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'],
-                //         new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'])
-                //     )
-                // );
+                ->setWeight(ComponentFontWeight::BOLD)
+                ->setAction(
+                    new UriTemplateActionBuilder(
+                        'เลือกแผนกอื่นๆ >',
+                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'],
+                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'])
+                    )
+                );
 
             if (count($boxImageContents) === 3 || $key + 1 === count($items)) {
                 $boximage =  BoxComponentBuilder::builder()
