@@ -124,7 +124,9 @@ SweetAlert2Asset::register($this);
                                 <?php foreach ($deptCodeSub as $key => $value) : ?>
                                     <div class="input-group">
                                         <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $value['deptCode']]) ?>" data-key="<?=$value['deptCode']?>" data-service-id="<?=$value['service_id']?>" class="list-group-item btn btn-outline-success list-group-dept">
+                                         <?php /*
                                             <img src="<?= ArrayHelper::getValue($images, $value['deptCode']) ?>" class="img-responsive" style="display: inline-block;">
+                                          */?>  
                                             <?= $value['deptDesc'] ?>
                                         </a>
                                     </div>
