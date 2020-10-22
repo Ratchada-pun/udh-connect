@@ -89,10 +89,10 @@ class AppointController extends Controller
      */
     public function actionCreateSubDepartment($id) //เลือกแผนกย่อย
     {
-        $session = Yii::$app->session;
-        if (!$session->get('user')) {
-            return $this->redirect(['/']);
-        }
+        // $session = Yii::$app->session;
+        // if (!$session->get('user')) {
+        //     return $this->redirect(['/']);
+        // }
 
         $DeptGrDesc = AppQuery::getDeptGrById($id);
         $departments = AppQuery::getDepartmentByDeptGroupHomc($id);

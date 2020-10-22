@@ -10,18 +10,19 @@ const UDH_PROFILE = "udh-profile";
  * Initialize LIFF
  * @param {string} myLiffId The LIFF ID of the selected element
  */
-var config = { //ไลน์พี่บอล
-  // redirectUri: "https://www.udhconnect.info",
-  // liffId: "1654023325-EkWmY9PA", // line login
-  // ChannelAccessToken:"FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=",
-  // RichMenuId:"richmenu-349a649ee1b2e2f659ae2da8e24df4ef"
-
-  redirectUri: "https://e98c9d411f42.ap.ngrok.io",
+var config = {
+  //ไลน์พี่บอล
+  redirectUri: "https://www.udhconnect.info",
   liffId: "1654023325-EkWmY9PA", // line login
   ChannelAccessToken:"FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=",
   RichMenuId:"richmenu-349a649ee1b2e2f659ae2da8e24df4ef"
-};
 
+  // redirectUri: "https://e98c9d411f42.ap.ngrok.io",
+  // liffId: "1654023325-EkWmY9PA", // line login
+  // ChannelAccessToken:
+  //   "FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=",
+  // RichMenuId: "richmenu-349a649ee1b2e2f659ae2da8e24df4ef",
+};
 
 var udhApp = {
   initializeLiff: async function(myLiffId) {
@@ -40,8 +41,8 @@ var udhApp = {
   },
   initializeApp: function() {
     if (!liff.isLoggedIn()) {
-          // set `redirectUri` to redirect the user to a URL other than the front page of your LIFF app.  
-    // liff.login({ redirectUri: config.redirectUri }); //บน Longin บน host
+      // set `redirectUri` to redirect the user to a URL other than the front page of your LIFF app.
+      liff.login({ redirectUri: config.redirectUri }); //บน Longin บน host
     } else {
       this.setProflie();
     }
@@ -61,6 +62,8 @@ var udhApp = {
         // if (paths.includes(window.location.pathname)) {
         //   window.location.href = "/app/appoint/create-department";
         // }
+      } else if (!window.localStorage.getItem(UDH_PROFILE) && window.location.pathname !== '/') {
+        window.location.href = "/";
       }
 
       this.stopLoading();
@@ -111,8 +114,8 @@ var udhApp = {
   },
   LinkRichMenu: function() {
     //เปลี่ยนเมนู
-     var profile = this.getProfileStorage();
-     var userId = profile.userId;
+    var profile = this.getProfileStorage();
+    var userId = profile.userId;
     $.ajax({
       method: "POST",
       url: `https://api.line.me/v2/bot/user/${userId}/richmenu/${config.RichMenuId}`,
