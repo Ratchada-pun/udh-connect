@@ -534,7 +534,7 @@ class AppointController extends Controller
                 'appoint_date' => ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543) . $formatter->asDate($attributes['appoint_date'], 'php:md'),
                 'appoint_time_from' => $appoint_time_from,
                 'appoint_time_to' => $appoint_time_to,
-                'appoint_note' => 'ทดสอบข้อมูล',
+                'appoint_note' => '',
                 'pre_dept_code' => $attributes['dept_code'],
                 'CID' => $profile['id_card'],
                 'phone' => $profile['phone_number'],
