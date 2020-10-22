@@ -58,7 +58,7 @@ var udhApp = {
       var paths = ["/", "/app/register/policy", "/app/register/create-new-user"];
       var response = await axios.get("/app/appoint/profile?userId=" + profile.userId);
       var isMatchRoute =
-        RegExp("/", "g").test(window.location.pathname) &&
+        RegExp("/", "g").test(window.location.pathname) ||
         RegExp("/app/register/*", "g").test(window.location.pathname);
       if (response.data) {
         window.localStorage.setItem(UDH_PROFILE, JSON.stringify(response.data));
