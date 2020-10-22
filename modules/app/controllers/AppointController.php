@@ -672,12 +672,12 @@ class AppointController extends Controller
         $session = Yii::$app->session;
 
         if (!$profile && $session->get('user')) {
-            $profile = $session->get('user');
-            $profile = ArrayHelper::merge($profile, [
-                'firstName' => ArrayHelper::getValue($profile, 'first_name', '-'),
-                'lastName' => ArrayHelper::getValue($profile, 'last_name', '-'),
+            $user = $session->get('user');
+            $profile = [
+                'firstName' => ArrayHelper::getValue($user, 'first_name', '-'),
+                'lastName' => ArrayHelper::getValue($user, 'last_name', '-'),
                 'hn' => $hn
-            ]);
+            ];
         }
 
         return $this->render('form_detail_status', [
