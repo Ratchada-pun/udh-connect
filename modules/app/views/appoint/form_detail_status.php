@@ -90,16 +90,11 @@ CSS
         </div>
     </div>
     <div class="card-body" style="background: #f6f6f6;">
-        <?php if($profile): ?>
         <ul class="no-margin mt-10" style="list-style: none;padding-inline-start: 40px;font-size: 16px;">
-            <li><strong>ชื่อ:</strong> <?= $profile['firstName'] . ' ' . $profile['lastName'] ?></li>
-            <li><strong>NH:</strong> <?= $profile['hn'] ?> </li>
+            <li><strong>ชื่อ:</strong> <?= $profile ? $profile['firstName'] . ' ' . $profile['lastName'] : '-' ?></li>
+            <li><strong>NH:</strong> <?= $profile ? $profile['hn'] : '' ?> </li>
         </ul>
-        <?php else: ?>
-            <h4 class="text-center text-danger" style="font-size: 20px;">
-                ไม่พบข้อมูล สถานะคิวของท่าน!!
-            </h4>
-        <?php endif; ?>
+
     </div>
 </div>
 <div id="app" class="d-flex align-content-center flex-wrap">
@@ -110,6 +105,10 @@ CSS
 
     <div class="container">
         <div class="container-content">
+
+            <h4 v-if="!filteredQueueList.length" class="text-center text-danger" style="font-size: 20px;">
+                ไม่พบข้อมูล สถานะคิวของท่าน!!
+            </h4>
 
             <div v-for="(item, key) in filteredQueueList" :key="key" class="card card-shadow  mb-4">
                 <div :class="['card-header',{'header-gray': item.queue_status_id === '4'}]" style="padding: 12px 16px;border: 1px solid #e5e9ec;">
