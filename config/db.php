@@ -21,6 +21,13 @@ $dbDev = [
         'password' => 'root_db',
         'charset' => 'utf8',
     ],
+    // 'db_queue' => [
+    //     'class' => 'yii\db\Connection',
+    //     'dsn' => 'mysql:host=localhost;dbname=queue-udon;port=3307',
+    //     'username' => 'root',
+    //     'password' => '',
+    //     'charset' => 'utf8',
+    // ],
 ];
 
 $dbProd = [
@@ -36,7 +43,7 @@ $dbProd = [
     ],
     'mssql' => [
         'class' => 'yii\db\Connection',
-        'dsn' => 'sqlsrv:Server=192.168.0.3;Database=UDTest',
+        'dsn' => 'sqlsrv:Server=192.168.0.1;Database=UDON2',
         'username' => 'homc',
         'password' => 'homc',
     ],
