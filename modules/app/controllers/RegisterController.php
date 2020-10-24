@@ -169,7 +169,7 @@ class RegisterController extends Controller
             if ($model->save()) {
                 $userId = $model->line_id;
                 //$richMenuId = 'richmenu-968dd0ce9b38909ff89aa2c5e5386845';
-                $richMenuId = 'richmenu-531fda8a9ccba1fa404ccca645672c3b';
+                $richMenuId = 'richmenu-5c2fa03d0d2513b0979fcc6f0a748558';
                 $dataRichMenu = '';
                 $client = new Client();
                 $response = $client->createRequest()
