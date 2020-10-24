@@ -35,7 +35,7 @@ use yii\helpers\Html;
         <li class="menu_title">
             <a href="/app/appoint/create-department"> 
                 <i class="fa fa-pencil-square-o"></i>
-                 <span>นัดหมายแพทย์ </span>
+                 <span>นัดหมายล่วงหน้า </span>
                  </a>
 
         </li>

@@ -265,7 +265,7 @@ class TextMessageHandler implements EventHandler
                 $flexMessageBuilder = FlexContact::get();
                 $this->bot->replyMessage($replyToken, $flexMessageBuilder);
                 break;
-            case 'นัดหมายแพทย์':
+            case 'นัดหมายล่วงหน้า':
                 $userId = $this->textMessage->getUserId();
                 $patient = TblPatient::findOne(['line_id' => $userId]);
                 // ตรวจสอบว่าลงทะเบียนหรือยัง
