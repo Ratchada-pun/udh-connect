@@ -17,7 +17,7 @@ var config = {
   ChannelAccessToken:
     "FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=",
   RichMenuId: "richmenu-531fda8a9ccba1fa404ccca645672c3b",
-  //RichMenuId: "richmenu-349a649ee1b2e2f659ae2da8e24df4ef",
+  //RichMenuId: "richmenu-349a649ee1b2e2f659ae2da8e24df4ef",//menu เดิม
 
   // redirectUri: "https://e98c9d411f42.ap.ngrok.io",
   // liffId: "1654023325-EkWmY9PA", // line login
