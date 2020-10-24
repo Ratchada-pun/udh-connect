@@ -168,7 +168,8 @@ class RegisterController extends Controller
             $model->line_id = isset($posted['userId']) ? $posted['userId'] : null;
             if ($model->save()) {
                 $userId = $model->line_id;
-                $richMenuId = 'richmenu-968dd0ce9b38909ff89aa2c5e5386845';
+                //$richMenuId = 'richmenu-968dd0ce9b38909ff89aa2c5e5386845';
+                $richMenuId = 'richmenu-531fda8a9ccba1fa404ccca645672c3b';
                 $dataRichMenu = '';
                 $client = new Client();
                 $response = $client->createRequest()
