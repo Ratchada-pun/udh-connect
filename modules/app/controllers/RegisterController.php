@@ -169,9 +169,17 @@ class RegisterController extends Controller
             if ($model->save()) {
                 $userId = $model->line_id;
                 //$richMenuId = 'richmenu-968dd0ce9b38909ff89aa2c5e5386845';
-                $richMenuId = 'richmenu-5c2fa03d0d2513b0979fcc6f0a748558';
+                $richMenuId = 'richmenu-7351dbcc12fcf979942367a8422087b3';
                 $dataRichMenu = '';
                 $client = new Client();
+                //Unlink rich menu from user
+                $response = $client->createRequest()
+                    ->setMethod('DELETE')
+                    ->setUrl('https://api.line.me/v2/bot/user/'.$userId.'/richmenu')
+                    ->addHeaders(['content-type' => 'application/json'])
+                    ->addHeaders(['Authorization' => 'Bearer FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU='])
+                    ->send();
+                //Link rich menu to user
                 $response = $client->createRequest()
                     ->setMethod('POST')
                     ->setUrl('https://api.line.me/v2/bot/user/'.$userId.'/richmenu/'.$richMenuId)
