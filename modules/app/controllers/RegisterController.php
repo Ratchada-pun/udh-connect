@@ -173,7 +173,7 @@ class RegisterController extends Controller
                 $dataRichMenu = '';
                 $client = new Client();
                 //Unlink rich menu from user
-                $response = $client->createRequest()
+                $unlinkresponse = $client->createRequest()
                     ->setMethod('DELETE')
                     ->setUrl('https://api.line.me/v2/bot/user/'.$userId.'/richmenu')
                     ->addHeaders(['content-type' => 'application/json'])
