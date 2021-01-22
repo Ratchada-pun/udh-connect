@@ -30,7 +30,9 @@ class AppAsset extends AssetBundle
         'js/moment.min.js',
         'js/waitMe/waitMe.min.js',
         'https://cdn.jsdelivr.net/npm/sweetalert2@9',
-        'bundle/app.min.js'
+        'https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js',
+        'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'
+        //'bundle/app.min.js'
         
     ];
     public $depends = [
