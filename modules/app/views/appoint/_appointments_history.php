@@ -123,7 +123,7 @@ $this->title = "นัดหมายล่วงหน้า";
 
                         <div class="btn-demo mb-4">
                             <?php if (!empty($history)) : ?>
-                                <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $history['pre_dept_code'], 'doc_id' => $history['doctor']]) ?>" class="btn btn-success btn-lg btn-block">
+                                <a href="<?= Url::to(['/app/appoint/create-appointments', 'deptgroup' => $history['DeptGroup'], 'deptcode' => $history['pre_dept_code'], 'doccode' => $history['doctor']]) ?>" class="btn btn-success btn-lg btn-block">
                                     <p style="font-size: 16pt;">
                                         นัดหมายจากประวัติล่าสุด
                                     </p>

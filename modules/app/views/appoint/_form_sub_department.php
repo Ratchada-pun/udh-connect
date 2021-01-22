@@ -13,6 +13,8 @@ use app\assets\SweetAlert2Asset;
 
 $this->title = "นัดหมาย";
 SweetAlert2Asset::register($this);
+
+
 ?>
 
 <style>
@@ -33,7 +35,7 @@ SweetAlert2Asset::register($this);
     }
 
     .sufee-login img {
-    max-width: 10%;
+        max-width: 10%;
     }
 
     .btn {
@@ -45,24 +47,29 @@ SweetAlert2Asset::register($this);
         max-width: 10%;
 
     }
+
     @media (max-width: 767px) {
-	.quick-links-grid .ql-grid-item {
-		width: 100% !important;
-	}
-	.login-content {
-		margin: 0;
-	}
-	.container-fluid {
-		padding-right: 0;
-    	padding-left: 0;
-	}
-    .card-body {
+        .quick-links-grid .ql-grid-item {
+            width: 100% !important;
+        }
+
+        .login-content {
+            margin: 0;
+        }
+
+        .container-fluid {
+            padding-right: 0;
+            padding-left: 0;
+        }
+
+        .card-body {
             padding: 0;
+        }
     }
-}
-.login-form .btn {
-    font-size: 16px;
-}
+
+    .login-form .btn {
+        font-size: 16px;
+    }
 </style>
 
 <div class="sufee-login d-flex align-content-center flex-wrap">
@@ -88,7 +95,7 @@ SweetAlert2Asset::register($this);
                     <div class="col-12">
                         <div class="card-body">
                             <div class="form-group">
-                              <!-- <div class="input-group">
+                                <!-- <div class="input-group">
                                     <div class="input-group-addon">
                                         <i class="fa fa-search"></i>
                                     </div>
@@ -96,10 +103,10 @@ SweetAlert2Asset::register($this);
                                 </div> -->
                                 <div class="input-group">
                                     <a class="list-group-item list-group-item-action active" style="font-size: 16pt;">
-                                    แผนก : <?= $DeptGrDesc['DeptGrDesc'] ?>
+                                       กลุ่มแผนก : <?= $DeptGrDesc['DeptGrDesc'] ?> 
                                     </a>
                                 </div>
-                          
+
                             </div>
 
                             <div id="list-group" class="list-group">
@@ -107,10 +114,10 @@ SweetAlert2Asset::register($this);
                                     <div class="input-group-addon">
                                         <i class="fa fa-search"></i>
                                     </div>
-                                    <input type="text" class="form-control" placeholder="ค้นหาแผนก..."  id="myInput" autofocus autocomplete="off">
+                                    <input type="text" class="form-control" placeholder="ค้นหาแผนก..." id="myInput" autofocus autocomplete="off">
                                 </div>
                                 <br>
-                              
+
                                 <?php /*
                                 <?php foreach ($deptCodeSub as $key => $value) : ?>
                                     <div class="input-group">
@@ -121,17 +128,18 @@ SweetAlert2Asset::register($this);
                                     </div>
                                 <?php endforeach; ?>
                            */ ?>
-                                <?php foreach ($deptCodeSub as $key => $value) : ?>
+                                <?php foreach ($departments as $key => $value) : ?>
                                     <div class="input-group">
-                                        <a href="<?= Url::to(['/app/appoint/create-appointments', 'id' => $value['deptCode']]) ?>" data-key="<?=$value['deptCode']?>" data-service-id="<?=$value['service_id']?>" class="list-group-item btn btn-outline-success list-group-dept">
-                                         <?php /*
+                                        <a href="<?= Url::to(['/app/appoint/create-appointments', 'deptgroup' => $deptgroup, 'deptcode' => $value['deptCode']]) ?>" data-key="<?= $value['deptCode'] ?>" class="list-group-item btn btn-outline-success list-group-dept">
+                                            <?php /*
                                             <img src="<?= ArrayHelper::getValue($images, $value['deptCode']) ?>" class="img-responsive" style="display: inline-block;">
-                                          */?>  
+                                          */ ?>
+                                           <img src="<?= Yii::getAlias('@web/images/doctor.png') ?>" class="img-responsive" style="display: inline-block;">
                                             <?= $value['deptDesc'] ?>
                                         </a>
                                     </div>
                                 <?php endforeach; ?>
-                           
+
                             </div>
                             <br>
                             <div>
@@ -157,7 +165,7 @@ SweetAlert2Asset::register($this);
 echo $this->render('menu');
 ?>
 
-<?php 
+<?php
 
 $this->registerJs(
     <<<JS
@@ -198,56 +206,57 @@ $('#myInput').on('keyup', function(){
     }
 })
 
-$('.list-group-dept').on('click', function(e){
-    e.preventDefault();
-    var key = $(this).data('key')//รหัสแผนก
-    $.ajax({
-        method: "GET",
-        url: "/app/appoint/check-schedule-doctor?dept_code=" + key,
-        dataType: "json",
-        beforeSend: function( jqXHR,  settings ){
-            Swal.fire({
-                title: 'กรุณารอสักครู่!',
-                html: 'ระบบกำลังตรวจสอบข้อมูลแพทย์',
-                timerProgressBar: true,
-                onBeforeOpen: () => {
-                    Swal.showLoading()
-                },
-            })
-        },
-        success: function(result){
-            Swal.close();
-            if (result.value) {//ถ้ามีไม่ระบุแพทย์
-                Swal.fire({
-                    title: '',
-                    text: "ต้องการระบุแพทย์หรือไม่?",
-                    icon: 'question',
-                    showCancelButton: true,
-                    allowOutsideClick: false,
-                    confirmButtonText: 'ต้องการ',
-                    cancelButtonText: 'ไม่ต้องการ',
-                }).then((result) => {
-                    if (result.value) {
-                        window.location.href = '/app/appoint/create-appointments?id='+key //ระบุแพทย์
-                    }else{
-                        window.location.href = '/app/appoint/appointments-undocter?id='+key //ไม่ระบุแพทย์
-                    }
-                })
-            } else { //ระบุแพทย์
-                window.location.href = '/app/appoint/create-appointments?id='+key
-            }
-        },
-        error: function( jqXHR,  textStatus,  errorThrown){
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: errorThrown,
-                confirmButtonText: 'ตกลง'
-            })
-        },
-    });
+// $('.list-group-dept').on('click', function(e){
+//     e.preventDefault();
+//     var key = $(this).data('key')//รหัสแผนก
+//     var url = $(this).attr('href')
+//     $.ajax({
+//         method: "GET",
+//         url: "/app/appoint/check-schedule-doctor?dept_code=" + key,
+//         dataType: "json",
+//         beforeSend: function( jqXHR,  settings ){
+//             swal.fire({
+//                 title: 'กรุณารอสักครู่!',
+//                 html: 'ระบบกำลังตรวจสอบข้อมูลแพทย์',
+//                 timerProgressBar: true,
+//                 onBeforeOpen: () => {
+//                     swal.showLoading()
+//                 },
+//             })
+//         },
+//         success: function(result){
+//             swal.close();
+//             if (result.value) {//ถ้ามีไม่ระบุแพทย์
+//                 swal.fire({
+//                     title: '',
+//                     text: "ต้องการระบุแพทย์หรือไม่?",
+//                     icon: 'question',
+//                     showCancelButton: true,
+//                     allowOutsideClick: false,
+//                     confirmButtonText: 'ต้องการ',
+//                     cancelButtonText: 'ไม่ต้องการ',
+//                 }).then((result) => {
+//                     if (result.value) {
+//                         window.location.href = '/app/appoint/create-appointments?id='+key //ระบุแพทย์
+//                     }else{
+//                         window.location.href = '/app/appoint/appointments-undocter?id='+key //ไม่ระบุแพทย์
+//                     }
+//                 })
+//             } else { //ระบุแพทย์
+//                 window.location.href = '/app/appoint/create-appointments?id='+key
+//             }
+//         },
+//         error: function( jqXHR,  textStatus,  errorThrown){
+//             swal.fire({
+//                 icon: 'error',
+//                 title: 'Oops...',
+//                 text: errorThrown,
+//                 confirmButtonText: 'ตกลง'
+//             })
+//         },
+//     });
     
-})
+// })
 JS
 );
 ?>

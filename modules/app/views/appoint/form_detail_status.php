@@ -275,7 +275,7 @@ var app = new Vue({
                 this.getCountData()
                 this.fetchDataQueueWait()
             } catch (error) {
-                Swal.fire({
+                swal.fire({
                     icon: 'error',
                     title: 'Oops...',
                     text: error.message || '',
@@ -291,7 +291,7 @@ var app = new Vue({
                     obj[queue.queue_detail_id] = result.data.data.count || 0
                     var count = result.data.data.count || 0
                     if(count > 0 && count < 4){
-                        Swal.fire({
+                        swal.fire({
                             icon: 'warning',
                             title: 'แจ้งเตือน!',
                             text: `รออีก \${count} คิว`,
@@ -302,7 +302,7 @@ var app = new Vue({
                     this.count = this.updateObject(this.count, obj)
                 }
             } catch (error) {
-                Swal.fire({
+                swal.fire({
                     icon: 'error',
                     title: 'Oops...',
                     text: error.message || '',
@@ -319,7 +319,7 @@ var app = new Vue({
                 })
                 this.displays = result.data.data
             } catch (error) {
-                Swal.fire({
+                swal.fire({
                     icon: 'error',
                     title: 'Oops...',
                     text: error.message || '',
@@ -362,7 +362,7 @@ socket.on('call wait', function(data){
         var queue_detail = data.data.queue_detail
         var counter = data.data.counter
         if (app.ids.includes(Number(queue_detail.queue_detail_id))) {
-            Swal.fire({
+            swal.fire({
               icon: 'warning',
               title: 'ถึงคิวคุณแล้วค่ะ!',
               text: `กรุณาเชิญที่ \${counter.counter_service_name}`,

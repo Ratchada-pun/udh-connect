@@ -92,7 +92,7 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                             <div class="form-group">
                                 <div class="input-group">
                                     <a class="list-group-item list-group-item-action active" style="font-size: 14pt;text-align:center;">
-                                         รายชื่อแผนก
+                                         ชื่อกลุ่มแผนก
                                     </a>
                                 </div>
                             </div>
@@ -139,7 +139,7 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
                             <div class="list-group" id="list-group">
                                 <?php foreach ($DeptGroups as $key => $value) : ?>
                                     <div class="input-group">
-                                        <a href="<?= Url::to(['/app/appoint/create-sub-department', 'id' => $key]) ?>" class="list-group-item btn btn-outline-success list-group-department">
+                                        <a href="<?= Url::to(['/app/appoint/create-sub-department', 'deptgroup' => $key]) ?>" class="list-group-item btn btn-outline-success list-group-department">
                                             <img src="<?= Yii::getAlias('@web/images/doctor.png') ?>" class="img-responsive" style="display: inline-block;">
                                             <?= $value ?>
                                             <span class="icon-input">

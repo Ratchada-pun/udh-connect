@@ -14,6 +14,7 @@ use app\models\AppointModel;
 use yii\db\conditions\AndCondition;
 use yii\web\HttpException;
 use common\components\AppQuery;
+use common\components\Util;
 
 /**
  * AppointController implements the CRUD actions for TblPatient model.
@@ -75,7 +76,7 @@ class AppointController extends Controller
         // if (!$session->get('user')) {
         //     return $this->redirect(['/']);
         // }
-        $departments = AppQuery::getDepartmentGroupHomc();
+        $departments = AppQuery::getDepartmentGroupHomc(); //ชื่อกลุ่มแผนก
         $DeptGroups = ArrayHelper::map($departments, 'DeptGroup', 'DeptGrDesc');
 
         return $this->render('_form_department.php', [
@@ -87,27 +88,27 @@ class AppointController extends Controller
      * เลือกแผนก
      * /app/appoint/create-sub-department?id={deptGroup}
      */
-    public function actionCreateSubDepartment($id) //เลือกแผนกย่อย
+    public function actionCreateSubDepartment($deptgroup) //เลือกแผนกย่อย เงื่อนไข คือรหัสแผนก จะต้องมี Appoint_hide ให้ค่า null และ จะต้อง มี รหัสแผนกนั้น ใน ตาราง DOCC_LimitApp
     {
         // $session = Yii::$app->session;
         // if (!$session->get('user')) {
         //     return $this->redirect(['/']);
         // }
 
-        $DeptGrDesc = AppQuery::getDeptGrById($id);
-        $departments = AppQuery::getDepartmentByDeptGroupHomc($id);
+        $DeptGrDesc = AppQuery::getDeptGrById($deptgroup);
+        $departments = AppQuery::getDepartmentByDeptGroupHomc($deptgroup); //ชื่อแผนกจากฐานข้อมูลโรงพยาบาล
 
-        $services = AppQuery::getServices();
-        $map_services = ArrayHelper::map($services, 'service_code', 'service_id');
+        // $services = AppQuery::getServices(); //ชื่อแผนกจากระบบคิว
+        // $map_services = ArrayHelper::map($services, 'service_code', 'service_id');
 
-        $map_departments = [];
-        foreach ($departments as $key => $department) {
-            if (ArrayHelper::getValue($map_services, $department['deptCode'], null) != null) {
-                $map_departments[] = ArrayHelper::merge($department, [
-                    'service_id' => ArrayHelper::getValue($map_services, $department['deptCode'], null),
-                ]);
-            }
-        }
+        // $map_departments = [];
+        // foreach ($departments as $key => $department) {
+        //     if (ArrayHelper::getValue($map_services, $department['deptCode'], null) != null) {
+        //         $map_departments[] = ArrayHelper::merge($department, [
+        //             'service_id' => ArrayHelper::getValue($map_services, $department['deptCode'], null),
+        //         ]);
+        //     }
+        // }
 
         $basePath = Yii::getAlias('@web/images');
         $images = [
@@ -123,8 +124,10 @@ class AppointController extends Controller
 
         return $this->render('_form_sub_department.php', [
             'DeptGrDesc' => $DeptGrDesc,
-            'deptCodeSub' => $map_departments,
+            // 'deptCodeSub' => $map_departments,
             'images' => $images,
+            'departments' => $departments,
+            'deptgroup' => $deptgroup
         ]);
     }
 
@@ -206,25 +209,28 @@ class AppointController extends Controller
      * @param {string} id > รหัสแผนก
      * @param {number} doc_id รหัสประจำตัวแพทย์
      */
-    public function actionCreateAppointments($id, $doc_id = '')  //ระบุแพทย์
+    public function actionCreateAppointments($deptgroup, $deptcode, $doccode = null)  //ระบุแพทย์
     {
         $model = new AppointModel();
 
         //ชื่อแผนกย่อย (ใช้ตรง header)
-        $deptCodeSub = AppQuery::getDepartmentById($id);
+        $deptCodeSub = AppQuery::getDepartmentById($deptcode);
 
-        $doctors = AppQuery::getDoctorByDeptcode($id);
-        $doctor_ids =  ArrayHelper::getValue($doctors, 'doctor_ids', []);
-        $doctors_list = AppQuery::getDoctorListByDoctorIds($doctor_ids);
+        // $doctors = AppQuery::getDoctorByDeptcode($id);
+        // $doctor_ids =  ArrayHelper::getValue($doctors, 'doctor_ids', []);
+        // $doctors_list = AppQuery::getDoctorListByDoctorIds($doctor_ids);
+        $doctors = AppQuery::getDoctorByDeptcode($deptcode);
 
         return $this->render('_form_appointments', [
             'deptCodeSub' => $deptCodeSub,
-            // 'docCode' => $docCode, //รายชื่อแพทย์ทั้งหมดตามแผนกที่เลือก
-            'doctors' => $doctors_list,
-            // 'service' => $service,
-            'dept_code' => $id,
+            // // 'docCode' => $docCode, //รายชื่อแพทย์ทั้งหมดตามแผนกที่เลือก
+            // 'doctors' => $doctors_list,
+            'deptgroup' => $deptgroup,
+            'dept_code' => $deptcode,
+            'doccode' => $doccode,
             'model' => $model,
-
+            // 'doctors_dbo' => $doctors_dbo
+            'doctors' => $doctors
         ]);
     }
 
@@ -410,14 +416,89 @@ class AppointController extends Controller
      * ตารางแพทย์ /app/appoint/schedules?doc_id={doc_id}
      * @param {String} doc_id รหัสแแพทย์
      */
-    public function actionSchedules($doc_id)
+    public function actionSchedules()
     {
         $response = Yii::$app->response;
+        $request = \Yii::$app->request;
+        $doc_id = $request->post('doc_id');
+        $deptgroup = $request->post('deptgroup');
+        $deptcode = $request->post('deptcode');
+
         $response->format = \yii\web\Response::FORMAT_JSON;
 
-        // ข้อมูลตารางแพทย์
-        $med_schedules = AppQuery::getScheduleByDoctorCode($doc_id);
-        return $med_schedules;
+        // ข้อมูลตารางแพทย์ระบบคิว
+        // $med_schedules = AppQuery::getScheduleByDoctorCode($doc_id);
+        // return $med_schedules;
+
+        //ข้อมูลตารางแพทย์จาก ระบบโรงพยาบาล
+        $dayofweek = [0, 1, 2, 3, 4, 5, 6];
+        $schedules = AppQuery::getScheduleDoctorByDbo($doc_id, $deptgroup, $deptcode);
+        $doccHoliday = AppQuery::getDoccHoliday($doc_id);
+        $holiday = AppQuery::getHoliday();
+
+        $holidays = [];
+        foreach ($holiday as $data) { //วันหยุดนักขัตฤกษ
+            $arr = explode("-", $data['h_date']);
+            $y = $arr[0] - 543;
+            $m = $arr[1];
+            $d = $arr[2];
+
+            $holidays[] = [
+                'title' => $data['h_comm'],
+                'date' => "$d/$m/$y",
+            ];
+        }
+
+        foreach ($doccHoliday as $data) { //วันหยุดแพทย์
+            $y = substr($data['Holdate'], 0, 4) - 543;
+            $m = substr($data['Holdate'], 4, -2);
+            $d = substr($data['Holdate'], -2);
+
+            $holidays[] = [
+                'title' => 'วันหยุดแพทย์',
+                'date' => "$d/$m/$y",
+            ];
+        }
+
+        $datesDisabled1 = array_map(function ($v) { //วันหยุดนักขัตฤกษ
+            $arr = explode("-", $v);
+            $y = $arr[0] - 543;
+            $m = $arr[1];
+            $d = $arr[2];
+            return "$d/$m/$y";
+        }, ArrayHelper::getColumn($holiday, 'h_date'));
+
+        $datesDisabled2 = array_map(function ($v) { //วันหยุดแพทย์
+            $y = substr($v, 0, 4) - 543;
+            $m = substr($v, 4, -2);
+            $d = substr($v, -2);
+            return "$d/$m/$y";
+        }, ArrayHelper::getColumn($doccHoliday, 'Holdate'));
+
+        $datesDisabled = ArrayHelper::merge($datesDisabled1, $datesDisabled2);
+
+        $mapDayOfWeek =  array_map(function ($v) {
+            if ($v == 7) {
+                return 0;
+            }
+            return $v;
+        }, ArrayHelper::getColumn($schedules, 'ad_orb'));
+
+        $daysOfWeekDisabled = [];
+        foreach ($dayofweek as $v) {
+            if (!in_array($v, $mapDayOfWeek)) {
+                $daysOfWeekDisabled[] = $v;
+            }
+        }
+
+
+        return [
+            'mapDayOfWeek' => $mapDayOfWeek,
+            'daysOfWeekDisabled' => $daysOfWeekDisabled,
+            'datesDisabled' => $datesDisabled,
+            'holidays' => $holidays,
+            'schedules' => $schedules
+        ];
     }
 
     public function actionScheduleTimes()  //ตารางแพทย์
@@ -425,9 +506,33 @@ class AppointController extends Controller
         $response = Yii::$app->response;
         $response->format = \yii\web\Response::FORMAT_JSON;
 
-        $attributes = \Yii::$app->request->post('AppointModel', []);
+        $request = \Yii::$app->request;
+        $attributes = $request->post('AppointModel', []);
+        $doc_code = ArrayHelper::getValue($attributes, 'doc_code', '');
+        $dept_code = ArrayHelper::getValue($attributes, 'dept_code', '');
+        $deptgroup = $request->post('deptgroup');
+        $day = \Yii::$app->request->post('day');
+
+        if ($day == 0) {
+            $day = 7;
+        }
+
+        $schedules = AppQuery::getScheduleDoctorByDbo($doc_code, $deptgroup, $dept_code, $day);
+
+
+        $schedule_times =  array_map(function ($item) {
+            return [
+                'text' => $item['stTime'] . '-' . $item['edTime'] . ' น.',
+                'value' => $item['stTime'] . '-' . $item['edTime'],
+            ];
+        }, $schedules);
+        return [
+            'schedule_times' => $schedule_times,
+        ];
+        /* $attributes = \Yii::$app->request->post('AppointModel', []);
         $appoint_date = \Yii::$app->request->post('appoint_date', '');  //;วันที่แพทย์ออกตรวจ
         $doc_code = ArrayHelper::getValue($attributes, 'doc_code', '');
+        $dept_code = ArrayHelper::getValue($attributes, 'dept_code', '');
 
         $doctors = AppQuery::getDoctorByDeptcode($attributes['dept_code']);
         $doc_codes = ArrayHelper::getValue($doctors, 'doc_codes', []);
@@ -456,7 +561,7 @@ class AppointController extends Controller
             'doc_codes' => $doc_codes,
             'schedule' => $schedule_times,
             'list' => $list,
-        ];
+        ]; */
     }
 
     /**
@@ -470,7 +575,9 @@ class AppointController extends Controller
         if (empty($profile)) {
             throw new HttpException(404, 'ไม่พบข้อมูลผู้ใช้งาน.');
         }
+        $profile = $this->findModelProfile(['id_card' => $profile['id_card']]);
         $attributes = \Yii::$app->request->post('AppointModel', []);
+
         $model = new AppointModel();
         $model->load($attributes, '');
         if (!$model->validate()) {
@@ -478,12 +585,62 @@ class AppointController extends Controller
         }
         $appoint_time_from = \Yii::$app->request->post('appoint_time_from', '');
         $appoint_time_to = \Yii::$app->request->post('appoint_time_to', '');
+        $deptgroup = \Yii::$app->request->post('deptgroup', '');
         $appoint_time = isset($attributes['appoint_time']) ? $attributes['appoint_time'] : '';
         $doc_option = \Yii::$app->request->post('doc_option', '');
         $db_mssql = Yii::$app->mssql;
         $formatter = Yii::$app->formatter;
         $appoint_date = explode("/", $attributes['appoint_date']);
-        $attributes['appoint_date'] = $appoint_date[2] . '-' . $appoint_date[1] . '-' . $appoint_date[0];
+        $attributes['appoint_date'] = $appoint_date[2] . '-' . $appoint_date[1] . '-' . $appoint_date[0]; // yyyy-mm-dd
+        $dayofweek = date('w', strtotime($attributes['appoint_date'])); //1-7 sun-mon
+        $appoint_date = ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543) . $formatter->asDate($attributes['appoint_date'], 'php:md'); //(yyyy+543)mmdd
+
+
+
+        // $dept_group = (new \yii\db\Query()) //แผนกหลัก
+        //     ->select([
+        //         'REPLACE(DEPTGROUP.DeptGroup, \' \', \'\') as DeptGroup',
+        //     ])
+        //     ->from('DEPTGROUP')
+        //     ->where(['deptCode' => $attributes['dept_code']])
+        //     ->one($db_mssql);
+
+
+        $DoccLimit = (new \yii\db\Query()) //จำนวนคิวนัดหมายตามที่แพทย์ลงบันทึก
+            ->select(['DOCC_LimitApp.*', 'Appoint_day.*'])
+            ->from('DOCC_LimitApp')
+            ->innerJoin('Appoint_day', 'DOCC_LimitApp.appoint_date = Appoint_day.ad_id')
+            ->where([
+                'REPLACE(DOCC_LimitApp.docCode, \' \', \'\')' => $attributes['doc_code'],
+                'DOCC_LimitApp.stTime' => $appoint_time_from,
+                'DOCC_LimitApp.edTime' => $appoint_time_to,
+                'Appoint_day.ad_orb' => $dayofweek,
+                'REPLACE(DOCC_LimitApp.DeptGroup, \' \', \'\')' => $deptgroup,
+            ])
+            ->one($db_mssql);
+
+
+        $count_appoint = (new \yii\db\Query()) //วันที่นัดหมายแพทย์
+            ->select(['*'])
+            ->from('Appoint')
+            ->where([
+                'REPLACE(Appoint.doctor, \' \', \'\')' => $attributes['doc_code'],
+                'Appoint.appoint_date' => $appoint_date,
+                'Appoint.appoint_time_from' => $appoint_time_from,
+                'Appoint.appoint_time_to' => $appoint_time_to,
+                'Appoint.pre_dept_code' =>  $attributes['dept_code']
+            ])
+            ->count('*', $db_mssql);
+
+
+
+        if ($count_appoint >= ArrayHelper::getValue($DoccLimit, 'applimit', 0)) { //ตรวจสอบจำนวนที่รับนัด
+            $response = Yii::$app->response;
+            $response->format = \yii\web\Response::FORMAT_JSON;
+            throw new HttpException(422, 'ไม่สามารถทำรายการได้ เนื่องจากคิวเต็ม.');
+        }
+
+
         $transaction = $db_mssql->beginTransaction();
         try {
             $response = Yii::$app->response;
@@ -497,31 +654,47 @@ class AppointController extends Controller
 
             $params = [];
 
-            if ($doc_option == 'selection' && !empty($attributes['doc_code'])) {
-                $params = [
-                    'maker' => 'queue online',
-                    'doc_code' => $attributes['doc_code'],
-                    'appoint_date' => ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543) . $formatter->asDate($attributes['appoint_date'], 'php:md'),
-                    'pre_dept_code' => $attributes['dept_code'],
-                    'appoint_time_from' => $appoint_time_from,
-                    'appoint_time_to' => $appoint_time_to,
-                    'hn' => $profile['hn'],
-                    'CID' => $profile['id_card'],
-                ];
-                $history_appoints = AppQuery::getHistoryAppoints($params);
-            } else {
-                $params = [
-                    'maker' => 'queue online',
-                    'doc_code' => '',
-                    'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:Ymd'),
-                    'pre_dept_code' => $attributes['dept_code'],
-                    'appoint_time_from' => $appoint_time_from,
-                    'appoint_time_to' => $appoint_time_to,
-                    'hn' => $profile['hn'],
-                    'CID' => $profile['id_card'],
-                ];
-                $history_appoints = AppQuery::getHistoryAppoints($params);
-            }
+
+            // if ($doc_option == 'selection' && !empty($attributes['doc_code'])) {
+            //     $params = [
+            //         'maker' => 'queue online',
+            //         'doc_code' => $attributes['doc_code'],
+            //         'appoint_date' => $appoint_date,
+            //         'pre_dept_code' => $attributes['dept_code'],
+            //         'appoint_time_from' => $appoint_time_from,
+            //         'appoint_time_to' => $appoint_time_to,
+            //         'hn' => $profile['hn'],
+            //         'CID' => $profile['id_card'],
+            //         'status_in' => 'm', //สถานะระบบ status_in (m = mobile,c = ศูนย์บริการ,n = ระบบนัดใหม่,null= ระบบเดิม)
+            //     ];
+            //     $history_appoints = AppQuery::getHistoryAppoints($params);
+            // } else {
+            //     $params = [
+            //         'maker' => 'queue online',
+            //         'doc_code' => '',
+            //         'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:Ymd'),
+            //         'pre_dept_code' => $attributes['dept_code'],
+            //         'appoint_time_from' => $appoint_time_from,
+            //         'appoint_time_to' => $appoint_time_to,
+            //         'hn' => $profile['hn'],
+            //         'CID' => $profile['id_card'],
+            //         'status_in' => 'm', //สถานะระบบ นัดจาก mobile
+            //     ];
+            //     $history_appoints = AppQuery::getHistoryAppoints($params);
+            // }
+
+            $params = [
+                'maker' => 'queue online',
+                'doc_code' => $attributes['doc_code'],
+                'appoint_date' => $appoint_date,
+                'pre_dept_code' => $attributes['dept_code'],
+                'appoint_time_from' => $appoint_time_from,
+                'appoint_time_to' => $appoint_time_to,
+                'hn' => $profile['hn'],
+                'CID' => $profile['id_card'],
+                'status_in' => 'm', //สถานะระบบ status_in (m = mobile,c = ศูนย์บริการ,n = ระบบนัดใหม่,null= ระบบเดิม)
+            ];
+            $history_appoints = AppQuery::getHistoryAppoints($params);
 
             if (!empty($history_appoints)) {
                 throw new HttpException(422, 'ไม่สามารถทำรายการได้ เนื่องจากคุณมีรายการนัดตามวัน,เวลา แผนก แพทย์ ที่เลือกอยู่แล้ว.');
@@ -529,9 +702,9 @@ class AppointController extends Controller
 
             $db_mssql->createCommand()->insert('Appoint', [
                 'app_type' => 'A',
-                'doctor' => empty($attributes['doc_code']) ? sprintf("% 6s", '0') : sprintf("% 6s", $attributes['doc_code']),
-                'hn' => sprintf("% 7s", $profile['hn']),
-                'appoint_date' => ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543) . $formatter->asDate($attributes['appoint_date'], 'php:md'),
+                'doctor' => Util::sprintf($attributes['doc_code'], 6),
+                'hn' =>  Util::sprintf($profile['hn'], 7),
+                'appoint_date' => $appoint_date,
                 'appoint_time_from' => $appoint_time_from,
                 'appoint_time_to' => $appoint_time_to,
                 'appoint_note' => '',
@@ -540,10 +713,11 @@ class AppointController extends Controller
                 'phone' => $profile['phone_number'],
                 'maker' => 'queue online',
                 'keyin_time' => $formatter->asDate('now', 'php:Y-m-d H:i:s'),
+                'status_in' => 'm',
             ])->execute();
             $appoint = [
-                'doctor_name' => empty($attributes['doc_code']) ? 'ไม่ระบุแพทย์' : $doctor['doctitle'] . $doctor['docName'] . ' ' . $doctor['docLName'],
-                'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:d M ') . ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543),
+                'doctor_name' => $doctor['doctitle'] . $doctor['docName'] . ' ' . $doctor['docLName'],
+                'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:d/m/'). ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543),
                 'appoint_time' => $appoint_time,
                 'department_name' => $dept['deptDesc'],
                 'hn' => $profile['hn'],
@@ -553,10 +727,10 @@ class AppointController extends Controller
             return [
                 'message' => 'ทำรายการสำเร็จ',
                 'appoint' => $appoint,
-                'appoint_date' => ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543) . $formatter->asDate($attributes['appoint_date'], 'php:md'),
+                'appoint_date' => $appoint_date,
                 'hn' => $profile['hn'],
                 'id_card' => $profile['id_card'],
-                'doctor' => empty($attributes['doc_code']) ? sprintf("% 6s", '0') : sprintf("% 6s", $attributes['doc_code'])
+                'doctor' => preg_replace('/\s+/', '', $attributes['doc_code'])
             ];
         } catch (\Exception $e) {
             $transaction->rollBack();
@@ -588,11 +762,12 @@ class AppointController extends Controller
     {
         $session = Yii::$app->session;
         $profile = $session->get('user');
+        $profile = $this->findModelProfile(['id_card' => $profile['id_card']]);
 
         $params = [
             'appoint_date' => $appoint_date,
             'cid' => $cid,
-            'doctor' => $doctor,
+            'doctor' => str_replace(' ', '', $doctor),
             'hn' => $hn
         ];
         $appoint = AppQuery::getAppointFollowUp($params);
@@ -604,9 +779,10 @@ class AppointController extends Controller
             ]);
         }
 
+
         return  $this->render('_form_follow_up', [
             'appoint' => $appoint,
-            'message' => empty($hn) ? 'กรุณาติดต่อห้องบัตร ตามวันและเวลาที่ท่านนัดหมาย!' : ' กดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่ท่านนัดหมาย!'
+            'message' => empty($hn) ? 'กรุณาติดต่องานเวชระเบียน ตามวันและเวลาที่ท่านนัดหมาย!' : ' กดบัตรคิว ณ จุดบริการ ตามวันและเวลาที่ท่านนัดหมาย!'
         ]);
     }
 
@@ -624,10 +800,11 @@ class AppointController extends Controller
         return $profile;
     }
 
-    public function actionUserHistory() //ประวัตใบนัดแพทย์
+    public function actionUserHistory() //ประวัตใบนัดหมายแพทย์
     {
         $session = Yii::$app->session;
         $profile = $session->get('user');
+        $profile = $this->findModelProfile(['id_card' => $profile['id_card']]);
 
         $history = AppQuery::getUserHistory($profile);
 
@@ -648,6 +825,7 @@ class AppointController extends Controller
     {
         $session = Yii::$app->session;
         $profile = $session->get('user');
+        $profile = $this->findModelProfile(['id_card' => $profile['id_card']]);
         $history = AppQuery::getAppointmentsHistory($profile);
 
         if ($history) {
@@ -673,6 +851,7 @@ class AppointController extends Controller
 
         if (!$profile && $session->get('user')) {
             $user = $session->get('user');
+            $profile = $this->findModelProfile(['id_card' => $user['id_card']]);
             $profile = [
                 'firstName' => ArrayHelper::getValue($user, 'first_name', '-'),
                 'lastName' => ArrayHelper::getValue($user, 'last_name', '-'),
@@ -709,5 +888,14 @@ class AppointController extends Controller
             ]);
         }
         return $items;
+    }
+
+    protected function findModelProfile($params)
+    {
+        if (($model = TblPatient::findOne($params)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Profile not found.');
     }
 }

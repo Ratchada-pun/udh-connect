@@ -113,9 +113,7 @@ $this->title = "ประวัตินัดหมาย";
                                                     <small style="font-size: 12pt; padding-left:7%">
                                                         <?= $value['appoint_time_from'] ?> - <?= $value['appoint_time_to'] ?> น.
                                                     </small>
-
                                                 </div>
-                             
                                             </button>
                                         </h2>
 
@@ -127,35 +125,35 @@ $this->title = "ประวัตินัดหมาย";
 
                                             <div class="card-body" style="padding-top:5px;background-color:#fce4ec;">
                                                 <div style="padding-top:10px;">
-                                                    <h1 class="text-muted" style="padding-left:5%;font-size: 12pt;">
+                                                    <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
                                                         ชื่อ :
-                                                        </h>
-                                                        <small style="font-size: 12pt; padding-left:10%">
-                                                            <?= $value['firstName'] . ' ' . $value['lastName'] ?>
-                                                        </small>
+                                                    </h>
+                                                    <small style="font-size: 12pt; padding-left:10%">
+                                                        <?= $value['firstName'] . ' ' . $value['lastName'] ?>
+                                                    </small>
                                                 </div>
 
                                                 <div style="padding-top:10px;">
-                                                    <h1 class="text-muted" style="padding-left:5%;font-size: 12pt; " \>
+                                                    <h class="text-muted" style="padding-left:5%;font-size: 12pt; " \>
                                                         แผนก :
-                                                        </h>
-                                                        <small style="font-size: 12pt;padding-left:5% ">
-                                                            <?= $value['deptDesc'] ?>
-                                                        </small>
+                                                    </h>
+                                                    <small style="font-size: 12pt;padding-left:5% ">
+                                                        <?= $value['deptDesc'] ?>
+                                                    </small>
                                                 </div>
 
                                                 <div style="padding-top:10px;">
-                                                    <h1 class="text-muted" style="padding-left:5%; font-size: 12pt; ">
+                                                    <h class="text-muted" style="padding-left:5%; font-size: 12pt; ">
                                                         แพทย์ :
-                                                        </h>
-                                                        <small style="font-size: 12pt; padding-left:5% ">
-                                                            <?= $value['docName'] . ' ' . $value['docLName'] ?>
-                                                        </small>
+                                                    </h>
+                                                    <small style="font-size: 12pt; padding-left:5% ">
+                                                        <?= $value['docName'] . ' ' . $value['docLName'] ?>
+                                                    </small>
                                                 </div>
 
                                                 <div style="padding-top:10px;">
-                                                    <h1 class="text-muted" style="padding-left:5%;font-size: 12pt;">
-                                                        วันที่นัด:
+                                                        <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
+                                                            วันที่นัด:
                                                         </h>
                                                         <small style="font-size: 12pt; padding-left:4% ">
                                                             <?= substr($value['appoint_date'], 6, 2) . '/' . substr($value['appoint_date'], 4, -2) . '/' . substr($value['appoint_date'], 0, 4) ?>
@@ -163,12 +161,12 @@ $this->title = "ประวัตินัดหมาย";
                                                 </div>
 
                                                 <div style="padding-top:10px;">
-                                                    <h1 class="text-muted" style="padding-left:5%;font-size: 12pt;">
-                                                        เวลานัด :
-                                                        </h>
-                                                        <small style="font-size: 12pt; padding-left:3%">
-                                                            <?= $value['appoint_time_from'] ?> - <?= $value['appoint_time_to'] ?> น.
-                                                        </small>
+                                                    <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
+                                                     เวลานัด :
+                                                    </h>
+                                                    <small style="font-size: 12pt; padding-left:3%">
+                                                        <?= $value['appoint_time_from'] ?> - <?= $value['appoint_time_to'] ?> น.
+                                                    </small>
                                                 </div>
 
                                             </div>
