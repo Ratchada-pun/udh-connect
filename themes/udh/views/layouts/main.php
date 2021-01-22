@@ -39,14 +39,26 @@ use yii\widgets\Breadcrumbs;
                         </div>
                     </div>
                 </div>
-                */?>
+                */ ?>
                 <!-- breadcrumb_End -->
-                <?=\yii2mod\alert\Alert::widget()?>
+                <?= \yii2mod\alert\Alert::widget() ?>
                 <?= $content ?>
             </div>
         </div>
         <?= $this->render('_footer.php') ?>
     </div>
 </div>
+<?php
+$ctrid = Yii::$app->controller->id;
+if (in_array($ctrid, ['appoint', 'register', 'site']) && Yii::$app->user->isGuest) {
+    $this->registerJsFile(
+        '@web/bundle/app.min.js',
+        ['depends' => [
+            \yii\web\JqueryAsset::class,
+            \app\assets\AppAsset::class
+        ]]
+    );
+}
 
+?>
 <?php $this->endContent(); ?>

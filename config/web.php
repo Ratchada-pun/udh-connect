@@ -15,12 +15,8 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
         '@udh'   => '@app/themes/udh',
-        '@common' => '@app/common'
-    ],
-    'modules' => [
-        'app' => [
-            'class' => 'app\modules\app\Module',
-        ],
+        '@common' => '@app/common',
+        '@udh/user' => '@udh/modules/yii2-user',
     ],
     'components' => [
         'request' => [
@@ -31,7 +27,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'dektrium\user\models\User',
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
@@ -53,7 +49,7 @@ $config = [
                 ],
             ],
         ],
-        
+
         // database connection
         'db' => $db['db'],
         'mssql' => $db['mssql'],
@@ -67,7 +63,8 @@ $config = [
         'view' => [
             'theme' => [
                 'pathMap' => [
-                    '@app/views' => '@udh/views'
+                    '@app/views' => '@udh/views',
+                    '@dektrium/user/views' => '@udh/user/views'
                 ],
             ],
         ],
@@ -90,6 +87,33 @@ $config = [
             'timeZone' => 'Asia/Bangkok',
             'locale' => 'th-TH'
         ],
+    ],
+    'modules' => [
+        'app' => [
+            'class' => 'app\modules\app\Module',
+        ],
+        'user' => [
+            'class' => 'dektrium\user\Module',
+            'enableUnconfirmedLogin' => false,
+            'enableRegistration' => false,
+            'confirmWithin' => 21600,
+            'cost' => 12,
+            'admins' => ['admin'],
+            'controllerMap' => [
+                'security' => [
+                    'class' => 'udh\user\controllers\SecurityController',
+                    'layout' => '@udh/views/layouts/main_auth.php'
+                ],
+                'registration' => [
+                    'class' => 'udh\user\controllers\RegistrationController',
+                    'layout' => '@udh/views/layouts/main_auth.php'
+                ],
+                'recovery' => [
+                    'class' => 'udh\user\controllers\RecoveryController',
+                    'layout' => '@udh/views/layouts/main_auth.php'
+                ],
+            ],
+        ]
     ],
     'params' => $params,
 ];
