@@ -11,15 +11,15 @@ use app\models\TblPatient;
  */
 class TblPatientSearch extends TblPatient
 {
-    public $q;
+    public $fullname;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'id_card', 'phone_number'], 'integer'],
-            [['first_name', 'last_name', 'brith_day', 'created_at', 'line_id','q'], 'safe'],
+            [['id'], 'integer'],
+            [['first_name', 'last_name', 'id_card', 'hn', 'brith_day', 'phone_number', 'created_at', 'line_id', 'user_type','fullname'], 'safe'],
         ];
     }
 
@@ -47,6 +47,10 @@ class TblPatientSearch extends TblPatient
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        
         ]);
 
         $this->load($params);
@@ -57,18 +61,26 @@ class TblPatientSearch extends TblPatient
             return $dataProvider;
         }
 
+        $brith_day = $this->brith_day;
+        if($this->brith_day){
+            $brith_day = explode("/", $this->brith_day);
+            $brith_day = $brith_day[2].'-'.$brith_day[1].'-'.$brith_day[0];
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'id_card' => $this->id_card,
-            'brith_day' => $this->brith_day,
-            'phone_number' => $this->phone_number,
+            'brith_day' => $brith_day,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'first_name', $this->first_name])
-            ->andFilterWhere(['like', 'last_name', $this->last_name])
-            ->andFilterWhere(['like', 'line_id', $this->line_id]);
+        $query->orFilterWhere(['like', 'first_name', $this->fullname])
+            ->orFilterWhere(['like', 'last_name', $this->fullname])
+            ->andFilterWhere(['like', 'id_card', $this->id_card])
+            ->andFilterWhere(['like', 'hn', $this->hn])
+            ->andFilterWhere(['like', 'phone_number', $this->phone_number])
+            ->andFilterWhere(['like', 'line_id', $this->line_id])
+            ->andFilterWhere(['like', 'user_type', $this->user_type]);
 
         return $dataProvider;
     }

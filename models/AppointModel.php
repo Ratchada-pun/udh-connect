@@ -20,7 +20,7 @@ class AppointModel extends Model
             'doc_code' => 'ชื่อแพทย์ที่นัด',
             'dept_code' => 'ชื่อแผนก',
             'appoint_date' => 'วันที่นัด',
-            'appoint_time' => 'เวลานัด',
+            'appoint_time' => 'เวลานัด'
         ];
     }
 
