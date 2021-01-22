@@ -36,56 +36,64 @@ inputEvent();
 
 function GetSchedules(docId) {
   $("#appoint-form").waitMe({
-
     effect: "roundBounce",
     color: "#ff518a",
   });
   $.ajax({
-    method: "GET",
+    method: "POST",
     url: "/app/appoint/schedules",
-    data: {
-      doc_id: docId,
-    },
+    data: Object.assign(
+      {
+        doc_id: docId,
+      },
+      yii.getQueryParams(window.location.search)
+    ),
     dataType: "json",
     success: function(data) {
-      if (data.length) {
-        var dates = []; // YYYY-MM-DD
-        for (let index = 0; index < data.length; index++) {
-          dates.push(data[index].schedule_date);
-        }
-        dateList = dates;
-        var startDate = moment(data[0].schedule_date).format("DD/MM/YYYY");
-        var endDate = moment(data[data.length - 1].schedule_date).format("DD/MM/YYYY");
+      daysOfWeekDisabled = data.daysOfWeekDisabled;
+      holidays = data.holidays;
 
-        var firstDate = moment(data[0].schedule_date); // YYYY-MM-DD
-        var lastDate = moment(data[data.length - 1].schedule_date); // YYYY-MM-DD
+      jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDaysOfWeekDisabled", data.daysOfWeekDisabled);
+      jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", data.datesDisabled); //วันหยุด
+      $("#appoint-form").waitMe("hide");
+      // if (data.length) {
+      //   var dates = []; // YYYY-MM-DD
+      //   for (let index = 0; index < data.length; index++) {
+      //     dates.push(data[index].schedule_date);
+      //   }
+      //   dateList = dates;
+      //   var startDate = moment(data[0].schedule_date).format("DD/MM/YYYY");
+      //   var endDate = moment(data[data.length - 1].schedule_date).format("DD/MM/YYYY");
 
-        var diffDates = lastDate.diff(firstDate, "days");
+      //   var firstDate = moment(data[0].schedule_date); // YYYY-MM-DD
+      //   var lastDate = moment(data[data.length - 1].schedule_date); // YYYY-MM-DD
 
-        let startDateDiff = data[0].schedule_date; // YYYY-MM-DD
-        var datesDisabled = [];
-        for (let i = 0; i < diffDates; i++) {
-          var tomorrow = new Date(startDateDiff);
-          tomorrow.setDate(tomorrow.getDate() + 1); // add date
-          if (!dateList.includes(moment(tomorrow).format("YYYY-MM-DD"))) {
-            datesDisabled.push(moment(tomorrow).format("DD/MM/YYYY"));
-          }
-          startDateDiff = moment(tomorrow).format("YYYY-MM-DD");
-        }
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", endDate);
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", datesDisabled);
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", '');
-        //GetScheduleTimes(data[0].schedule_date);
-        $("#appoint-form").waitMe("hide");
-      } else {
-        var startDate = moment().format("DD/MM/YYYY");
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", null);
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", []);
-        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", '');
-        $("#appoint-form").waitMe("hide");
-      }
+      //   var diffDates = lastDate.diff(firstDate, "days");
+
+      //   let startDateDiff = data[0].schedule_date; // YYYY-MM-DD
+      //   var datesDisabled = [];
+      //   for (let i = 0; i < diffDates; i++) {
+      //     var tomorrow = new Date(startDateDiff);
+      //     tomorrow.setDate(tomorrow.getDate() + 1); // add date
+      //     if (!dateList.includes(moment(tomorrow).format("YYYY-MM-DD"))) {
+      //       datesDisabled.push(moment(tomorrow).format("DD/MM/YYYY"));
+      //     }
+      //     startDateDiff = moment(tomorrow).format("YYYY-MM-DD");
+      //   }
+      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
+      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", endDate);
+      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", datesDisabled);
+      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", "");
+      //   //GetScheduleTimes(data[0].schedule_date);
+      //   $("#appoint-form").waitMe("hide");
+      // } else {
+      //   var startDate = moment().format("DD/MM/YYYY");
+      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
+      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", null);
+      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", []);
+      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", "");
+      //   $("#appoint-form").waitMe("hide");
+      // }
     },
     error: function(jqXHR, textStatus, errorThrown) {
       $("#appoint-form").waitMe("hide");
@@ -104,39 +112,46 @@ function GetScheduleTimes(date) {
     effect: "roundBounce",
     color: "#ff518a",
   });
+  
   var formArray = objectifyForm();
   $.ajax({
     method: "POST",
     url: "/app/appoint/schedule-times",
-    data: {
-      ...formArray,
-      appoint_date: date,
-    },
+    data: Object.assign(
+      {},
+      {
+        ...formArray,
+        appoint_date: date,
+        day: moment(date, "YYYY-MM-DD").day(), //วันที่แพทย์ออกตรวจ
+      },
+      yii.getQueryParams(window.location.search)
+    ),
     dataType: "json",
     success: function(data) {
       $("#doctor").removeClass("hidden");
       $(".appoint-time").html("");
       if (data.schedule_times.length) {
         for (let index = 0; index < data.schedule_times.length; index++) {
-          if(data.schedule_times[index].disabled){
+          if (data.schedule_times[index].disabled) {
             $(".appoint-time").append(`<label class="control control-solid control-solid-success control--radio">
             ${data.schedule_times[index].text}
             <input type="radio" name="AppointModel[appoint_time]" value="${data.schedule_times[index].value}" disabled />
                 <span class="control__indicator"></span>
         </label>`);
-          }else{
+          } else {
             $(".appoint-time").append(`<label class="control control-solid control-solid-success control--radio">
             ${data.schedule_times[index].text}
             <input type="radio" name="AppointModel[appoint_time]" value="${data.schedule_times[index].value}"  />
                 <span class="control__indicator"></span>
         </label>`);
           }
-         
         }
-      }else{
-        $(".appoint-time").html(`<div style="text-align: center;font-size:16pt;color:#ff0000;">ไม่พบเวลาทำการแพทย์ กรุณาเลือกวันนัดหมายใหม่</div>`);
+      } else {
+        $(".appoint-time").html(
+          `<div style="text-align: center;font-size:16pt;color:#ff0000;">ไม่พบเวลาทำการแพทย์ กรุณาเลือกวันนัดหมายใหม่</div>`
+        );
       }
-      $("#doctor-list").html(data.list);
+      //$("#doctor-list").html(data.list);
       $("#appoint-form").waitMe("hide");
       inputEvent();
     },
@@ -281,6 +296,7 @@ $form.on("beforeSubmit", function() {
       appoint_time_to: formArray["AppointModel[appoint_time]"]
         ? formArray["AppointModel[appoint_time]"].substring(6, 11)
         : "",
+        ...yii.getQueryParams(window.location.search)
     },
     success: function(data) {
       // Implement successful
@@ -296,7 +312,7 @@ $form.on("beforeSubmit", function() {
               size: "mega",
               hero: {
                 type: "image",
-               // url: "https://docs.google.com/uc?id=1741EturA17E9hZSNGiWkoQ6ri-T28oQe",
+                // url: "https://docs.google.com/uc?id=1741EturA17E9hZSNGiWkoQ6ri-T28oQe",
                 url: "https://www.udhconnect.info/images/logonew.png", //logoใหม่
                 size: "full",
                 aspectRatio: "30:13",
@@ -339,7 +355,7 @@ $form.on("beforeSubmit", function() {
                           },
                           {
                             type: "text",
-                            text: appoint.hn || "ยังไม่มี hn",
+                            text: appoint.hn || "-",
                             wrap: true,
                             size: "lg",
                             color: "#666666",
@@ -500,8 +516,11 @@ $form.on("beforeSubmit", function() {
     },
     error: function(jqXHR, textStatus, errorThrown) {
       $("#appoint-form").waitMe("hide");
-      console.log(jqXHR)
-      var message = jqXHR.hasOwnProperty('responseJSON') && jqXHR.responseJSON.hasOwnProperty('message') ? jqXHR.responseJSON.message : errorThrown
+      console.log(jqXHR);
+      var message =
+        jqXHR.hasOwnProperty("responseJSON") && jqXHR.responseJSON.hasOwnProperty("message")
+          ? jqXHR.responseJSON.message
+          : errorThrown;
       Swal.fire({
         title: "ไม่สามารถบันทึกข้อมูลได้!",
         text: message,
@@ -514,20 +533,22 @@ $form.on("beforeSubmit", function() {
 });
 
 $(window).on("load", function(e) {
-  var params = yii.getQueryParams(window.location.search);
-  if (params.doc_id) {
-    var docInput = $("#" + params.doc_id);
-    if (docInput) {
-      $(".btn-doc-option").removeClass("active");
-      $("#doctor").val(docInput.data("docname"));
-      $("#doctor_id").val(docInput.val());
-      docInput.prop("checked", true);
-      $("#option").prop("checked", false);
-      $("#option1").prop("checked", true);
-      $("#doctor").removeClass("hidden");
-      GetSchedules(docInput.val());
+  setTimeout(() => {
+    var params = yii.getQueryParams(window.location.search);
+    if (params.doccode) {
+      var docInput = $("#" + params.doccode);
+      if (docInput) {
+        $(".btn-doc-option").removeClass("active");
+        $("#doctor").val(docInput.data("docname"));
+        $("#doctor_id").val(docInput.val());
+        docInput.prop("checked", true);
+        $("#option").prop("checked", false);
+        $("#option1").prop("checked", true);
+        $("#doctor").removeClass("hidden");
+        GetSchedules(params.doccode);
+      }
+    } else {
+      $("#option").prop("checked", true);
     }
-  } else {
-    $("#option").prop("checked", true);
-  }
+  }, 1000);
 });
