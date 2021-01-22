@@ -29,7 +29,7 @@ $profile = $session->get('user');
                     </div>
                     <div class="h1 no-margin">
                         <span class="menu-label">
-                            นัดหมาย
+                            นัดหมายล่าสุด
                         </span>
                         <p data-v-0dbf6a13=""></p>
                     </div>
@@ -41,7 +41,7 @@ $profile = $session->get('user');
                     <div class="icon"><i class="fa fa-address-book-o fa-2x"></i></div>
                     <div class="h1 no-margin">
                         <span class="menu-label">
-                            ประวัตินัดหมาย
+                            ประวัติ
                         </span>
                         <p data-v-0dbf6a13=""></p>
                     </div>
