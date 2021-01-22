@@ -124,8 +124,8 @@ class FlexDepartment
                 ->setAction(
                     new UriTemplateActionBuilder(
                         'เลือกแผนกอื่นๆ >',
-                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'],
-                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id=' . $item['DeptGroup'])
+                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?deptgroup=' . $item['DeptGroup'],
+                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?deptgroup=' . $item['DeptGroup'])
                     )
                 );
 
@@ -141,8 +141,8 @@ class FlexDepartment
                 ->setAction(
                     new UriTemplateActionBuilder(
                         'เลือกแผนกอื่นๆ >',
-                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'],
-                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?id='.$item['DeptGroup'])
+                        'https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?deptgroup='.$item['DeptGroup'],
+                        new AltUriBuilder('https://liff.line.me/1654023325-EkWmY9PA/app/appoint/create-sub-department?deptgroup='.$item['DeptGroup'])
                     )
                 );
 
