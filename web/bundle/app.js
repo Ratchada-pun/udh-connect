@@ -1,8 +1,8 @@
 "use strict";
 
-const Swal = require("sweetalert2");
-const _ = require("lodash");
-const axios = require("axios");
+// const swal = require("sweetalert2");
+// const _ = require("lodash");
+// const axios = require("axios");
 
 const LIFF_PROFILE = "liff-profile";
 const UDH_PROFILE = "udh-profile";
@@ -17,13 +17,16 @@ var config = {
   ChannelAccessToken:
     "FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=",
   RichMenuId: "richmenu-7351dbcc12fcf979942367a8422087b3",
+
   //RichMenuId: "richmenu-349a649ee1b2e2f659ae2da8e24df4ef",//menu เดิม
 
-  // redirectUri: "https://e98c9d411f42.ap.ngrok.io",
-  // liffId: "1654023325-EkWmY9PA", // line login
+
+
+  // redirectUri: "https://4752d9e4a503.ap.ngrok.io",
+  // liffId: "1621638840-51pLveK0", // line login
   // ChannelAccessToken:
-  //   "FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU=",
-  // RichMenuId: "richmenu-349a649ee1b2e2f659ae2da8e24df4ef",
+  //   "uLF9THsOlQfvth3Y7bvLym0ZwPoEliKF7MszmJq4aymKwWJfYpknJ/zmWwOZsNzgrDXU0+Y7KGMrxCPi79NX1/g3iSeY5Mva1olEL4cwoJtDdznKV+7MjYP89tW6BO8/A//QjXTcoB6BdDt6ooFzB1GUYhWQfeY8sLGRXgo3xvw=",
+  // RichMenuId: "richmenu-7351dbcc12fcf979942367a8422087b3",
 };
 
 var udhApp = {
@@ -34,7 +37,7 @@ var udhApp = {
       });
       this.initializeApp();
     } catch (error) {
-      Swal.fire({
+      swal.fire({
         icon: "error",
         title: "Oops...",
         text: _.get(error, "message", "InitializeLiff Error"),
@@ -76,7 +79,7 @@ var udhApp = {
       this.stopLoading();
     } catch (error) {
       this.stopLoading();
-      Swal.fire({
+      swal.fire({
         icon: "error",
         title: "Oops...",
         text: _.get(error, "message", error),
@@ -107,7 +110,7 @@ var udhApp = {
     try {
       await liff.sendMessages(messages);
     } catch (error) {
-      Swal.fire({
+      swal.fire({
         title: "เกิดข้อผิดพลาดในการส่งข้อความไลน์",
         text: error,
         icon: "error",
@@ -132,7 +135,7 @@ var udhApp = {
         xhr.setRequestHeader("Authorization", "Bearer " + config.ChannelAccessToken);
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        Swal.fire({
+        swal.fire({
           title: "เกิดข้อผิดพลาดในการผูกริชเมนู",
           text: errorThrown,
           icon: "error",
@@ -190,7 +193,7 @@ var udhApp = {
               self.sendMessages(data.FlexMessage);
             }
 
-            Swal.fire({
+            swal.fire({
               title: data.message,
               text: "",
               icon: "success",
@@ -211,7 +214,7 @@ var udhApp = {
         },
         error: function(error) {
           self.stopLoading(formId);
-          Swal.fire({
+          swal.fire({
             title: "",
             text: error.responseJSON ? error.responseJSON.message : "Error",
             icon: "error",
@@ -251,7 +254,7 @@ var udhApp = {
               self.sendMessages(data.FlexMessage);
             }
 
-            Swal.fire({
+            swal.fire({
               title: data.message,
               text: "",
               icon: "success",
@@ -272,7 +275,7 @@ var udhApp = {
         },
         error: function(error) {
           self.stopLoading(formId);
-          Swal.fire({
+          swal.fire({
             title: "",
             text: error.responseJSON ? error.responseJSON.message : "Error",
             icon: "error",
@@ -314,7 +317,7 @@ var udhApp = {
         self.stopLoading(formId);
         if (!data) {
           $(".form-content").hide();
-          Swal.fire({
+          swal.fire({
             title: "Oops!",
             text: "ไม่พบข้อมูล",
             icon: "warning",
@@ -352,7 +355,7 @@ var udhApp = {
       error: function(jqXHR, textStatus, errorThrown) {
         $(".form-content").hide();
         self.stopLoading(formId);
-        Swal.fire({
+        swal.fire({
           title: "Error!",
           text: errorThrown,
           icon: "error",
