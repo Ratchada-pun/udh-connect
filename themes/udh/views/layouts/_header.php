@@ -50,7 +50,7 @@
                         <!--// profile-user -->
                         <div class="dropdown dropdown-user">
                             <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" aria-expanded="true"> 
-                                <img id="user-picture" class="img-circle pro_pic" src="<?= Yii::getAlias('@web/images/about-1.jpg') ?>" alt=""> 
+                                <img id="user-picture" class="img-circle pro_pic" src="<?= Yii::getAlias('@web/images/default.jpg') ?>" alt=""> 
                             </a>
                         </div>
                         <!-- Dropdown_User_End -->
