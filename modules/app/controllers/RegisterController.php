@@ -5,6 +5,7 @@ namespace app\modules\app\controllers;
 use Yii;
 use app\models\TblPatient;
 use app\models\TblPatientSearch;
+use common\components\Util;
 use common\Line\EventHandler\MessageHandler\Flex\FlexRegisterSuccess;
 use kartik\form\ActiveForm;
 use yii\web\Controller;
@@ -234,7 +235,7 @@ class RegisterController extends Controller
         $request = Yii::$app->request;
         $db_mssql = Yii::$app->mssql;
         $fliterKey = $request->post('filter');
-        if (strlen($fliterKey) == 13) {
+        if (mb_strlen($fliterKey) == 13) {
             // $query = $db_mssql->createCommand('SELECT
             //         dbo.v_patient_detail.hn,
             //         REPLACE(dbo.v_patient_detail.CardID, \' \', \'\') as CardID,
@@ -336,7 +337,7 @@ class RegisterController extends Controller
                 WHERE
                     dbo.PATIENT.hn = :hn')
                 ->bindValues([
-                    ':hn' => sprintf("% 7s", $fliterKey)
+                    ':hn' => Util::sprintf($fliterKey,7)
                 ])
                 ->queryOne();
         }
