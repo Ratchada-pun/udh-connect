@@ -4,10 +4,11 @@ namespace common\components;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use common\components\Util;
 
 class AppQuery
 {
-    //รายชื่อแพทย์ในฐานข้อมูล homc โรงพยาบาล
+    //รายชื่อแพทย์ในฐานข้อมูล dbo โรงพยาบาล
     public static function getDoctorHomc()
     {
         $rows = (new \yii\db\Query())
@@ -40,6 +41,18 @@ class AppQuery
         return $rows;
     }
 
+    //รายชื่อแพทย์ฐานข้อมูล โรงพยาบาล
+    public static function getDoctorDbo()
+    {
+        $rows = (new \yii\db\Query())
+            ->select([
+                'DOCC.*'
+            ])
+            ->from('DOCC')
+            ->all(Yii::$app->mssql);
+        return $rows;
+    }
+
     //รายชื่อแผนกจากฐานข้อมูล queue
     public static function getServices()
     {
@@ -51,7 +64,7 @@ class AppQuery
         return $rows;
     }
 
-    //รายชื่อแผนกในฐานข้อมูล homc โรงพยาบาล
+    //รายชื่อแผนกในฐานข้อมูล dbo โรงพยาบาล
     public static function getDepartmentHomc()
     {
         $rows = (new \yii\db\Query())
@@ -69,8 +82,8 @@ class AppQuery
         return $rows;
     }
 
-    //รายชื่อแผนกในฐานข้อมูล homc โรงพยาบาล
-    public static function getDepartmentGroupHomc()
+
+    public static function getDepartmentGroupHomc() //รายชื่อกลุ่มแผนกในฐานข้อมูล dbo โรงพยาบาล
     {
         $DEPTGROUP = (new \yii\db\Query())
             ->select([
@@ -78,7 +91,7 @@ class AppQuery
             ])
             ->from('DEPTGROUP')
             ->all(Yii::$app->mssql);
-        $DEPTGROUP = array_unique(ArrayHelper::getColumn($DEPTGROUP, 'DeptGroup'));
+        $DEPTGROUP = array_unique(ArrayHelper::getColumn($DEPTGROUP, 'DeptGroup')); //หาว่ามีกลุ่มแผนกอะไรบ้าง
 
         $rows = (new \yii\db\Query())
             ->select([
@@ -90,10 +103,12 @@ class AppQuery
             ->all(Yii::$app->mssql);
 
 
+
+
         return $rows;
     }
 
-    public static function getDepartmentByDeptGroupHomc($dept_group)
+    public static function getDepartmentByDeptGroupHomc($dept_group) //ชื่อแผนก
     {
         $rows = (new \yii\db\Query())
             ->select([
@@ -101,20 +116,36 @@ class AppQuery
                 'REPLACE(DEPT.deptDesc, \' \', \'\') as deptDesc',
                 'REPLACE(DEPTGROUP.DeptGroup, \' \', \'\') as DeptGroup',
                 'REPLACE(DEPTGr.DeptGrDesc, \' \', \'\') as DeptGrDesc',
+                'DEPT.Appoint_hide'
             ])
             ->from('DEPT')
             //->innerJoin('Appoint_dep_doc', 'Appoint_dep_doc.deptCode = DEPT.deptCode')
             ->leftJoin('DEPTGROUP', 'DEPTGROUP.deptCode = DEPT.deptCode')
             ->leftJoin('DEPTGr', 'DEPTGr.DeptGroup = DEPTGROUP.DeptGroup')
             ->where(['REPLACE(DEPTGROUP.DeptGroup, \' \', \'\')' => $dept_group])
+            ->andWhere('DEPT.Appoint_hide IS NULL')
             ->all(Yii::$app->mssql);
+
+        // $DoccLimit = (new \yii\db\Query()) //จำนวนคิวนัดหมายตามที่แพทย์ลงบันทึก
+        //     ->select(['REPLACE(DOCC_LimitApp.deptCode, \' \', \'\') as deptCode'])
+        //     ->from('DOCC_LimitApp')
+        //     ->where(['DOCC_LimitApp.DeptGroup' => $dept_group])
+        //     ->all(Yii::$app->mssql);
+        // $deptcodes = ArrayHelper::getColumn($DoccLimit, 'deptCode');
+
+        // $result = [];
+        // foreach ($rows as $row) { //ตรวจสอบว่าใน ตาราง DOCC_LimitApp มี รหัสแผนกนั้นไหม
+        //     if (in_array($row['deptCode'], $deptcodes)) {
+        //         $result[] = $row;
+        //     }
+        // }
         return $rows;
     }
 
     //ค้นหารหัสแพทย์ตามรหัสแผนก
     public static function getDoctorByDeptcode($dept_code)
     {
-        $doctors_homc =  (new \yii\db\Query())
+        $doctors =  (new \yii\db\Query()) //ข้อมูลแพทย์จากระบบโรงพยาบาล
             ->select([
                 'REPLACE(Appoint_dep_doc.deptCode, \' \', \'\') as deptCode',
                 'REPLACE(Appoint_dep_doc.docCode, \' \', \'\') as docCode',
@@ -129,21 +160,39 @@ class AppQuery
             ->where(['Appoint_dep_doc.deptCode' => $dept_code])
             ->all(Yii::$app->mssql);
 
-        $doctors_queue = AppQuery::getDoctorQueue();
-        $map_doctors_queue = ArrayHelper::map($doctors_queue, 'doctor_code', 'doctor_id');
+        $DoccLimit = (new \yii\db\Query()) //จำนวนคิวนัดหมายตามที่แพทย์ลงบันทึก
+            ->select(['REPLACE(DOCC_LimitApp.docCode, \' \', \'\') as docCode',])
+            ->from('DOCC_LimitApp')
+            ->where(['DOCC_LimitApp.deptCode' => $dept_code])
+            ->all(Yii::$app->mssql);
+        $docCodeArr = ArrayHelper::getColumn($DoccLimit, 'docCode');
 
-        $map_doctors = [];
-        foreach ($doctors_homc as $key => $doctor) {
-            $map_doctors[] = ArrayHelper::merge($doctor, [
-                'doctor_id' => ArrayHelper::getValue($map_doctors_queue, $doctor['docCode']),
-                'fullname' => $doctor['doctitle'] . $doctor['docName'] . ' ' . $doctor['docLName']
-            ]);
+        $result = [];
+        foreach ($doctors as $doc) {
+            if (in_array($doc['docCode'], $docCodeArr)) {
+                $result[] = $doc;
+            }
         }
-        return [
-            'doctors' => $map_doctors,
-            'doc_codes' => array_unique(ArrayHelper::getColumn($doctors_homc, 'docCode')),
-            'doctor_ids' => array_unique(ArrayHelper::getColumn($map_doctors, 'doctor_id')),
-        ];
+
+        // $doctors_queue = AppQuery::getDoctorQueue(); //ข้อมูล แพทย์ จากระบบ queue
+
+        // $map_doctors_queue = ArrayHelper::map($doctors_queue, 'doctor_code', 'doctor_id');
+
+        // $map_doctors = [];
+        // foreach ($doctors_homc as $key => $doctor) {
+        //     $map_doctors[] = ArrayHelper::merge($doctor, [
+        //         'doctor_id' => ArrayHelper::getValue($map_doctors_queue, $doctor['docCode']),
+        //         'fullname' => $doctor['doctitle'] . $doctor['docName'] . ' ' . $doctor['docLName']
+        //     ]);
+        // }
+        // return [
+        //     'doctors' => $doctors,
+        //     // 'doc_codes' => array_unique(ArrayHelper::getColumn($doctors_homc, 'docCode')),
+        //     // 'doctor_ids' => array_unique(ArrayHelper::getColumn($map_doctors, 'doctor_id')),
+        //     // 'doctors_homc' => $doctors_homc
+
+        // ];
+        return $result;
     }
 
     public static function getScheduleByDoctorIds($ids, $schedule_date = null)
@@ -328,12 +377,14 @@ class AppQuery
                 'REPLACE(DEPT.deptDesc, \' \', \'\') as deptDesc'
             ])
             ->from('DEPT')
-            ->where(['REPLACE(DEPT.deptCode, \' \', \'\')' => $deptCode])
+            ->where([
+                'DEPT.deptCode' => Util::sprintfAfter($deptCode, 6)
+            ])
             ->one(Yii::$app->mssql);
         return $rows;
     }
 
-    public static function getDoctorListByDoctorIds($ids, $schedule_date = null)
+    public static function getDoctorListByDoctorIds($ids, $schedule_date = null) //ตารางแพทย์จาก ฐานข้อมูลระบบคิว
     {
         if ($schedule_date ==  null) {
             $schedule_date = Yii::$app->formatter->asDate('now', 'php:Y-m-d');
@@ -351,6 +402,43 @@ class AppQuery
         return $doctors_list;
     }
 
+
+    public static function getScheduleDoctorByDbo($doc_code, $deptgroup, $deptcode, $day = null) //ตารางแพทย์จาก ฐานข้อมูลโรงพยาบาล
+    {
+        $query = (new \yii\db\Query())
+
+            ->select([
+                'Appoint_dep_doc.docCode',
+                'DOCC.docName',
+                'DOCC.docLName',
+                'DOCC_LimitApp.stTime',
+                'DOCC_LimitApp.edTime',
+                'DOCC_LimitApp.applimit',
+                'DOCC_LimitApp.appoint_date',
+                'DOCC_LimitApp.DeptGroup',
+                'DOCC_LimitApp.deptCode',
+                'Appoint_day.ad_orb'
+            ])
+            ->from('DOCC_LimitApp')
+            ->innerJoin('Appoint_dep_doc', 'DOCC_LimitApp.docCode = Appoint_dep_doc.docCode')
+            ->innerJoin('DOCC', 'DOCC_LimitApp.docCode = DOCC.docCode')
+            ->innerJoin('Appoint_day', 'DOCC_LimitApp.appoint_date = Appoint_day.ad_id')
+            ->where([
+                'DOCC_LimitApp.docCode' => Util::sprintf($doc_code, 6),
+                'DOCC_LimitApp.DeptGroup' => $deptgroup,
+                'DOCC_LimitApp.deptCode' => Util::sprintfAfter($deptcode, 6),
+
+            ]);
+
+        if ($day) {
+            $query->andWhere(['Appoint_day.ad_orb' => $day]);
+        }
+
+        return $query->all(Yii::$app->mssql);
+    }
+
+
+
     public static function getSubScheduleTimes($appoint_date, $doc_code, $dept_code)
     {
         $formatter = Yii::$app->formatter;
@@ -365,7 +453,9 @@ class AppQuery
                 'REPLACE(DEPTGROUP.DeptGroup, \' \', \'\') as DeptGroup'
             ])
             ->from('DEPTGROUP')
-            ->where(['REPLACE(DEPTGROUP.deptCode, \' \', \'\')' => $dept_code])
+            ->where([
+                'DEPTGROUP.deptCode' => Util::sprintfAfter($dept_code, 6),
+            ])
             ->one(Yii::$app->mssql);
 
         $DeptGroupQueue = (new \yii\db\Query())
@@ -397,7 +487,7 @@ class AppQuery
             ->where([
                 'tbl_med_schedule.schedule_date' => $appoint_date,
                 'tbl_med_schedule.service_id' => $service_ids,
-               // 'tbl_doctor.doctor_id' =>  1,
+                // 'tbl_doctor.doctor_id' =>  1,
 
                 // 'tbl_med_schedule.service_id' => $service_ids,
                 //'LEFT(tbl_service.service_name,8)' => 'ห้องตรวจ'
@@ -407,9 +497,9 @@ class AppQuery
 
         if ($current_date == $appoint_date) {  //ถ้าวันที่นัดแพทย์ เท่ากับ วันที่แพทย์ออกตรวจ
             $query->andWhere('(
-                UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= '.$unix_time.' 
+                UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= ' . $unix_time . ' 
                 OR 
-                UNIX_TIMESTAMP( CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time )) >= '.$unix_time.'
+                UNIX_TIMESTAMP( CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time )) >= ' . $unix_time . '
                 )');
             // $query->andWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.start_time )) >= ' . $unix_time); //;เวลาเริ่มต้นที่แพย์ออกตรวจ มากกว่าเท่ากับ เวลาปัจุบัน
             // $query->orWhere('UNIX_TIMESTAMP(CONCAT( tbl_med_schedule.schedule_date, \' \', tbl_med_schedule_time.end_time )) >= ' . $unix_time); //;เวลาสิ้นสุดที่แพย์ออกตรวจ มากกว่าเท่ากับ เวลาปัจุบัน
@@ -462,7 +552,7 @@ class AppQuery
                 'Appoint.appoint_date' => $appoint_date_th,
                 'Appoint.appoint_time_from' => $formatter->asDate($schedule_time['start_time'], 'php:H:i'),
                 'Appoint.appoint_time_to' => $formatter->asDate($schedule_time['end_time'], 'php:H:i'),
-                'Appoint.doctor' => sprintf("% 6s", $doc_code),
+                'Appoint.doctor' =>  Util::sprintf($doc_code, 6),
                 'Appoint.pre_dept_code' => $dept_code,
             ])
             ->all(Yii::$app->mssql);
@@ -481,7 +571,7 @@ class AppQuery
             ])
             ->from('DOCC')
             ->where([
-                'REPLACE(DOCC.docCode, \' \', \'\')' => $doctor_code
+                'DOCC.docCode' => Util::sprintf($doctor_code, 6),
             ])
             ->one(Yii::$app->mssql);
         return $rows;
@@ -496,7 +586,7 @@ class AppQuery
             ])
             ->from('DEPT')
             ->where([
-                'REPLACE(DEPT.deptCode, \' \', \'\')' => $dept_code
+                'DEPT.deptCode' => Util::sprintfAfter($dept_code, 6),
             ])
             ->one(Yii::$app->mssql);
         return $rows;
@@ -513,12 +603,15 @@ class AppQuery
                 'pre_dept_code' => $params['pre_dept_code'],
                 'appoint_time_from' => $params['appoint_time_from'],
                 'appoint_time_to' => $params['appoint_time_to'],
-                'hn' => sprintf("% 7s", $params['hn']),
                 'CID' => $params['CID'],
+                'status_in' => 'm',
+                'REPLACE( doctor, \' \', \'\')' => $params['doc_code']
             ]);
 
-        if ($params['doc_code']) {
-            $query->andWhere(['doctor' => sprintf("% 6s", $params['doc_code']),]);
+        if ($params['hn']) {
+            $query->andWhere([
+                'hn' => Util::sprintf($params['hn'], 7),
+            ]);
         }
 
         return $query->all(Yii::$app->mssql);
@@ -545,12 +638,12 @@ class AppQuery
                 'Appoint.appoint_date' => $params['appoint_date'],
                 'Appoint.maker' => 'queue online',
                 'Appoint.CID' =>  $params['cid'],
-                'Appoint.doctor' => sprintf("% 6s", $params['doctor']),
-                'Appoint.hn' => sprintf("% 7s", $params['hn'])
+                'Appoint.doctor' => Util::sprintf($params['doctor'], 6),
             ]);
         if (!empty($hn)) {
             $query->andWhere([
-                'Appoint.hn' => sprintf("% 7s", $params['hn'])
+                'Appoint.hn' =>  Util::sprintf($params['hn'], 7)
+
             ]);
         }
         $appoint = $query->one(Yii::$app->mssql);
@@ -587,7 +680,7 @@ class AppQuery
             ->orderBy('Appoint.appoint_date DESC');
         if ($profile['hn']) {
             $query->andWhere([
-                'Appoint.hn' => sprintf("% 7s", $profile['hn'])
+                'Appoint.hn' =>  Util::sprintf($profile['hn'], 7)
             ]);
         }
         if ($profile['id_card']) {
@@ -611,6 +704,7 @@ class AppQuery
                 'Appoint.CID',
                 'DEPT.deptDesc',
                 'PATIENT.phone',
+                'DEPTGr.DeptGrDesc',
                 'REPLACE(PATIENT.titleCode, \' \', \'\') as titleCode',
                 'REPLACE( PATIENT.firstName, \' \', \'\') as firstName',
                 'REPLACE( PATIENT.lastName, \' \', \'\') as lastName',
@@ -618,17 +712,20 @@ class AppQuery
                 'REPLACE(DOCC.docName, \' \', \'\') as docName',
                 'REPLACE(DOCC.docLName, \' \', \'\') as docLName',
                 'REPLACE(Appoint.pre_dept_code, \' \', \'\') as pre_dept_code',
-                'REPLACE(Appoint.doctor, \' \', \'\') as doctor'
+                'REPLACE(Appoint.doctor, \' \', \'\') as doctor',
+                'REPLACE(DEPTGROUP.DeptGroup, \' \', \'\') as DeptGroup'
             ])
             ->from('Appoint')
             ->innerJoin('DEPT', 'DEPT.deptCode = Appoint.pre_dept_code')
             ->leftJoin('PATIENT', 'PATIENT.hn = Appoint.hn')
             ->leftJoin('DOCC', 'DOCC.docCode = Appoint.doctor')
+            ->innerJoin('DEPTGROUP', 'DEPT.deptCode = DEPTGROUP.deptCode')
+            ->innerJoin('DEPTGr', 'DEPTGROUP.DeptGroup = DEPTGr.DeptGroup')
             ->where(['Appoint.maker' => 'queue online'])
             ->orderBy('Appoint.appoint_date DESC');
         if ($profile['hn']) {
             $query->andWhere([
-                'Appoint.hn' => sprintf("% 7s", $profile['hn'])
+                'Appoint.hn' =>  Util::sprintf($profile['hn'], 7)
             ]);
         }
         if ($profile['id_card']) {
@@ -653,7 +750,9 @@ class AppQuery
             ])
             ->from('PATIENT')
             ->innerJoin('PatSS', 'PatSS.hn = PATIENT.hn')
-            ->where(['PATIENT.hn' => sprintf("% 7s", $hn)])
+            ->where([
+                'PATIENT.hn' =>  Util::sprintf($hn, 7)
+            ])
             ->one(Yii::$app->mssql);
         return $rows;
     }
@@ -732,6 +831,37 @@ class AppQuery
             ->orderBy('tbl_queue.created_at ASC')
             ->all(Yii::$app->db_queue);
 
+        return $rows;
+    }
+
+    public static function getDoccHoliday($doctor_code) //วันหยุดแพทย์ ฐานข้อมูลโรงพยาบาล
+    {
+        $rows = (new \yii\db\Query())
+            ->select([
+                'HolNote.DocCode',
+                'REPLACE(HolNote.Holdate, \' \', \'\') as Holdate',
+                'REPLACE(HolNote.Note, \' \', \'\') as Note',
+                'REPLACE(DOCC.docName, \' \', \'\') as docName',
+                'REPLACE(DOCC.docLName, \' \', \'\') as docLName',
+                'REPLACE(HolNote.Holdate2, \' \', \'\') as Holdate2'
+            ])
+            ->from('HolNote')
+            ->innerJoin('DOCC', 'HolNote.DocCode = DOCC.docCode')
+            ->where([
+                'DOCC.docCode' =>  Util::sprintf($doctor_code, 6)
+            ])
+            ->all(Yii::$app->mssql);
+        return $rows;
+    }
+
+    public static function getHoliday() //วันหยุดนักขัตฤกษ์ ฐานข้อมูลโรงพยาบาล
+    {
+        $rows = (new \yii\db\Query())
+            ->select([
+                'Appoint_Holiday.*'
+            ])
+            ->from('Appoint_Holiday')
+            ->all(Yii::$app->mssql);
         return $rows;
     }
 }
