@@ -676,7 +676,7 @@ class AppQuery
             ->innerJoin('DEPT', 'DEPT.deptCode = Appoint.pre_dept_code')
             ->leftJoin('PATIENT', 'PATIENT.hn = Appoint.hn')
             ->leftJoin('DOCC', 'DOCC.docCode = Appoint.doctor')
-            ->where(['Appoint.maker' => 'queue online'])
+           // ->where(['Appoint.maker' => 'queue online'])
             ->orderBy('Appoint.appoint_date DESC');
         if ($profile['hn']) {
             $query->andWhere([
