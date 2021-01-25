@@ -680,7 +680,7 @@ class AppQuery
             ->orderBy('Appoint.appoint_date DESC');
         if ($profile['hn']) {
             $query->andWhere([
-                'Appoint.hn' =>  $profile['hn']
+                'Appoint.hn' =>  Util::sprintf($profile['hn'], 7)
             ]);
         }
         if ($profile['id_card']) {
