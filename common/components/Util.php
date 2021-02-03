@@ -4,7 +4,7 @@ namespace common\components;
 
 class Util
 {
-    public static function sprintf($str = '', $len = 6)
+    public static function sprintf($str = '', $len = 6) //ตัดช่องว่างข้างหน้า
     {
         if(empty($str)) return '';
         $str = preg_replace('/\s+/', '', $str);
@@ -13,7 +13,7 @@ class Util
         return sprintf("% " . $n . "s", '') . $str;
     }
 
-    public static function sprintfAfter($str = '', $len = 6)
+    public static function sprintfAfter($str = '', $len = 6) //ตัดช่องว่างข้างหลัง
     {
         if(empty($str)) return '';
         $str = preg_replace('/\s+/', '', $str);
