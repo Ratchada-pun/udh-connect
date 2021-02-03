@@ -30,7 +30,8 @@
         "linecorp/line-bot-sdk": "^4.5",
         "monolog/monolog": "^2.1",
         "yiisoft/yii2-httpclient": "*",
-        "dektrium/yii2-user": "^0.9.14"
+        "dektrium/yii2-user": "^0.9.14",
+        "bower-asset/datatables.net-bs4": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

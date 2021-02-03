@@ -655,7 +655,6 @@ class AppQuery
         $query = (new \yii\db\Query())
             ->select([
                 'Appoint.doctor',
-                'Appoint.hn',
                 'Appoint.appoint_date',
                 'Appoint.appoint_time_from',
                 'Appoint.appoint_time_to',
@@ -670,7 +669,8 @@ class AppQuery
                 'REPLACE( PATIENT.lastName, \' \', \'\') as lastName',
                 'REPLACE(DOCC.doctitle, \' \', \'\') as doctitle',
                 'REPLACE(DOCC.docName, \' \', \'\') as docName',
-                'REPLACE(DOCC.docLName, \' \', \'\') as docLName'
+                'REPLACE(DOCC.docLName, \' \', \'\') as docLName',
+                'REPLACE(Appoint.hn, \' \', \'\') as hn',
             ])
             ->from('Appoint')
             ->innerJoin('DEPT', 'DEPT.deptCode = Appoint.pre_dept_code')

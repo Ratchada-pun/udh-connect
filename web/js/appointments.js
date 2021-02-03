@@ -500,7 +500,7 @@ $form.on("beforeSubmit", function() {
       }
 
       Swal.fire({
-        title: "ทำรายการนัดหมายสำเร็จ",
+        title: "นัดหมายสำเร็จ",
         text: "",
         icon: "success",
         confirmButtonText: "ตกลง",
