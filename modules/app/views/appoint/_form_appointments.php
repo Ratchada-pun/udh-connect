@@ -58,6 +58,9 @@ $this->registerCss(
             padding: 0;
         }
     }
+    .modal-header {
+        border-bottom: 1px solid var(--pink);
+    }
 CSS
 );
 $this->registerJs(

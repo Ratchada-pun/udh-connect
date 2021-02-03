@@ -188,3 +188,6 @@ $this->title = "ใบนัดหมายล่วงหน้า";
     </div>
 
 </div>
+<?php
+echo $this->render('menu');
+?>

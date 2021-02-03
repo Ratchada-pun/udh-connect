@@ -32,31 +32,41 @@ use yii\helpers\Html;
             <a href="#"> <i class="fa fa-home"></i> <span>หน้าหลัก </span> </a>
 
         </li> -->
-        <li class="menu_title">
-            <a href="/app/appoint/create-department">
-                <i class="fa fa-pencil-square-o"></i>
-                <span>นัดหมายล่วงหน้า </span>
-            </a>
+        <?php if (Yii::$app->user->isGuest) { ?>
+            <li class="menu_title">
+                <a href="/app/appoint/create-department">
+                    <i class="fa fa-pencil-square-o"></i>
+                    <span>นัดหมายล่วงหน้า </span>
+                </a>
 
-        </li>
-        <li class="menu_title">
-            <a href="<?= Url::to(['/app/appoint/user-history']) ?>">
-                <i class="fa fa-calendar-check-o"></i>
-                <span>
-                    ประวัตินัดหมาย
-                </span>
-            </a>
-        </li>
+            </li>
+            <li class="menu_title">
+                <a href="<?= Url::to(['/app/appoint/user-history']) ?>">
+                    <i class="fa fa-calendar-check-o"></i>
+                    <span>
+                        ประวัตินัดหมาย
+                    </span>
+                </a>
+            </li>
+        <?php } ?>
         <?php if (!Yii::$app->user->isGuest) { ?>
-        <li class="menu_title">
-            <a href="<?= Url::to(['/app/setting/index']) ?>">
-            <i class="fa fa-address-book-o"></i>
-                <span>
-                    รายชื่อผู้ลงทะเบียน
-                </span>
-            </a>
-        </li>
-        
+            <li class="menu_title">
+                <a href="<?= Url::to(['/app/setting/index']) ?>">
+                    <i class="fa fa-address-book-o"></i>
+                    <span>
+                        รายชื่อผู้ลงทะเบียน
+                    </span>
+                </a>
+            </li>
+            <li class="menu_title">
+                <a href="<?= Url::to(['/app/setting/user-booking']) ?>">
+                    <i class="fa fa-calendar-check-o"></i>
+                    <span>
+                        รายการนัดล่วงหน้า
+                    </span>
+                </a>
+            </li>
+
             <li class="menu_title">
                 <a href="/user/security/logout" data-method="post">
                     <i class="icon-logout"></i>

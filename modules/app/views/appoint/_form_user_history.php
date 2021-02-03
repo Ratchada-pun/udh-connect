@@ -126,6 +126,15 @@ $this->title = "ประวัตินัดหมาย";
                                             <div class="card-body" style="padding-top:5px;background-color:#fce4ec;">
                                                 <div style="padding-top:10px;">
                                                     <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
+                                                        HN :
+                                                    </h>
+                                                    <small style="font-size: 12pt; padding-left:10%">
+                                                        <?= empty($value['hn']) ?  '-' : $value['hn']  ?>
+                                                    </small>
+                                                </div>
+
+                                                <div style="padding-top:10px;">
+                                                    <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
                                                         ชื่อ :
                                                     </h>
                                                     <small style="font-size: 12pt; padding-left:10%">

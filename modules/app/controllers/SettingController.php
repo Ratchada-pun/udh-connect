@@ -11,6 +11,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
+use yii\data\ArrayDataProvider;
 
 /**
  * SettingController implements the CRUD actions for TblPatient model.
@@ -34,7 +36,7 @@ class SettingController extends \yii\web\Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index'],
+                        'actions' => ['index', 'user-booking'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -110,5 +112,80 @@ class SettingController extends \yii\web\Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionUserBooking()
+    {
+        $db_mssql = Yii::$app->mssql;
+        $db = Yii::$app->db;
+
+        $user_bookings = $db_mssql->createCommand(//ข้อมูลผู้ป่วยนัดหมาย ฐานข้อมูลโรงพยาบาล
+            'SELECT
+                    Appoint.app_type,
+                    Appoint.appoint_date, 
+                    Appoint.appoint_time_from, 
+                    Appoint.appoint_time_to, 
+                    Appoint.appoint_note, 
+                    Appoint.pre_dept_code, 
+                    Appoint.maker, 
+                    Appoint.app_reserv, 
+                    Appoint.keyin_time, 
+                    Appoint.phone,
+                    Appoint.status_in, 
+                    Appoint.AR_ID,
+                    DOCC.docCode,
+                    DOCC.docName,
+                    DOCC.docLName,
+                    DEPT.deptDesc,
+                    DEPTGROUP.DeptGroup,
+                    DEPTGr.DeptGrDesc,
+                    PATIENT.firstName,
+                    PATIENT.lastName,
+                    REPLACE(Appoint.doctor, \' \', \'\') as doctor,
+                    REPLACE(Appoint.CID, \' \', \'\') as CID,
+                    REPLACE(Appoint.hn, \' \', \'\') as hn
+                FROM
+                    dbo.Appoint
+                INNER JOIN dbo.DOCC ON Appoint.doctor = DOCC.docCode
+                INNER JOIN dbo.DEPT ON Appoint.pre_dept_code = DEPT.deptCode
+                INNER JOIN dbo.DEPTGROUP ON DEPT.deptCode = DEPTGROUP.deptCode
+                INNER JOIN dbo.DEPTGr ON DEPTGROUP.DeptGroup = DEPTGr.DeptGroup
+                LEFT JOIN dbo.PATIENT ON Appoint.hn = PATIENT.hn
+                WHERE
+                Appoint.status_in = \'m\' 
+                ORDER BY Appoint.keyin_time DESC
+                '
+        )->queryAll();
+
+        $bookings = [];
+        foreach ($user_bookings as $key => $user_booking) {
+            if (empty($user_booking['hn'])) {
+                $patient = (new \yii\db\Query()) //ข้อมูลลงทะเบียนใช้งาน udh connect
+                    ->select(['*'])
+                    ->from('tbl_patient')
+                    ->where([
+                        'id_card' => $user_booking['CID']
+                    ])
+                    ->one($db);
+                $bookings[] = ArrayHelper::merge($user_booking, [
+                    'firstName' => ArrayHelper::getValue($patient, 'first_name', '-'),
+                    'lastName' => ArrayHelper::getValue($patient, 'last_name', '-'),
+                ]);
+            } else {
+                $bookings[] = $user_booking;
+            }
+        }
+
+
+        $provider = new ArrayDataProvider([
+            'allModels' => $bookings,
+            'pagination' => [
+                'pageSize' => false,
+            ],
+        ]);
+
+        return $this->render('_form_user_booking',[
+            'provider' => $provider
+        ]);
     }
 }
