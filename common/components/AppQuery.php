@@ -427,6 +427,8 @@ class AppQuery
                 'DOCC_LimitApp.docCode' => Util::sprintf($doc_code, 6),
                 'DOCC_LimitApp.DeptGroup' => $deptgroup,
                 'DOCC_LimitApp.deptCode' => Util::sprintfAfter($deptcode, 6),
+                'Appoint_dep_doc.docCode' => Util::sprintf($doc_code, 6) ,
+                'Appoint_dep_doc.deptCode' => Util::sprintfAfter($deptcode, 6)
 
             ]);
 
@@ -684,7 +686,7 @@ class AppQuery
             ]);
         }
         if ($profile['id_card']) {
-            $query->andWhere([
+            $query->orWhere([
                 'Appoint.CID' => $profile['id_card']
             ]);
         }

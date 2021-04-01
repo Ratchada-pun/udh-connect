@@ -44,6 +44,15 @@ $this->title = "ประวัตินัดหมาย";
     .login-form .btn {
         text-align: left;
     }
+
+    .btn-light.active {
+        background-color: #93ddee;
+    }
+
+    .first-item button {
+        background-color: #93ddee;
+        border-color: #93ddee;
+    }
 </style>
 
 
@@ -59,7 +68,7 @@ $this->title = "ประวัตินัดหมาย";
                                     โรงพยาบาลอุดรธานี
                                 </p> -->
                                 <p style="font-size: 16pt;margin-bottom:5px;">
-                                    ประวัตินัดหมาย
+                                    รายการนัดหมาย
                                 </p>
                             </strong>
                         </p>
@@ -94,10 +103,10 @@ $this->title = "ประวัตินัดหมาย";
                             <?php foreach ($history as $key => $value) : ?>
                                 <div class="baseline baseline-border" style="border-bottom: 1px dashed #ccc;">
                                     <div class="baseline-list baseline-border baseline-success">
-
-                                        <h2 class="mb-0">
+                                        <h2 class="mb-0 <?= $key == 0 ? 'first-item' : '' ?>">
                                             <button class="btn btn-light collapsed" type="button" data-toggle="collapse" data-target="#collapseOne<?= $key ?>" aria-expanded="false" aria-controls="collapseOne">
                                                 <span class="fa fa-angle-down pull-right" style="color: black;"> </span>
+                                                
                                                 <div>
                                                     <h class="text-muted" style="font-size: 12pt;">
                                                         วันที่นัด :
@@ -114,6 +123,25 @@ $this->title = "ประวัตินัดหมาย";
                                                         <?= $value['appoint_time_from'] ?> - <?= $value['appoint_time_to'] ?> น.
                                                     </small>
                                                 </div>
+
+                                                <div style="padding-top: 5px;">
+                                                    <h class="text-muted" style="font-size: 12pt;">
+                                                        แผนก :
+                                                    </h>
+                                                    <small style="font-size: 12pt; padding-left:5% ">
+                                                        <?= $value['deptDesc'] ?>
+                                                    </small>
+                                                </div>
+
+                                                <div style="padding-top: 5px;">
+                                                    <h class="text-muted" style="font-size: 12pt;">
+                                                        ชื่อแพทย์ :
+                                                    </h>
+                                                    <small style="font-size: 12pt; padding-left:2% ">
+                                                        <?= $value['docName'] . ' ' . $value['docLName'] ?>
+                                                    </small>
+                                                </div>
+
                                             </button>
                                         </h2>
 
@@ -141,40 +169,37 @@ $this->title = "ประวัตินัดหมาย";
                                                         <?= $value['firstName'] . ' ' . $value['lastName'] ?>
                                                     </small>
                                                 </div>
-
                                                 <div style="padding-top:10px;">
-                                                    <h class="text-muted" style="padding-left:5%;font-size: 12pt; " \>
-                                                        แผนก :
+                                                    <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
+                                                        วันที่นัด:
                                                     </h>
-                                                    <small style="font-size: 12pt;padding-left:5% ">
-                                                        <?= $value['deptDesc'] ?>
+                                                    <small style="font-size: 12pt; padding-left:4% ">
+                                                        <?= substr($value['appoint_date'], 6, 2) . '/' . substr($value['appoint_date'], 4, -2) . '/' . substr($value['appoint_date'], 0, 4) ?>
                                                     </small>
-                                                </div>
-
-                                                <div style="padding-top:10px;">
-                                                    <h class="text-muted" style="padding-left:5%; font-size: 12pt; ">
-                                                        แพทย์ :
-                                                    </h>
-                                                    <small style="font-size: 12pt; padding-left:5% ">
-                                                        <?= $value['docName'] . ' ' . $value['docLName'] ?>
-                                                    </small>
-                                                </div>
-
-                                                <div style="padding-top:10px;">
-                                                        <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
-                                                            วันที่นัด:
-                                                        </h>
-                                                        <small style="font-size: 12pt; padding-left:4% ">
-                                                            <?= substr($value['appoint_date'], 6, 2) . '/' . substr($value['appoint_date'], 4, -2) . '/' . substr($value['appoint_date'], 0, 4) ?>
-                                                        </small>
                                                 </div>
 
                                                 <div style="padding-top:10px;">
                                                     <h class="text-muted" style="padding-left:5%;font-size: 12pt;">
-                                                     เวลานัด :
+                                                        เวลานัด :
                                                     </h>
                                                     <small style="font-size: 12pt; padding-left:3%">
                                                         <?= $value['appoint_time_from'] ?> - <?= $value['appoint_time_to'] ?> น.
+                                                    </small>
+                                                </div>
+                                                <div style="padding-top:10px;">
+                                                    <h class="text-muted" style="padding-left:5%; font-size: 12pt;">
+                                                        แผนก :
+                                                    </h>
+                                                    <small style="font-size: 12pt; padding-left:4%">
+                                                        <?= $value['deptDesc'] ?>
+                                                    </small>
+                                                </div>
+                                                <div style="padding-top:10px;">
+                                                    <h class="text-muted" style="padding-left:5%; font-size: 12pt;">
+                                                        แพทย์ :
+                                                    </h>
+                                                    <small style="font-size: 12pt; padding-left:4%">
+                                                        <?= $value['docName'] . ' ' . $value['docLName'] ?>
                                                     </small>
                                                 </div>
 
@@ -185,7 +210,7 @@ $this->title = "ประวัตินัดหมาย";
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        
+
                     </div>
 
                 </div>
