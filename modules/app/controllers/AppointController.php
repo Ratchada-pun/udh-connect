@@ -11,10 +11,13 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use app\models\AppointModel;
+use app\models\TblAppoint;
 use yii\db\conditions\AndCondition;
 use yii\web\HttpException;
 use common\components\AppQuery;
 use common\components\Util;
+use kartik\form\ActiveForm;
+use yii\helpers\Url;
 
 /**
  * AppointController implements the CRUD actions for TblPatient model.
@@ -683,21 +686,41 @@ class AppointController extends Controller
             //     $history_appoints = AppQuery::getHistoryAppoints($params);
             // }
 
-            $params = [
-                'maker' => 'queue online',
-                'doc_code' => $attributes['doc_code'],
+            $params = [ //ตรวจสอบ  ถ้าเลือกวันและเวลาเดียวกัน ไม่สามารถนัดได้
+                // 'maker' => 'queue online mobile',
+                // 'doc_code' => $attributes['doc_code'],
                 'appoint_date' => $appoint_date,
-                'pre_dept_code' => $attributes['dept_code'],
+                // 'pre_dept_code' => $attributes['dept_code'],
                 'appoint_time_from' => $appoint_time_from,
                 'appoint_time_to' => $appoint_time_to,
                 'hn' => $profile['hn'],
                 'CID' => $profile['id_card'],
-                'status_in' => 'm', //สถานะระบบ status_in (m = mobile,c = ศูนย์บริการ,n = ระบบนัดใหม่,null= ระบบเดิม)
+                // 'status_in' => 'm', //สถานะระบบ status_in (m = mobile,c = ศูนย์บริการ,n = ระบบนัดใหม่,null= ระบบเดิม)
             ];
             $history_appoints = AppQuery::getHistoryAppoints($params);
+            $params2 = [ // ตรวจสอบ เลือกแผนกเดิม และ วันเดิมไม่ได้
+                // 'maker' => 'queue online mobile',
+                // 'doc_code' => $attributes['doc_code'],
+                'appoint_date' => $appoint_date, //วันนัด
+                'pre_dept_code' => $attributes['dept_code'], //รหัสแผนก
+                // 'appoint_time_from' => $appoint_time_from, //เวลาเริ่มนัด
+                // 'appoint_time_to' => $appoint_time_to, //เวลาสิ้นสุดนัด
+                'hn' => $profile['hn'], //รหัส hn
+                'CID' => $profile['id_card'], //รหัสบัตรประจำตัวประชาชน 
+                // 'status_in' => 'm', //สถานะระบบ status_in (m = mobile,c = ศูนย์บริการ,n = ระบบนัดใหม่,null= ระบบเดิม)
+            ];
+            $history_appoints2 = AppQuery::getHistoryAppoints($params2);
 
-            if (!empty($history_appoints)) {
-                throw new HttpException(422, 'ไม่สามารถทำรายการได้ เนื่องจากคุณมีรายการนัดตามวัน,เวลา แผนก แพทย์ ที่เลือกอยู่แล้ว.');
+            $history_appoints3 = AppQuery::getHistoryAppoints([ //ตรวจสอบ เวลาคาบเกี่ยว จะไม่สามารถทำนัดได้
+                'appoint_date' => $appoint_date,
+                'appoint_time_from' => $appoint_time_from,
+                'appoint_time_to' => $appoint_time_to,
+                'hn' => $profile['hn'],
+                'CID' => $profile['id_card']
+            ]);
+
+            if (!empty($history_appoints) || !empty($history_appoints2) || !empty($history_appoints3)) {
+                throw new HttpException(422, 'มีนัดหมายแล้ว ไม่สามารถทำนัดซ้ำได้');
             }
 
             $db_mssql->createCommand()->insert('Appoint', [
@@ -711,18 +734,36 @@ class AppointController extends Controller
                 'pre_dept_code' => $attributes['dept_code'],
                 'CID' => $profile['id_card'],
                 'phone' => $profile['phone_number'],
-                'maker' => 'queue online',
+                'maker' => 'queue mobile',
                 'keyin_time' => $formatter->asDate('now', 'php:Y-m-d H:i:s'),
                 'status_in' => 'm',
             ])->execute();
+
+            $qrcode = Yii::$app->security->generateRandomString();
             $appoint = [
                 'doctor_name' => $doctor['doctitle'] . $doctor['docName'] . ' ' . $doctor['docLName'],
-                'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:d/m/'). ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543),
+                'appoint_date' => $formatter->asDate($attributes['appoint_date'], 'php:d/m/') . ($formatter->asDate($attributes['appoint_date'], 'php:Y') + 543),
                 'appoint_time' => $appoint_time,
                 'department_name' => $dept['deptDesc'],
                 'hn' => $profile['hn'],
-                'fullname' => $profile['first_name'] . ' ' . $profile['last_name']
+                'fullname' => $profile['first_name'] . ' ' . $profile['last_name'],
+                'description' => $profile['hn'] ? 'กรุณาลงทะเบียนที่ Kiosk ก่อนเวลานัดหมาย 30 นาที ' : 'กรุณาลงทะเบียนผู้ป่วยใหม่ ที่งานเวชระเบียน ชั้น1 ก่อนเวลานัด 30 นาที!',
+                'urlQRCode' => Url::base(true) . Url::to(['/site/qrcode', 'qrcode' => $qrcode])
             ];
+            $AppointModel = \Yii::$app->request->post('AppointModel');
+            $ap_date = explode("/", $AppointModel['appoint_date']);
+            $modelAppoint = new TblAppoint();
+            $modelAppoint->setAttributes([
+                'hn' => $profile['hn'],
+                'appoint_date' => $ap_date[2] . '-' . $ap_date[1] . '-' . $ap_date[0],
+                'app_time_from' => $appoint_time_from,
+                'app_time_to' => $appoint_time_to,
+                'dept_code' => $attributes['dept_code'],
+                'doc_code' => $attributes['doc_code'],
+                'cid' => $profile['id_card'],
+                'qrcode' => $qrcode
+            ]);
+            $modelAppoint->save();
             $transaction->commit();
             return [
                 'message' => 'ทำรายการสำเร็จ',
@@ -730,7 +771,7 @@ class AppointController extends Controller
                 'appoint_date' => $appoint_date,
                 'hn' => $profile['hn'],
                 'id_card' => $profile['id_card'],
-                'doctor' => preg_replace('/\s+/', '', $attributes['doc_code'])
+                'doctor' => preg_replace('/\s+/', '', $attributes['doc_code']),
             ];
         } catch (\Exception $e) {
             $transaction->rollBack();
@@ -788,11 +829,52 @@ class AppointController extends Controller
 
     public function actionProfile($userId)
     {
+        $db_mssql = Yii::$app->mssql;
         $response = Yii::$app->response;
         $response->format = \yii\web\Response::FORMAT_JSON;
         $profile = TblPatient::findOne(['line_id' => $userId]);
 
         if ($profile) {
+            if (empty($profile->hn)) {
+                $query = $db_mssql->createCommand('SELECT TOP
+                1 REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
+                REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
+                dbo.PATIENT.phone,
+                dbo.PATIENT.birthDay,
+                dbo.PATIENT.titleCode,
+                REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID,
+                CONVERT (
+                datetime,
+                SUBSTRING ( CONVERT ( CHAR, dbo.PATIENT.birthDay - 5430000 ), 1, 4 ) + (
+                CASE
+                WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) = \'00\' THEN
+                \'07\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) 
+                    END 
+                ) + (
+                    CASE
+                WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) = \'00\' THEN
+                \'01\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) 
+            END 
+                ) 
+            ) AS bday                   
+            FROM
+                dbo.PATIENT
+                INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+            WHERE
+            dbo.PatSS.CardID = :CardID')
+                    ->bindValues([
+                        ':CardID' => $profile['id_card']
+                    ])
+                    ->queryOne();
+                if ($query) {
+                    Yii::$app->db->createCommand()->update('tbl_patient', ['hn' => $query['hn']], ['id' => $profile['id']])->execute();
+                    $profile['hn'] = $query['hn'];
+                    $session = Yii::$app->session;
+                    $session->set('user', $profile);
+                }
+            }
+
             $session = Yii::$app->session;
             $session->set('user', $profile);
         }
@@ -809,15 +891,34 @@ class AppointController extends Controller
         $history = AppQuery::getUserHistory($profile);
 
         $rows = [];
-        foreach ($history as $key => $value) {
+        foreach ($history['result'] as $key => $value) {
             if (empty($value['firstName'])) {
                 $value['firstName'] = $profile['first_name'];
                 $value['lastName'] = $profile['last_name'];
             }
             $rows[] = $value;
         }
+        $rows2 = [];
+        $formatter = Yii::$app->formatter;
+        $current_date_unix = $formatter->asTimestamp($formatter->asDate('now', 'php:Y-m-d')); // 2021-04-07 xxxxxxxxxx
+        $start_date_unix = $formatter->asTimestamp(($formatter->asDate('now', 'php:Y') - 1) . $formatter->asDate('now', 'php:-m-d')); //2020-04-07 xxxxxxxxxx
+        // 3333333333 วันที่นัดของปีที่แล้ว
+        // 4444444444 1 ปีที่แล้ว
+        // 5555555555 วันปัจจุบัน
+        // 6666666666 วันที่นัด >= 1 ปีที่แล้ว
+
+        foreach ($history['result2'] as $key => $value) {
+            if ($formatter->asTimestamp($value['appoint_date2']) >= $start_date_unix) {
+                if (empty($value['firstName'])) {
+                    $value['firstName'] = $profile['first_name'];
+                    $value['lastName'] = $profile['last_name'];
+                }
+                $rows2[] = $value;
+            }
+        }
         return $this->render('_form_user_history', [
-            'history' => $rows
+            'history' => $rows,
+            'history2' => $rows2
         ]);
     }
 

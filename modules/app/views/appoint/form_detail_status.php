@@ -92,7 +92,7 @@ CSS
     <div class="card-body" style="background: #f6f6f6;">
         <ul class="no-margin mt-10" style="list-style: none;padding-inline-start: 40px;font-size: 16px;">
             <li><strong>ชื่อ:</strong> <?= $profile ? $profile['firstName'] . ' ' . $profile['lastName'] : '-' ?></li>
-            <li><strong>NH:</strong> <?= $profile ? $profile['hn'] : '-' ?> </li>
+            <li><strong>HN:</strong> <?= $profile ? $profile['hn'] : '-' ?> </li>
         </ul>
 
     </div>

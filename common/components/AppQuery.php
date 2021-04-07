@@ -427,7 +427,7 @@ class AppQuery
                 'DOCC_LimitApp.docCode' => Util::sprintf($doc_code, 6),
                 'DOCC_LimitApp.DeptGroup' => $deptgroup,
                 'DOCC_LimitApp.deptCode' => Util::sprintfAfter($deptcode, 6),
-                'Appoint_dep_doc.docCode' => Util::sprintf($doc_code, 6) ,
+                'Appoint_dep_doc.docCode' => Util::sprintf($doc_code, 6),
                 'Appoint_dep_doc.deptCode' => Util::sprintfAfter($deptcode, 6)
 
             ]);
@@ -550,7 +550,7 @@ class AppQuery
             ->innerJoin('DOCC', 'DOCC.docCode = Appoint.doctor')
             ->leftJoin('Appoint_dep_doc', 'Appoint_dep_doc.docCode = DOCC.docCode')
             ->where([
-                'Appoint.maker' => 'queue online',
+                // 'Appoint.maker' => 'queue mobile',
                 'Appoint.appoint_date' => $appoint_date_th,
                 'Appoint.appoint_time_from' => $formatter->asDate($schedule_time['start_time'], 'php:H:i'),
                 'Appoint.appoint_time_to' => $formatter->asDate($schedule_time['end_time'], 'php:H:i'),
@@ -599,16 +599,39 @@ class AppQuery
         $query = (new \yii\db\Query())
             ->select(['Appoint.*'])
             ->from('Appoint')
-            ->where([
-                'maker' => 'queue online',
-                'appoint_date' => $params['appoint_date'],
-                'pre_dept_code' => $params['pre_dept_code'],
-                'appoint_time_from' => $params['appoint_time_from'],
-                'appoint_time_to' => $params['appoint_time_to'],
-                'CID' => $params['CID'],
-                'status_in' => 'm',
-                'REPLACE( doctor, \' \', \'\')' => $params['doc_code']
+            ->where($params)
+            
+            // ->where([
+            //     'maker' => 'queue online mobile',
+            //     'appoint_date' => $params['appoint_date'],
+            //     'pre_dept_code' => $params['pre_dept_code'],
+            //     'appoint_time_from' => $params['appoint_time_from'],
+            //     'appoint_time_to' => $params['appoint_time_to'],
+            //     'CID' => $params['CID'],
+            //     'status_in' => 'm',
+            //     'REPLACE( doctor, \' \', \'\')' => $params['doc_code']
+            // ])
+        ;
+
+        if ($params['hn']) {
+            $query->andWhere([
+                'hn' => Util::sprintf($params['hn'], 7),
             ]);
+        }
+
+        return $query->all(Yii::$app->mssql);
+    }
+
+    public static function getHistoryAppoints2($params)
+    {
+        $query = (new \yii\db\Query())
+            ->select(['Appoint.*'])
+            ->from('Appoint')
+            ->where([
+                'appoint_date' => $params['appoint_date'],
+                'CID' => $params['CID'],
+            ])
+            ->andWhere(['between', 'appoint_time_from', $params['appoint_time_from'], $params['appoint_time_to']]);
 
         if ($params['hn']) {
             $query->andWhere([
@@ -638,7 +661,7 @@ class AppQuery
             ->leftJoin('PATIENT', 'PATIENT.hn = Appoint.hn')
             ->where([
                 'Appoint.appoint_date' => $params['appoint_date'],
-                'Appoint.maker' => 'queue online',
+                //   'Appoint.maker' => 'queue online mobile',
                 'Appoint.CID' =>  $params['cid'],
                 'Appoint.doctor' => Util::sprintf($params['doctor'], 6),
             ]);
@@ -654,6 +677,7 @@ class AppQuery
 
     public static function getUserHistory($profile)
     {
+        $formatter = Yii::$app->formatter;
         $query = (new \yii\db\Query())
             ->select([
                 'Appoint.doctor',
@@ -673,12 +697,27 @@ class AppQuery
                 'REPLACE(DOCC.docName, \' \', \'\') as docName',
                 'REPLACE(DOCC.docLName, \' \', \'\') as docLName',
                 'REPLACE(Appoint.hn, \' \', \'\') as hn',
+                'CONVERT (
+                    date,
+                    SUBSTRING ( CONVERT ( CHAR, appoint_date - 5430000 ), 1, 4 ) + (
+                    CASE
+                    WHEN SUBSTRING ( CONVERT ( CHAR, appoint_date - 5430000 ), 5, 2 ) = \'00\' THEN
+                    \'07\' ELSE SUBSTRING ( CONVERT ( CHAR, appoint_date - 5430000 ), 5, 2 ) 
+                        END 
+                    ) + (
+                        CASE
+                    WHEN SUBSTRING ( CONVERT ( CHAR, appoint_date - 5430000 ), 7, 2 ) = \'00\' THEN
+                    \'01\' ELSE SUBSTRING ( CONVERT ( CHAR, appoint_date - 5430000 ), 7, 2 ) 
+                END 
+                    ) 
+                ) AS appoint_date2'
             ])
             ->from('Appoint')
             ->innerJoin('DEPT', 'DEPT.deptCode = Appoint.pre_dept_code')
             ->leftJoin('PATIENT', 'PATIENT.hn = Appoint.hn')
             ->leftJoin('DOCC', 'DOCC.docCode = Appoint.doctor')
-           // ->where(['Appoint.maker' => 'queue online'])
+            //->andWhere('Appoint.appoint_date1 >= :appoint_date', [':appoint_date' => ($formatter->asDate('now','php:Y')+543) . $formatter->asDate('now','php:md')])
+            // ->where(['Appoint.maker' => 'queue online'])
             ->orderBy('Appoint.appoint_date DESC');
         if ($profile['hn']) {
             $query->andWhere([
@@ -690,7 +729,22 @@ class AppQuery
                 'Appoint.CID' => $profile['id_card']
             ]);
         }
-        return $query->all(Yii::$app->mssql);
+
+        $result = [];
+        $result2 = [];
+        foreach ($query->all(Yii::$app->mssql) as $appoint) {
+            $appoint_date = (intval(substr($appoint['appoint_date'], 0, 4)) - 543) . '-' . substr($appoint['appoint_date'], 4, -2) . '-' . substr($appoint['appoint_date'], 6, 2);
+            $appoint_date_uinx = $formatter->asTimestamp($appoint_date);
+            if($appoint_date_uinx >= $formatter->asTimestamp($formatter->asDate('now','php:Y-m-d'))){
+                $result[] = $appoint;
+            }else{
+                $result2[] = $appoint;
+            }
+        }
+        return [
+            'result' => $result,
+            'result2' => $result2,
+        ];
     }
 
     public static function getAppointmentsHistory($profile)
@@ -723,7 +777,7 @@ class AppQuery
             ->leftJoin('DOCC', 'DOCC.docCode = Appoint.doctor')
             ->innerJoin('DEPTGROUP', 'DEPT.deptCode = DEPTGROUP.deptCode')
             ->innerJoin('DEPTGr', 'DEPTGROUP.DeptGroup = DEPTGr.DeptGroup')
-            ->where(['Appoint.maker' => 'queue online'])
+            // ->where(['Appoint.maker' => 'queue online mobile'])
             ->orderBy('Appoint.appoint_date DESC');
         if ($profile['hn']) {
             $query->andWhere([

@@ -52,7 +52,7 @@ $profile = $session->get('user');
 
             <li class="menu-item border-bottom-danger" style="width: 20%;">
                  <a href="<?= Url::to(['/app/appoint/queue-status', 'hn' => $profile['hn']]) ?>" class="page-scroll page-scroll-danger">
-                    <div class="icon"><i class="fa fa-address-card-o fa-2x"></i></div>
+                    <div class="icon"><i class="fa fa-list-ol"></i></div>
                     <div class="h1 no-margin"><span class="menu-label">สถานะคิว</span>
                         <p data-v-0dbf6a13=""></p>
                     </div>

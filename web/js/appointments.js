@@ -91,7 +91,7 @@ function GetSchedules(docId) {
       //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setStartDate", startDate);
       //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setEndDate", null);
       //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("setDatesDisabled", []);
-      //   jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", "");
+        jQuery("#appointmodel-appoint_date-kvdate").kvDatepicker("update", "");
       //   $("#appoint-form").waitMe("hide");
       // }
     },
@@ -112,7 +112,7 @@ function GetScheduleTimes(date) {
     effect: "roundBounce",
     color: "#ff518a",
   });
-  
+
   var formArray = objectifyForm();
   $.ajax({
     method: "POST",
@@ -296,13 +296,39 @@ $form.on("beforeSubmit", function() {
       appoint_time_to: formArray["AppointModel[appoint_time]"]
         ? formArray["AppointModel[appoint_time]"].substring(6, 11)
         : "",
-        ...yii.getQueryParams(window.location.search)
+      ...yii.getQueryParams(window.location.search),
     },
     success: function(data) {
       // Implement successful
       ClearForm();
       var appoint = data.appoint;
       if (liff.isInClient()) {
+        var footercontent = [
+          {
+            type: "text",
+            text: appoint.description,
+            size: "xs",
+            color: "#ff0000",
+            style: "normal",
+            align: "center",
+            margin: "md",
+            wrap: true,
+          },
+        ];
+        if (appoint.hn) {
+          footercontent.push({
+            type: "button",
+            action: {
+              type: "uri",
+              label: "แสดงคิวอาร์โค้ด",
+              uri: appoint.urlQRCode,
+            },
+            color: "#f06292",
+            style: "primary",
+            height: "sm",
+            margin: "md",
+          });
+        }
         udhApp.sendMessages([
           {
             type: "flex",
@@ -317,7 +343,7 @@ $form.on("beforeSubmit", function() {
                 size: "full",
                 aspectRatio: "30:13",
                 aspectMode: "fit",
-                backgroundColor: "#eeeeee",
+                backgroundColor: "#fce4ec",
               },
               body: {
                 type: "box",
@@ -331,9 +357,8 @@ $form.on("beforeSubmit", function() {
                     wrap: true,
                     weight: "bold",
                     gravity: "center",
-                    size: "xxl",
+                    size: "xl",
                     align: "center",
-                    color: "#62cb31",
                   },
                   {
                     type: "box",
@@ -348,7 +373,7 @@ $form.on("beforeSubmit", function() {
                         contents: [
                           {
                             type: "text",
-                            text: "HN :",
+                            text: "HN",
                             color: "#aaaaaa",
                             size: "lg",
                             flex: 1,
@@ -357,9 +382,10 @@ $form.on("beforeSubmit", function() {
                             type: "text",
                             text: appoint.hn || "-",
                             wrap: true,
-                            size: "lg",
-                            color: "#666666",
+                            size: "md",
                             flex: 4,
+                            align: "end",
+                            weight: "bold",
                           },
                         ],
                       },
@@ -379,9 +405,10 @@ $form.on("beforeSubmit", function() {
                             type: "text",
                             text: appoint.fullname,
                             wrap: true,
-                            size: "lg",
-                            color: "#666666",
+                            size: "md",
                             flex: 4,
+                            align: "end",
+                            weight: "bold",
                           },
                         ],
                       },
@@ -401,9 +428,10 @@ $form.on("beforeSubmit", function() {
                             type: "text",
                             text: appoint.department_name,
                             wrap: true,
-                            color: "#666666",
-                            size: "lg",
+                            size: "md",
                             flex: 4,
+                            align: "end",
+                            weight: "bold",
                           },
                         ],
                       },
@@ -423,9 +451,10 @@ $form.on("beforeSubmit", function() {
                             type: "text",
                             text: appoint.doctor_name,
                             wrap: true,
-                            color: "#666666",
-                            size: "lg",
+                            size: "md",
                             flex: 4,
+                            align: "end",
+                            weight: "bold",
                           },
                         ],
                       },
@@ -445,9 +474,10 @@ $form.on("beforeSubmit", function() {
                             type: "text",
                             text: appoint.appoint_date,
                             wrap: true,
-                            color: "#666666",
-                            size: "lg",
+                            size: "md",
                             flex: 4,
+                            align: "end",
+                            weight: "bold",
                           },
                         ],
                       },
@@ -467,9 +497,10 @@ $form.on("beforeSubmit", function() {
                             type: "text",
                             text: appoint.appoint_time + " น.",
                             wrap: true,
-                            size: "lg",
-                            color: "#666666",
+                            size: "md",
                             flex: 4,
+                            align: "end",
+                            weight: "bold",
                           },
                         ],
                       },
@@ -480,19 +511,7 @@ $form.on("beforeSubmit", function() {
               footer: {
                 type: "box",
                 layout: "vertical",
-                backgroundColor: "#eeeeee",
-                contents: [
-                  {
-                    type: "text",
-                    text: appoint.hn
-                      ? "กรุณากดบัตรคิว ณ จุดบริการ ตามวัน/เวลาที่นัดหมาย!"
-                      : "กรุณาติดต่อห้องบัตร ตามวัน/เวลาที่นัดหมาย!",
-                    size: "xs",
-                    color: "#ff0000",
-                    style: "normal",
-                    align: "center",
-                  },
-                ],
+                contents: footercontent
               },
             },
           },
@@ -516,7 +535,6 @@ $form.on("beforeSubmit", function() {
     },
     error: function(jqXHR, textStatus, errorThrown) {
       $("#appoint-form").waitMe("hide");
-      console.log(jqXHR);
       var message =
         jqXHR.hasOwnProperty("responseJSON") && jqXHR.responseJSON.hasOwnProperty("message")
           ? jqXHR.responseJSON.message

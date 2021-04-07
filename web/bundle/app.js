@@ -20,13 +20,10 @@ var config = {
 
   //RichMenuId: "richmenu-349a649ee1b2e2f659ae2da8e24df4ef",//menu เดิม
 
-
-
-  // redirectUri: "https://4752d9e4a503.ap.ngrok.io",
-  // liffId: "1621638840-51pLveK0", // line login
+  // redirectUri: "https://3c4660e58561.ap.ngrok.io",
+  // liffId: "1654009422-Avg5LbQg", // line login
   // ChannelAccessToken:
   //   "uLF9THsOlQfvth3Y7bvLym0ZwPoEliKF7MszmJq4aymKwWJfYpknJ/zmWwOZsNzgrDXU0+Y7KGMrxCPi79NX1/g3iSeY5Mva1olEL4cwoJtDdznKV+7MjYP89tW6BO8/A//QjXTcoB6BdDt6ooFzB1GUYhWQfeY8sLGRXgo3xvw=",
-  // RichMenuId: "richmenu-7351dbcc12fcf979942367a8422087b3",
 };
 
 var udhApp = {
@@ -193,18 +190,20 @@ var udhApp = {
               self.sendMessages(data.FlexMessage);
             }
 
-            swal.fire({
-              title: data.message,
-              text: "",
-              icon: "success",
-              showCancelButton: false,
-              confirmButtonText: "ตกลง",
-              cancelButtonText: "ยกเลิก",
-            }).then((result) => {
-              if (result.value) {
-                self.closeWindow();
-              }
-            });
+            swal
+              .fire({
+                title: data.message,
+                text: "",
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonText: "ตกลง",
+                cancelButtonText: "ยกเลิก",
+              })
+              .then((result) => {
+                if (result.value) {
+                  self.closeWindow();
+                }
+              });
           } else {
             Object.keys(data.validate).map((key) => {
               $(form).yiiActiveForm("updateAttribute", key, data.validate[key]);
@@ -231,11 +230,15 @@ var udhApp = {
     var self = this;
     var formId = "#form-search";
     var form = $(formId);
-
+    var query = yii.getQueryParams(window.location.search);
+    $("#input-filter").val(query.q);
     $(".form-content, #btn-submit").hide();
+
     $("#btn-search").on("click", function() {
       self.searchPatient();
     });
+
+    self.searchPatient();
 
     form.on("beforeSubmit", function() {
       self.startLoading(formId);
@@ -254,18 +257,20 @@ var udhApp = {
               self.sendMessages(data.FlexMessage);
             }
 
-            swal.fire({
-              title: data.message,
-              text: "",
-              icon: "success",
-              showCancelButton: false,
-              confirmButtonText: "ตกลง",
-              cancelButtonText: "ยกเลิก",
-            }).then((result) => {
-              if (result.value) {
-                self.closeWindow();
-              }
-            });
+            swal
+              .fire({
+                title: data.message,
+                text: "",
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonText: "ตกลง",
+                cancelButtonText: "ยกเลิก",
+              })
+              .then((result) => {
+                if (result.value) {
+                  self.closeWindow();
+                }
+              });
           } else {
             Object.keys(data.validate).map((key) => {
               $(form).yiiActiveForm("updateAttribute", key, data.validate[key]);
@@ -303,13 +308,14 @@ var udhApp = {
     var self = this;
     var formId = "#form-search";
     var form = $(formId);
+    var query = yii.getQueryParams(window.location.search);
 
     if (!$("#input-filter").val()) return false;
     var data = form.serialize();
     self.startLoading(formId);
 
     $.ajax({
-      url: "/app/register/search-patient",
+      url: "/app/register/patient?q=" + query.q,
       type: form.attr("method"),
       data: data,
       dataType: "JSON",

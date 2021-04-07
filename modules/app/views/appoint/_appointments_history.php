@@ -28,6 +28,10 @@ $this->title = "นัดหมายล่วงหน้า";
     .card .card-header .card-title {
         text-align: center;
     }
+    .login-content{
+        max-width: 540px;
+        margin: 4vh auto;
+    } 
 </style>
 
 
@@ -132,7 +136,7 @@ $this->title = "นัดหมายล่วงหน้า";
 
                             <a href="<?= Url::to(['/app/appoint/create-department']) ?>" class="btn btn-pill btn-danger btn-lg">
                                 <p style="font-size: 16pt;">
-                                    ทำการนัดหมายใหม่
+                                    ทำนัดหมายใหม่
                                 </p>
                             </a>
 

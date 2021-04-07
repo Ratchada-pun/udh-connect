@@ -48,9 +48,11 @@ use yii\widgets\Breadcrumbs;
         <?= $this->render('_footer.php') ?>
     </div>
 </div>
+
+
 <?php
 $ctrid = Yii::$app->controller->id;
-if (in_array($ctrid, ['appoint', 'register', 'site']) && Yii::$app->user->isGuest) {
+if (in_array($ctrid, ['appoint', 'register', 'site']) && Yii::$app->user->isGuest && Yii::$app->request->pathInfo != 'site/qrcode') {
     $this->registerJsFile(
         YII_ENV_DEV ? '@web/bundle/app.js' : '@web/bundle/app.min.js',
         ['depends' => [
