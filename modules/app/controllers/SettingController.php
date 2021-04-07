@@ -92,7 +92,15 @@ class SettingController extends \yii\web\Controller
 
     public function actionDelete($id)
     {
+        $request = Yii::$app->request;
+
         $this->findModel($id)->delete();
+
+        if($request->isAjax) {
+            return [
+                'message' => 'ลบรายการสำเร็จ!'
+            ];
+        }
 
         return $this->redirect(['index']);
     }
