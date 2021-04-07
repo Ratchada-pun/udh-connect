@@ -36,7 +36,7 @@ class SettingController extends \yii\web\Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'user-booking'],
+                        'actions' => ['index', 'user-booking','delete'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
