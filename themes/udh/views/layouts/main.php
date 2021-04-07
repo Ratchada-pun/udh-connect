@@ -52,7 +52,7 @@ use yii\widgets\Breadcrumbs;
 $ctrid = Yii::$app->controller->id;
 if (in_array($ctrid, ['appoint', 'register', 'site']) && Yii::$app->user->isGuest) {
     $this->registerJsFile(
-        '@web/bundle/app.min.js',
+        YII_ENV_DEV ? '@web/bundle/app.js' : '@web/bundle/app.min.js',
         ['depends' => [
             \yii\web\JqueryAsset::class,
             \app\assets\AppAsset::class

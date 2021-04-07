@@ -12,6 +12,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
+use yii\helpers\Url;
 use yii\web\HttpException;
 use yii\httpclient\Client;
 
@@ -158,6 +159,9 @@ class RegisterController extends Controller
                 throw new HttpException(422, "มีการลงทะเบียนข้อมูลในระบบแล้ว ไม่สามารถลงทะเบียนซ้ำได้");
             }
 
+            if (TblPatient::findOne(['line_id' => $posted['userId']]) !== null) {
+                throw new HttpException(422, "มีการลงทะเบียนข้อมูลในระบบแล้ว ไม่สามารถลงทะเบียนซ้ำได้");
+            }
 
             $day = isset($formdata['day']) ? $formdata['day'] : null;
             $month = isset($formdata['month']) ? $formdata['month'] : null;
@@ -176,14 +180,14 @@ class RegisterController extends Controller
                 //Unlink rich menu from user
                 $unlinkresponse = $client->createRequest()
                     ->setMethod('DELETE')
-                    ->setUrl('https://api.line.me/v2/bot/user/'.$userId.'/richmenu')
+                    ->setUrl('https://api.line.me/v2/bot/user/' . $userId . '/richmenu')
                     ->addHeaders(['content-type' => 'application/json'])
                     ->addHeaders(['Authorization' => 'Bearer FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU='])
                     ->send();
                 //Link rich menu to user
                 $response = $client->createRequest()
                     ->setMethod('POST')
-                    ->setUrl('https://api.line.me/v2/bot/user/'.$userId.'/richmenu/'.$richMenuId)
+                    ->setUrl('https://api.line.me/v2/bot/user/' . $userId . '/richmenu/' . $richMenuId)
                     ->addHeaders(['content-type' => 'application/json'])
                     ->addHeaders(['Authorization' => 'Bearer FWZ3P4fRrEXOmhyQtiQFp+TXeSSrkQwGdt3zvp1TezV9gYOruopsbo4YDBjoIKSoWzd/Yx/Ow/8xT0Elwvv6N+akUpPXtdMOdi5NN+t8BMHiVFWoDopJLEn0fUJSg0Rink0gBjXMSwcKIoI6FmoaQQdB04t89/1O/w1cDnyilFU='])
                     ->send();
@@ -232,9 +236,159 @@ class RegisterController extends Controller
 
     public function actionSearchPatient()
     {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $request = Yii::$app->request;
         $db_mssql = Yii::$app->mssql;
         $fliterKey = $request->post('filter');
+        if (mb_strlen($fliterKey) == 13) {
+            // $query = $db_mssql->createCommand('SELECT
+            //         dbo.v_patient_detail.hn,
+            //         REPLACE(dbo.v_patient_detail.CardID, \' \', \'\') as CardID,
+            //         dbo.v_patient_detail.titleCode,
+            //         REPLACE( dbo.v_patient_detail.firstName, \' \', \'\') as firstName,
+            //         REPLACE(dbo.v_patient_detail.lastName, \' \', \'\') as lastName,
+            //         dbo.v_patient_detail.phone,
+            //         dbo.v_patient_detail.mobilephone,
+            //         dbo.v_patient_detail.age,
+            //         dbo.v_patient_detail.bday
+
+            //         FROM
+            //         dbo.v_patient_detail
+            //         WHERE
+            //         dbo.v_patient_detail.hn = :hn
+            //     ')
+            //     ->bindValues([
+            //         ':hn' => sprintf("% 7s", $fliterKey)
+            //     ])
+            //     ->queryOne();
+            $query = $db_mssql->createCommand('SELECT TOP
+                    1 REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                    REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
+                    REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
+                    dbo.PATIENT.phone,
+                    dbo.PATIENT.birthDay,
+                    dbo.PATIENT.titleCode,
+                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID,
+                    CONVERT (
+                    datetime,
+                    SUBSTRING ( CONVERT ( CHAR, dbo.PATIENT.birthDay - 5430000 ), 1, 4 ) + (
+                    CASE
+                    WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) = \'00\' THEN
+                    \'07\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) 
+                        END 
+                    ) + (
+                        CASE
+					WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) = \'00\' THEN
+					\'01\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) 
+				END 
+				    ) 
+			    ) AS bday                   
+                FROM
+                    dbo.PATIENT
+                    INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+                WHERE
+                dbo.PatSS.CardID = :CardID')
+                ->bindValues([
+                    ':CardID' => $fliterKey
+                ])
+                ->queryOne();
+
+            if ($query) {
+                $patient = TblPatient::findOne(['id_card' => $fliterKey]);
+                if ($patient) {
+                    return [
+                        'success' => true,
+                        'redirect' => Url::to(['/app/appoint/create-department']),
+                        'message' => ''
+                    ];
+                }
+            }
+        } else {
+            // $query = $db_mssql->createCommand('SELECT
+            //         dbo.v_patient_detail.hn,
+            //         REPLACE(dbo.v_patient_detail.CardID, \' \', \'\') as CardID,
+            //         dbo.v_patient_detail.titleCode,
+            //         REPLACE( dbo.v_patient_detail.firstName, \' \', \'\') as firstName,
+            //         REPLACE(dbo.v_patient_detail.lastName, \' \', \'\') as lastName,
+            //         dbo.v_patient_detail.phone,
+            //         dbo.v_patient_detail.mobilephone,
+            //         dbo.v_patient_detail.age,
+            //         dbo.v_patient_detail.bday
+
+            //         FROM
+            //         dbo.v_patient_detail
+            //         WHERE
+            //         dbo.v_patient_detail.CardID LIKE :CardID
+            //     ')
+            //     ->bindValues([
+            //         ':CardID' => '%'.$fliterKey.'%'
+            //     ])
+            //     ->queryOne();
+            $query = $db_mssql->createCommand('SELECT TOP
+                    1 REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                    REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
+                    REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
+                    dbo.PATIENT.phone,
+                    dbo.PATIENT.birthDay,
+                    dbo.PATIENT.titleCode,
+                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as CardID,
+                    CONVERT (
+                    datetime,
+                    SUBSTRING ( CONVERT ( CHAR, dbo.PATIENT.birthDay - 5430000 ), 1, 4 ) + (
+                    CASE
+                    WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) = \'00\' THEN
+                    \'07\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) 
+                        END 
+                    ) + (
+                        CASE
+					WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) = \'00\' THEN
+					\'01\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) 
+				END 
+				    ) 
+			    ) AS bday 
+
+                FROM
+                    dbo.PATIENT
+                    INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+                WHERE
+                    dbo.PATIENT.hn = :hn')
+                ->bindValues([
+                    ':hn' => Util::sprintf($fliterKey, 7)
+                ])
+                ->queryOne();
+                
+            if ($query) {
+                $patient = TblPatient::findOne(['hn' => $fliterKey]);
+                if ($patient) {
+                    return [
+                        'success' => true,
+                        'redirect' => Url::to(['/app/appoint/create-department']),
+                        'message' => ''
+                    ];
+                }
+            }
+        }
+
+        if (!$query) {
+            return [
+                'success' => false,
+                'redirect' => Url::to(['/app/register/create-new-user', 'user' => 'new']),
+                'message' => 'ไม่พบข้อมูล'
+            ];
+        }
+        return [
+            'success' => true,
+            'redirect' => Url::to(['/app/register/create-new-user', 'user' => 'old', 'q' => $fliterKey]),
+            'message' => ''
+        ];
+    }
+
+    public function actionPatient($q)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $request = Yii::$app->request;
+        $db_mssql = Yii::$app->mssql;
+        $fliterKey = $q;
         if (mb_strlen($fliterKey) == 13) {
             // $query = $db_mssql->createCommand('SELECT
             //         dbo.v_patient_detail.hn,
@@ -337,12 +491,16 @@ class RegisterController extends Controller
                 WHERE
                     dbo.PATIENT.hn = :hn')
                 ->bindValues([
-                    ':hn' => Util::sprintf($fliterKey,7)
+                    ':hn' => Util::sprintf($fliterKey, 7)
                 ])
                 ->queryOne();
         }
 
+        if (!$query) {
+            throw new HttpException(404, 'ไม่พบข้อมูล กรุณาติดต่อโรงพยาบาลอุดรธาณีเพื่อ .');
+        }
 
-        return Json::encode($query);
+
+        return $query;
     }
 }
