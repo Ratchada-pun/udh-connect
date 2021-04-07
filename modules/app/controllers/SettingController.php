@@ -97,6 +97,7 @@ class SettingController extends \yii\web\Controller
         $this->findModel($id)->delete();
 
         if($request->isAjax) {
+            \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             return [
                 'message' => 'ลบรายการสำเร็จ!'
             ];
