@@ -9,6 +9,8 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\TblAppoint;
+use app\models\TblPatient;
 use yii\httpclient\Client;
 use yii\web\HttpException;
 use yii\httpclient\Exception;
@@ -29,6 +31,11 @@ class SiteController extends Controller
                         'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['qrcode'],
+                        'allow' => true,
+                        'roles' => ['?'],
                     ],
                 ],
             ],
@@ -69,6 +76,22 @@ class SiteController extends Controller
         return $this->render('index');
      
     }
+
+    public function actionQrcode($qrcode)
+    {
+        $appoint = TblAppoint::findOne(['qrcode' => $qrcode]);
+        
+        if(!$appoint){
+            throw new HttpException(404,'qrcode not found.');
+        }
+        $patient = TblPatient::findOne(['hn' => $appoint['hn']]);
+        return $this->render('qrcode',[
+            'patient' => $patient,
+            'appoint' => $appoint,
+        ]);
+     
+    }
+
 
     /**
      * Login action.

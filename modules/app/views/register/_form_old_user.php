@@ -3,6 +3,7 @@
 use app\assets\SweetAlert2Asset;
 use kartik\form\ActiveForm;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 SweetAlert2Asset::register($this);
 
@@ -52,7 +53,7 @@ $this->registerCssFile("@web/js/waitMe/waitMe.min.css", [
             </div>
 
             <div class="login-form">
-                <?php $form = ActiveForm::begin(['id' => 'form-search', 'type' => ActiveForm::TYPE_VERTICAL]); ?>
+                <?php $form = ActiveForm::begin(['id' => 'form-search', 'type' => ActiveForm::TYPE_VERTICAL, 'action' => Url::to(['/app/register/patient'])]); ?>
 
                 <div class="row">
                     <div class=" col-12">
