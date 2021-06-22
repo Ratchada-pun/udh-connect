@@ -33,7 +33,29 @@ class RegisterController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['search-patient'],
+                        'roles' => ['?'],
+                    ],
+                ],
+            ],
         ];
+    }
+
+        /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {
+        if (in_array($action->id, ['search-patient'])) {
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
     }
 
     /**
@@ -356,7 +378,7 @@ class RegisterController extends Controller
                     ':hn' => Util::sprintf($fliterKey, 7)
                 ])
                 ->queryOne();
-                
+
             if ($query) {
                 $patient = TblPatient::findOne(['hn' => $fliterKey]);
                 if ($patient) {
