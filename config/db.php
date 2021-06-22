@@ -3,11 +3,18 @@
 $dbDev = [
     'db' => [
         'class' => 'yii\db\Connection',
-        'dsn' => 'mysql:host=localhost;dbname=udh-connect;port=3307',
+        'dsn' => 'mysql:host=172.16.254.64;dbname=udh-connect;port=3306',
         'username' => 'root',
-        'password' => '',
+        'password' => 'root_db',
         'charset' => 'utf8',
     ],
+    // 'db' => [
+    //     'class' => 'yii\db\Connection',
+    //     'dsn' => 'mysql:host=localhost;dbname=udh-connect;port=3307',
+    //     'username' => 'root',
+    //     'password' => '',
+    //     'charset' => 'utf8',
+    // ],
     'mssql' => [
         'class' => 'yii\db\Connection',
         'dsn' => 'sqlsrv:Server=192.168.0.3;Database=UDTest',
@@ -60,3 +67,10 @@ $dbProd = [
 ];
 
 return YII_ENV_DEV ? $dbDev : $dbProd;
+// return [
+//     'class' => 'yii\db\Connection',
+//     'dsn' => 'mysql:host=localhost;dbname=udh-connect;port=3307',
+//     'username' => 'root',
+//     'password' => '',
+//     'charset' => 'utf8',
+// ];
