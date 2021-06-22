@@ -15,6 +15,7 @@ use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\HttpException;
 use yii\httpclient\Client;
+use yii\filters\AccessControl;
 
 /**
  * RegisterController implements the CRUD actions for TblPatient model.
