@@ -40,6 +40,18 @@ class AppointController extends Controller
     }
 
     /**
+     * @inheritdoc
+     */
+    public function beforeAction($action)
+    {
+        if (in_array($action->id, ['departments', 'dept-groups', 'doctors', 'schedules-doctor', 'save-appoint-mobile-app','patient-appoints'])) {
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
+    }
+
+    /**
      * Lists all TblPatient models.
      * @return mixed
      */
@@ -999,4 +1011,344 @@ class AppointController extends Controller
 
         throw new NotFoundHttpException('Profile not found.');
     }
+
+    public function actionDeptGroups() //เลือกแผนก/คลีนิคหลัก
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $departments = AppQuery::getDepartmentGroupHomc(); //ชื่อกลุ่มแผนก
+        // $DeptGroups = ArrayHelper::map($departments, 'DeptGroup', 'DeptGrDesc');
+
+        return $departments;
+    }
+
+    public function actionDepartments($deptgroup) //เลือกแผนก/คลีนิคหลัก
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $DeptGrDesc = AppQuery::getDeptGrById($deptgroup);
+        $departments = AppQuery::getDepartmentByDeptGroupHomc($deptgroup); //ชื่อแผนกจากฐานข้อมูลโรงพยาบาล
+
+        return $departments;
+    }
+
+    public function actionDoctors($deptcode) //เลือกแผนก/คลีนิคหลัก
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $doctors = AppQuery::getDoctorByDeptcode($deptcode);
+
+        return $doctors;
+    }
+
+    public function actionSchedulesDoctor($doccode, $deptgroup, $deptcode) //เลือกแผนก/คลีนิคหลัก
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        //ข้อมูลตารางแพทย์จาก ระบบโรงพยาบาล
+        $dayofweek = [0, 1, 2, 3, 4, 5, 6];
+        $schedules = AppQuery::getScheduleDoctorByDbo($doccode, $deptgroup, $deptcode);
+        $doccHoliday = AppQuery::getDoccHoliday($doccode);
+        $holiday = AppQuery::getHoliday();
+
+        $holidays = [];
+        foreach ($holiday as $data) { //วันหยุดนักขัตฤกษ
+            $arr = explode("-", $data['h_date']);
+            $y = $arr[0] - 543;
+            $m = $arr[1];
+            $d = $arr[2];
+
+            $holidays[] = [
+                'title' => $data['h_comm'],
+                'date' => "$y-$m-$d",
+            ];
+        }
+
+        foreach ($doccHoliday as $data) { //วันหยุดแพทย์
+            $y = substr($data['Holdate'], 0, 4) - 543;
+            $m = substr($data['Holdate'], 4, -2);
+            $d = substr($data['Holdate'], -2);
+
+            $holidays[] = [
+                'title' => 'วันหยุดแพทย์',
+                'date' =>  "$y-$m-$d",
+            ];
+        }
+
+        $datesDisabled1 = array_map(function ($v) { //วันหยุดนักขัตฤกษ
+            $arr = explode("-", $v);
+            $y = $arr[0] - 543;
+            $m = $arr[1];
+            $d = $arr[2];
+            return "$y-$m-$d";
+        }, ArrayHelper::getColumn($holiday, 'h_date'));
+
+        $datesDisabled2 = array_map(function ($v) { //วันหยุดแพทย์
+            $y = substr($v, 0, 4) - 543;
+            $m = substr($v, 4, -2);
+            $d = substr($v, -2);
+            return "$y-$m-$d";
+        }, ArrayHelper::getColumn($doccHoliday, 'Holdate'));
+
+        $datesDisabled = ArrayHelper::merge($datesDisabled1, $datesDisabled2);
+
+        $mapDayOfWeek =  array_map(function ($v) {
+            if ($v == 7) {
+                return 0;
+            }
+            return $v;
+        }, ArrayHelper::getColumn($schedules, 'ad_orb'));
+
+        $daysOfWeekDisabled = [];
+        foreach ($dayofweek as $v) {
+            if (!in_array($v, $mapDayOfWeek)) {
+                $daysOfWeekDisabled[] = $v;
+            }
+        }
+
+
+        return [
+            'mapDayOfWeek' => $mapDayOfWeek,
+            'daysOfWeekDisabled' => $daysOfWeekDisabled,
+            'datesDisabled' => $datesDisabled,
+            'holidays' => $holidays,
+            'schedules' => $schedules
+        ];
+    }
+
+    public function actionSaveAppointMobileApp() //เลือกแผนก/คลีนิคหลัก
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $rawdata = \Yii::$app->getRequest()->getRawBody();
+        $bodyParams = $rawdata ? Json::decode($rawdata) : [];
+
+        $id_card = ArrayHelper::getValue($bodyParams, 'id_card', null);
+        $appoint_date = ArrayHelper::getValue($bodyParams, 'appoint_date', null); // yyyy-mm-dd
+        $doc_code = ArrayHelper::getValue($bodyParams, 'doc_code', null);
+        $dept_code = ArrayHelper::getValue($bodyParams, 'dept_code', null);
+        $appoint_time = ArrayHelper::getValue($bodyParams, 'appoint_time', null); // hh:ii-hh:ii
+        $deptgroup = ArrayHelper::getValue($bodyParams, 'deptgroup', null);
+
+        if (!$id_card) {
+            throw new HttpException(400, 'invalid id_card.');
+        }
+        if (!$appoint_date) {
+            throw new HttpException(400, 'invalid appoint_date.');
+        }
+        if (!$doc_code) {
+            throw new HttpException(400, 'invalid doc_code.');
+        }
+        if (!$dept_code) {
+            throw new HttpException(400, 'invalid dept_code.');
+        }
+        if (!$appoint_time) {
+            throw new HttpException(400, 'invalid appoint_time.');
+        }
+        if (!$deptgroup) {
+            throw new HttpException(400, 'invalid deptgroup.');
+        }
+
+        $arr = explode("-", $appoint_date);
+        $y = $arr[0];
+        $m = $arr[1];
+        $d = $arr[2];
+        // $appoint_date = "$d/$m/$y"; // d/m/Y
+        $appoint_date_th = (intval($y) + 543) . "$m$d"; // ex. 25640102
+
+        $profile = $this->findModelProfile(['id_card' => $id_card]);
+
+        $attributes = [
+            'doc_code' => $doc_code,
+            'dept_code' => $dept_code,
+            'appoint_date' => $appoint_date,
+            'appoint_time' => $appoint_time
+        ];
+
+        $model = new AppointModel();
+        $model->load($attributes, '');
+        if (!$model->validate()) {
+            throw new HttpException(400, Json::encode($model->errors));
+        }
+
+        $ap_time = explode("-", $appoint_time);
+        $appoint_time_from = $ap_time[0];
+        $appoint_time_to = $ap_time[1];
+
+        $db_mssql = Yii::$app->mssql;
+        $formatter = Yii::$app->formatter;
+        $dayofweek = date('w', strtotime($attributes['appoint_date'])); //1-7 sun-mon
+
+        $DoccLimit = (new \yii\db\Query()) //จำนวนคิวนัดหมายตามที่แพทย์ลงบันทึก
+            ->select(['DOCC_LimitApp.*', 'Appoint_day.*'])
+            ->from('DOCC_LimitApp')
+            ->innerJoin('Appoint_day', 'DOCC_LimitApp.appoint_date = Appoint_day.ad_id')
+            ->where([
+                'REPLACE(DOCC_LimitApp.docCode, \' \', \'\')' => $doc_code,
+                'DOCC_LimitApp.stTime' => $appoint_time_from,
+                'DOCC_LimitApp.edTime' => $appoint_time_to,
+                'Appoint_day.ad_orb' => $dayofweek,
+                'REPLACE(DOCC_LimitApp.DeptGroup, \' \', \'\')' => $deptgroup,
+            ])
+            ->one($db_mssql);
+
+
+        $count_appoint = (new \yii\db\Query()) //วันที่นัดหมายแพทย์
+            ->select(['*'])
+            ->from('Appoint')
+            ->where([
+                'REPLACE(Appoint.doctor, \' \', \'\')' => $doc_code,
+                'Appoint.appoint_date' => $appoint_date_th,
+                'Appoint.appoint_time_from' => $appoint_time_from,
+                'Appoint.appoint_time_to' => $appoint_time_to,
+                'Appoint.pre_dept_code' =>  $dept_code
+            ])
+            ->count('*', $db_mssql);
+
+
+
+        if ($count_appoint >= ArrayHelper::getValue($DoccLimit, 'applimit', 0)) { //ตรวจสอบจำนวนที่รับนัด
+            throw new HttpException(422, 'ไม่สามารถทำรายการได้ เนื่องจากคิวเต็ม.');
+        }
+
+
+        $transaction = $db_mssql->beginTransaction();
+        try {
+            // ตรวจสอบว่าเคยลงรายการนัดหรือยัง
+            $history_appoints = [];
+
+            $doctor = AppQuery::findOneDoctorByDocCode($attributes['doc_code']);
+
+            $dept = AppQuery::findOneDeptByDeptCode($attributes['dept_code']);
+
+            $params = [ //ตรวจสอบ  ถ้าเลือกวันและเวลาเดียวกัน ไม่สามารถนัดได้
+                // 'maker' => 'queue online mobile',
+                // 'doc_code' => $attributes['doc_code'],
+                'appoint_date' => $appoint_date_th,
+                // 'pre_dept_code' => $attributes['dept_code'],
+                'appoint_time_from' => $appoint_time_from,
+                'appoint_time_to' => $appoint_time_to,
+                'hn' => $profile['hn'],
+                'CID' => $profile['id_card'],
+                // 'status_in' => 'm', //สถานะระบบ status_in (m = mobile,c = ศูนย์บริการ,n = ระบบนัดใหม่,null= ระบบเดิม)
+            ];
+            $history_appoints = AppQuery::getHistoryAppoints($params);
+            $params2 = [ // ตรวจสอบ เลือกแผนกเดิม และ วันเดิมไม่ได้
+                // 'maker' => 'queue online mobile',
+                // 'doc_code' => $attributes['doc_code'],
+                'appoint_date' => $appoint_date_th, //วันนัด
+                'pre_dept_code' => $attributes['dept_code'], //รหัสแผนก
+                // 'appoint_time_from' => $appoint_time_from, //เวลาเริ่มนัด
+                // 'appoint_time_to' => $appoint_time_to, //เวลาสิ้นสุดนัด
+                'hn' => $profile['hn'], //รหัส hn
+                'CID' => $profile['id_card'], //รหัสบัตรประจำตัวประชาชน 
+                // 'status_in' => 'm', //สถานะระบบ status_in (m = mobile,c = ศูนย์บริการ,n = ระบบนัดใหม่,null= ระบบเดิม)
+            ];
+            $history_appoints2 = AppQuery::getHistoryAppoints($params2);
+
+            $history_appoints3 = AppQuery::getHistoryAppoints([ //ตรวจสอบ เวลาคาบเกี่ยว จะไม่สามารถทำนัดได้
+                'appoint_date' => $appoint_date_th,
+                'appoint_time_from' => $appoint_time_from,
+                'appoint_time_to' => $appoint_time_to,
+                'hn' => $profile['hn'],
+                'CID' => $profile['id_card']
+            ]);
+
+            if (!empty($history_appoints) || !empty($history_appoints2) || !empty($history_appoints3)) {
+                throw new HttpException(422, 'มีนัดหมายแล้ว ไม่สามารถทำนัดซ้ำได้');
+            }
+
+            $db_mssql->createCommand()->insert('Appoint', [
+                'app_type' => 'A',
+                'doctor' => Util::sprintf($attributes['doc_code'], 6),
+                'hn' =>  Util::sprintf($profile['hn'], 7),
+                'appoint_date' => $appoint_date_th,
+                'appoint_time_from' => $appoint_time_from,
+                'appoint_time_to' => $appoint_time_to,
+                'appoint_note' => '',
+                'pre_dept_code' => $dept_code,
+                'CID' => $profile['id_card'],
+                'phone' => $profile['phone_number'],
+                'maker' => 'queue mobile',
+                'keyin_time' => $formatter->asDate('now', 'php:Y-m-d H:i:s'),
+                'status_in' => 'm',
+            ])->execute();
+
+            $qrcode = Yii::$app->security->generateRandomString();
+            $appoint = [
+                'doctor_name' => $doctor['doctitle'] . $doctor['docName'] . ' ' . $doctor['docLName'],
+                'appoint_date' => $formatter->asDate($appoint_date, 'php:d/m/') . ($formatter->asDate($appoint_date, 'php:Y') + 543),
+                'appoint_time' => $appoint_time,
+                'department_name' => $dept['deptDesc'],
+                'hn' => $profile['hn'],
+                'fullname' => $profile['first_name'] . ' ' . $profile['last_name'],
+                'description' => $profile['hn'] ? 'กรุณาลงทะเบียนที่ Kiosk ก่อนเวลานัดหมาย 30 นาที ' : 'กรุณาลงทะเบียนผู้ป่วยใหม่ ที่งานเวชระเบียน ชั้น1 ก่อนเวลานัด 30 นาที!',
+                'urlQRCode' => Url::base(true) . Url::to(['/site/qrcode', 'qrcode' => $qrcode])
+            ];
+
+            $modelAppoint = new TblAppoint();
+            $modelAppoint->setAttributes([
+                'hn' => $profile['hn'],
+                'appoint_date' => ArrayHelper::getValue($bodyParams, 'appoint_date', null),
+                'app_time_from' => $appoint_time_from,
+                'app_time_to' => $appoint_time_to,
+                'dept_code' => $attributes['dept_code'],
+                'doc_code' => $attributes['doc_code'],
+                'cid' => $profile['id_card'],
+                'qrcode' => $qrcode
+            ]);
+            $modelAppoint->save();
+            $transaction->commit();
+            return [
+                'message' => 'ทำรายการสำเร็จ',
+                'appoint' => $appoint,
+                'appoint_date' => $appoint_date,
+                'hn' => $profile['hn'],
+                'id_card' => $profile['id_card'],
+                'doctor' => preg_replace('/\s+/', '', $attributes['doc_code']),
+            ];
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+    }
+
+    public function actionPatientAppoints($id_card) //ประวัตใบนัดหมายแพทย์
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $profile = $this->findModelProfile(['id_card' => $id_card]);
+        if (!$profile) {
+            return [];
+        }
+
+        $history = AppQuery::getUserHistory($profile);
+
+        $rows = [];
+        foreach ($history['result'] as $key => $value) {
+            if (empty($value['firstName'])) {
+                $value['firstName'] = $profile['first_name'];
+                $value['lastName'] = $profile['last_name'];
+            }
+            $rows[] = $value;
+        }
+        $rows2 = [];
+        $formatter = Yii::$app->formatter;
+        //$current_date_unix = $formatter->asTimestamp($formatter->asDate('now', 'php:Y-m-d')); // 2021-04-07 xxxxxxxxxx
+        $start_date_unix = $formatter->asTimestamp(($formatter->asDate('now', 'php:Y') - 1) . $formatter->asDate('now', 'php:-m-d')); //2020-04-07 xxxxxxxxxx
+        // 3333333333 วันที่นัดของปีที่แล้ว
+        // 4444444444 1 ปีที่แล้ว
+        // 5555555555 วันปัจจุบัน
+        // 6666666666 วันที่นัด >= 1 ปีที่แล้ว
+
+        foreach ($history['result2'] as $key => $value) {
+            if ($formatter->asTimestamp($value['appoint_date2']) >= $start_date_unix) {
+                if (empty($value['firstName'])) {
+                    $value['firstName'] = $profile['first_name'];
+                    $value['lastName'] = $profile['last_name'];
+                }
+                $rows2[] = $value;
+            }
+        }
+        return ArrayHelper::merge($rows, $rows2);
+    }
+
 }

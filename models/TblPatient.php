@@ -21,6 +21,8 @@ use yii\db\Expression;
  */
 class TblPatient extends \yii\db\ActiveRecord
 {
+    const SCENARIO_LINE = 'line';
+    const SCENARIO_MOBILE = 'mobile';
     /**
      * {@inheritdoc}
      */
@@ -55,7 +57,7 @@ class TblPatient extends \yii\db\ActiveRecord
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at']
                 ],
                 // if you're using datetime instead of UNIX timestamp:
-                'value' => new Expression('NOW()'),
+                'value' => Yii::$app->formatter->asDate('now','php:Y-m-d H:i:s')
             ],
         ];
     }
@@ -66,7 +68,7 @@ class TblPatient extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['first_name', 'last_name', 'id_card', 'brith_day', 'phone_number', 'day', 'month', 'year'], 'required'],
+            //[['first_name', 'last_name', 'id_card', 'brith_day', 'phone_number', 'day', 'month', 'year'], 'required'],
             [['id'], 'integer'],
             [['brith_day', 'created_at'], 'safe'],
             [['first_name', 'last_name'], 'string', 'max' => 255],
@@ -75,7 +77,17 @@ class TblPatient extends \yii\db\ActiveRecord
             [['user_type'], 'string', 'max' => 10],
             [['phone_number'], 'string', 'max' => 10, 'min' => 10],
             [['id'], 'unique'],
+            [['first_name', 'last_name', 'id_card', 'brith_day', 'phone_number', 'day', 'month', 'year'], 'required', 'on' => self::SCENARIO_LINE],
+            [['first_name', 'last_name', 'id_card', 'brith_day', 'phone_number'], 'required', 'on' => self::SCENARIO_MOBILE],
         ];
+    }
+
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_LINE] = ['first_name', 'last_name', 'id_card', 'brith_day', 'phone_number', 'day', 'month', 'year'];
+        $scenarios[self::SCENARIO_MOBILE] = ['first_name', 'last_name', 'id_card', 'brith_day', 'phone_number'];
+        return $scenarios;
     }
 
     /**

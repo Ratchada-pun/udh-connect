@@ -409,14 +409,14 @@ class AppQuery
 
             ->select([
                 'Appoint_dep_doc.docCode',
-                'DOCC.docName',
-                'DOCC.docLName',
+                'REPLACE(DOCC.docName, \' \', \'\') as docName',
+                'REPLACE(DOCC.docLName, \' \', \'\') as docLName',
                 'DOCC_LimitApp.stTime',
                 'DOCC_LimitApp.edTime',
                 'DOCC_LimitApp.applimit',
-                'DOCC_LimitApp.appoint_date',
-                'DOCC_LimitApp.DeptGroup',
-                'DOCC_LimitApp.deptCode',
+                'REPLACE(DOCC_LimitApp.appoint_date, \' \', \'\') as appoint_date',
+                'REPLACE(DOCC_LimitApp.DeptGroup, \' \', \'\') as DeptGroup',
+                'REPLACE(DOCC_LimitApp.deptCode, \' \', \'\') as deptCode',
                 'Appoint_day.ad_orb'
             ])
             ->from('DOCC_LimitApp')
@@ -680,19 +680,18 @@ class AppQuery
         $formatter = Yii::$app->formatter;
         $query = (new \yii\db\Query())
             ->select([
-                'Appoint.doctor',
-                'Appoint.appoint_date',
-                'Appoint.appoint_time_from',
-                'Appoint.appoint_time_to',
-                'Appoint.maker',
-                'Appoint.phone',
-                'Appoint.CID',
-                'Appoint.pre_dept_code',
-                'DEPT.deptDesc',
-                'PATIENT.phone',
+                'REPLACE(Appoint.doctor, \' \', \'\') as doctor',
+                'REPLACE(Appoint.appoint_date, \' \', \'\') as appoint_date',
+                'REPLACE(Appoint.appoint_time_from, \' \', \'\') as appoint_time_from',
+                'REPLACE(Appoint.appoint_time_to, \' \', \'\') as appoint_time_to',
+                'Appoint.maker as maker',
+                'REPLACE(PATIENT.phone, \' \', \'\') as phone',
+                'REPLACE(Appoint.CID, \' \', \'\') as CID',
+                'REPLACE(Appoint.pre_dept_code, \' \', \'\') as pre_dept_code',
+                'REPLACE(DEPT.deptDesc, \' \', \'\') as deptDesc',
                 'REPLACE(PATIENT.titleCode, \' \', \'\') as titleCode',
-                'REPLACE( PATIENT.firstName, \' \', \'\') as firstName',
-                'REPLACE( PATIENT.lastName, \' \', \'\') as lastName',
+                'REPLACE(PATIENT.firstName, \' \', \'\') as firstName',
+                'REPLACE(PATIENT.lastName, \' \', \'\') as lastName',
                 'REPLACE(DOCC.doctitle, \' \', \'\') as doctitle',
                 'REPLACE(DOCC.docName, \' \', \'\') as docName',
                 'REPLACE(DOCC.docLName, \' \', \'\') as docLName',

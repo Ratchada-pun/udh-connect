@@ -16,6 +16,7 @@ use yii\helpers\Url;
 use yii\web\HttpException;
 use yii\httpclient\Client;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 
 /**
  * RegisterController implements the CRUD actions for TblPatient model.
@@ -39,7 +40,7 @@ class RegisterController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['search-patient'],
+                        'actions' => ['search-patient', 'check-patient', 'patient-mobile-app'],
                         'roles' => ['?'],
                     ],
                 ],
@@ -47,12 +48,12 @@ class RegisterController extends Controller
         ];
     }
 
-        /**
+    /**
      * @inheritdoc
      */
     public function beforeAction($action)
     {
-        if (in_array($action->id, ['search-patient'])) {
+        if (in_array($action->id, ['search-patient', 'check-patient', 'patient-mobile-app'])) {
             $this->enableCsrfValidation = false;
         }
 
@@ -163,8 +164,8 @@ class RegisterController extends Controller
         // }
         $model = new TblPatient();
         $user = Yii::$app->request->get('user');
-
         $request = Yii::$app->request;
+        $model->scenario = TblPatient::SCENARIO_LINE;
 
         // if($session->get('user')) {
         //     return $this->redirect(['/app/appoint/create-department']);
@@ -263,6 +264,8 @@ class RegisterController extends Controller
         $request = Yii::$app->request;
         $db_mssql = Yii::$app->mssql;
         $fliterKey = $request->post('filter');
+
+
         if (mb_strlen($fliterKey) == 13) {
             // $query = $db_mssql->createCommand('SELECT
             //         dbo.v_patient_detail.hn,
@@ -285,7 +288,10 @@ class RegisterController extends Controller
             //     ])
             //     ->queryOne();
             $query = $db_mssql->createCommand('SELECT TOP
-                    1 REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                    1 
+                    
+                    REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                    PTITLE.titleName,
                     REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
                     REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
                     dbo.PATIENT.phone,
@@ -309,6 +315,7 @@ class RegisterController extends Controller
                 FROM
                     dbo.PATIENT
                     INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+                    LEFT JOIN dbo.PTITLE ON PATIENT.titleCode = PTITLE.titleCode 
                 WHERE
                 dbo.PatSS.CardID = :CardID')
                 ->bindValues([
@@ -348,7 +355,10 @@ class RegisterController extends Controller
             //     ])
             //     ->queryOne();
             $query = $db_mssql->createCommand('SELECT TOP
-                    1 REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                    1 
+                    
+                    REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                    PTITLE.titleName,
                     REPLACE( dbo.PATIENT.firstName, \' \', \'\') as firstName,
                     REPLACE(dbo.PATIENT.lastName, \' \', \'\') as lastName,
                     dbo.PATIENT.phone,
@@ -372,7 +382,8 @@ class RegisterController extends Controller
 
                 FROM
                     dbo.PATIENT
-                    INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+                    INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn
+                    LEFT JOIN dbo.PTITLE ON PATIENT.titleCode = PTITLE.titleCode 
                 WHERE
                     dbo.PATIENT.hn = :hn')
                 ->bindValues([
@@ -386,7 +397,8 @@ class RegisterController extends Controller
                     return [
                         'success' => true,
                         'redirect' => Url::to(['/app/appoint/create-department']),
-                        'message' => ''
+                        'message' => '',
+                        'patient' => $query
                     ];
                 }
             }
@@ -396,13 +408,15 @@ class RegisterController extends Controller
             return [
                 'success' => false,
                 'redirect' => Url::to(['/app/register/create-new-user', 'user' => 'new']),
-                'message' => 'ไม่พบข้อมูล'
+                'message' => 'ไม่พบข้อมูล',
+                'patient' => $query
             ];
         }
         return [
             'success' => true,
             'redirect' => Url::to(['/app/register/create-new-user', 'user' => 'old', 'q' => $fliterKey]),
-            'message' => ''
+            'message' => '',
+            'patient' => $query
         ];
     }
 
@@ -525,5 +539,118 @@ class RegisterController extends Controller
 
 
         return $query;
+    }
+
+
+    public function actionCheckPatient($q)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $request = Yii::$app->request;
+        $db_mssql = Yii::$app->mssql;
+        if (mb_strlen($q) == 13) {
+            $query = $db_mssql->createCommand('SELECT TOP
+                    1 
+                    
+                    REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                    REPLACE( PTITLE.titleName, \' \', \'\') as title_name,
+                    REPLACE( dbo.PATIENT.firstName, \' \', \'\') as first_name,
+                    REPLACE(dbo.PATIENT.lastName, \' \', \'\') as last_name,
+                    REPLACE(dbo.PATIENT.phone, \' \', \'\') as phone,
+                    -- dbo.PATIENT.birthDay as birth_day,
+                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as card_id,
+                    CONVERT (
+                    datetime,
+                    SUBSTRING ( CONVERT ( CHAR, dbo.PATIENT.birthDay - 5430000 ), 1, 4 ) + (
+                    CASE
+                    WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) = \'00\' THEN
+                    \'07\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) 
+                        END 
+                    ) + (
+                        CASE
+					WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) = \'00\' THEN
+					\'01\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) 
+				END 
+				    ) 
+			    ) AS birth_day                   
+                FROM
+                    dbo.PATIENT
+                    INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn 
+                    LEFT JOIN dbo.PTITLE ON PATIENT.titleCode = PTITLE.titleCode 
+                WHERE
+                dbo.PatSS.CardID = :CardID')
+                ->bindValues([
+                    ':CardID' => $q
+                ])
+                ->queryOne();
+        } else {
+            $query = $db_mssql->createCommand('SELECT TOP
+                    1 
+                    REPLACE( dbo.PATIENT.hn, \' \', \'\') as hn,
+                    REPLACE( PTITLE.titleName, \' \', \'\') as title_name,
+                    REPLACE( dbo.PATIENT.firstName, \' \', \'\') as first_name,
+                    REPLACE(dbo.PATIENT.lastName, \' \', \'\') as last_name,
+                    REPLACE(dbo.PATIENT.phone, \' \', \'\') as phone,
+                    -- dbo.PATIENT.birthDay as birth_day,
+                    REPLACE(dbo.PatSS.CardID, \' \', \'\') as card_id,
+                    CONVERT (
+                    datetime,
+                    SUBSTRING ( CONVERT ( CHAR, dbo.PATIENT.birthDay - 5430000 ), 1, 4 ) + (
+                    CASE
+                    WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) = \'00\' THEN
+                    \'07\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 5, 2 ) 
+                        END 
+                    ) + (
+                        CASE
+					WHEN SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) = \'00\' THEN
+					\'01\' ELSE SUBSTRING ( CONVERT ( CHAR, PATIENT.birthDay - 5430000 ), 7, 2 ) 
+				END 
+				    ) 
+			    ) AS birth_day 
+
+                FROM
+                    dbo.PATIENT
+                    INNER JOIN dbo.PatSS ON dbo.PatSS.hn = dbo.PATIENT.hn
+                    LEFT JOIN dbo.PTITLE ON PATIENT.titleCode = PTITLE.titleCode 
+                WHERE
+                    dbo.PATIENT.hn = :hn')
+                ->bindValues([
+                    ':hn' => Util::sprintf($q, 7)
+                ])
+                ->queryOne();
+        }
+
+        if ($query) {
+            $query = ArrayHelper::merge($query, [
+                'birth_day' => $query['birth_day'] ? Yii::$app->formatter->asDate($query['birth_day'], 'php:Y-m-d') : null
+            ]);
+        }
+
+        return $query;
+    }
+
+    public function actionPatientMobileApp()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $model = new TblPatient();
+        $model->scenario = TblPatient::SCENARIO_MOBILE;
+
+        $rawdata = \Yii::$app->getRequest()->getRawBody();
+        $bodyParams = $rawdata ? Json::decode($rawdata) : [];
+        $hn = ArrayHelper::getValue($bodyParams, 'hn', null);
+        if (($patient = TblPatient::findOne(['hn' => $hn])) != null && $hn) {
+            return $patient;
+        }
+        $id_card = ArrayHelper::getValue($bodyParams, 'id_card', null);
+        if (($patient = TblPatient::findOne(['id_card' => $id_card])) != null && $id_card) {
+            return $patient;
+        }
+        $model->user_type = !empty($hn) ? 'old' : 'new';
+        if ($model->load($bodyParams, '') && $model->save()) {
+            return $model;
+        } else {
+            $response = \Yii::$app->getResponse();
+            $response->setStatusCode(400);
+            return ActiveForm::validate($model);
+        }
     }
 }
