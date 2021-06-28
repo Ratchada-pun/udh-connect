@@ -44,7 +44,9 @@ class AppointController extends Controller
      */
     public function beforeAction($action)
     {
-        if (in_array($action->id, ['departments', 'dept-groups', 'doctors', 'schedules-doctor', 'save-appoint-mobile-app','patient-appoints'])) {
+        if (in_array($action->id, [
+            'departments', 'dept-groups', 'doctors', 'schedules-doctor', 
+            'save-appoint-mobile-app', 'patient-appoints','schedule-times-mobile-app'])) {
             $this->enableCsrfValidation = false;
         }
 
@@ -1351,4 +1353,24 @@ class AppointController extends Controller
         return ArrayHelper::merge($rows, $rows2);
     }
 
+    public function actionScheduleTimesMobileApp($doc_code, $deptgroup, $dept_code, $dayofweek)  //ตารางแพทย์
+    {
+        $response = Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_JSON;
+
+        if ($dayofweek == 0) {
+            $dayofweek = 7;
+        }
+
+        $schedules = AppQuery::getScheduleDoctorByDbo($doc_code, $deptgroup, $dept_code, $dayofweek);
+
+
+        $schedule_times =  array_map(function ($item) {
+            return [
+                'text' => $item['stTime'] . '-' . $item['edTime'] . ' น.',
+                'value' => $item['stTime'] . '-' . $item['edTime'],
+            ];
+        }, $schedules);
+        return  $schedule_times;
+    }
 }
